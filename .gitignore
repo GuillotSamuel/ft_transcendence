@@ -1,2 +1,9 @@
+# Docker files
 .env
+
+# Backend
+
+# Frontend
+
+# IDE Configuration
 .vscode/
