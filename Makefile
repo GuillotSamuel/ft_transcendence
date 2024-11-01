@@ -1,7 +1,7 @@
 # Define
 YELLOW = \033[1;33m
 NC = \033[0m
-COMPOSE_F = srcs/docker-compose.yml
+COMPOSE_FILE = srcs/docker-compose.yml
 
 # Build and run
 
@@ -46,16 +46,20 @@ remove:
 	@echo "$(YELLOW)Stopping Docker containers and removing all resources...$(NC)"
 	docker-compose -f $(COMPOSE_FILE) down --volumes --remove-orphans
 
-prune:
+prune: remove
 	@echo "$(YELLOW)Pruning all unused Docker resources...$(NC)"
 	@docker system prune -a --volumes -f
 
+
 # Accessing container terminals
 
-# todo, example :
-# shell<ContainerName>:
-# 	@echo "$(YELLOW)Accessing the shell of the specified container...$(NC)"
-# 	docker-compose -f $(COMPOSE_FILE) exec <container_name> sh
+shellPostgreSQL:
+	@echo "$(YELLOW)Accessing the shell of the PostgreSQL container...$(NC)"
+	docker-compose -f $(COMPOSE_FILE) exec postgresql sh
+
+# shellDjango:
+# 	@echo "$(YELLOW)Accessing the shell of the Django container...$(NC)"
+# 	docker-compose -f $(COMPOSE_FILE) exec Django sh
 
 
 .PHONY: all build up down stop restart re logs status remove prune

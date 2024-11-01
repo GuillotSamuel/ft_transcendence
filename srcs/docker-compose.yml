@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+# # --- DJANGO --- #
+#   django:
+#     container_name: django
+#     build:
+#       context: ./backend/django
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./srcs/backend/django:/app
+#     ports:
+#       - "8000:8000"
+#     env_file:
+#       - ../.env
+#     depends_on:
+#       - postgresql
+#     networks:
+#       - tsdc_network
+# --- POSTGRESQL --- #
+  postgresql:
+    container_name: postgresql
+    image: postgres:latest
+    env_file:
+      - ../.env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - tsdc_network
+
+volumes:
+  db_data:
+
+networks:
+  tsdc_network:
+    driver: bridge
+
