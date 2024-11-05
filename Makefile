@@ -26,7 +26,7 @@ stop:
 restart: down up
 	@echo "$(YELLOW)Restarting Docker containers...$(NC)"
 
-re: prune all
+re: remove all
 
 
 # Logs and status 
@@ -57,9 +57,9 @@ shellPostgreSQL:
 	@echo "$(YELLOW)Accessing the shell of the PostgreSQL container...$(NC)"
 	docker-compose -f $(COMPOSE_FILE) exec postgresql sh
 
-# shellDjango:
-# 	@echo "$(YELLOW)Accessing the shell of the Django container...$(NC)"
-# 	docker-compose -f $(COMPOSE_FILE) exec Django sh
+shellDjango:
+	@echo "$(YELLOW)Accessing the shell of the Django container...$(NC)"
+	docker-compose -f $(COMPOSE_FILE) exec Django sh
 
 
 .PHONY: all build up down stop restart re logs status remove prune
