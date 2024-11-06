@@ -59,7 +59,7 @@ shellPostgreSQL:
 
 shellDjango:
 	@echo "$(YELLOW)Accessing the shell of the Django container...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) exec Django sh
+	docker-compose -f $(COMPOSE_FILE) exec django sh
 
 
 .PHONY: all build up down stop restart re logs status remove prune shellPostgreSQL shellDjango

@@ -7,8 +7,6 @@ services:
     build:
       context: ./backend/django
       dockerfile: Dockerfile
-    volumes:
-      - ./srcs/backend/django:/app
     ports:
       - "8000:8000"
     env_file:
@@ -17,6 +15,10 @@ services:
       - postgresql
     networks:
       - tsdc_network
+    # START TESTS
+    stdin_open: true 
+    tty: true
+    # END TESTS
 # --- POSTGRESQL --- #
   postgresql:
     container_name: postgresql

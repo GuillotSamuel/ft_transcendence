@@ -8,12 +8,12 @@ COPY requirements.txt .
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-COPY manage.py .
-COPY Project/ .
-COPY tools/entrypoint.sh /app/entrypoint.sh
+COPY manage.py /app/manage.py
+COPY Project/ /app/Project/.
+COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
 
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /app/manage.py
 
 EXPOSE 8000
 
-ENTRYPOINT ["bash", "/app/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
