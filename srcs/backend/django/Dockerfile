@@ -1,15 +1,14 @@
 FROM python:3.13
 
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
-		postgresql-client \
-	&& rm -rf /var/lib/apt/lists/*
+ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
+WORKDIR /project
 
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
-COPY . .
+COPY requirements.txt .
+
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+COPY project/ .
 
 EXPOSE 8000
 

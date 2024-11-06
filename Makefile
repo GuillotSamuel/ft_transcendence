@@ -23,7 +23,7 @@ stop:
 	@echo "$(YELLOW)Stopping Docker containers...$(NC)"
 	docker-compose -f $(COMPOSE_FILE) stop
 
-restart: down up
+restart: remove up
 	@echo "$(YELLOW)Restarting Docker containers...$(NC)"
 
 re: remove all
@@ -62,4 +62,4 @@ shellDjango:
 	docker-compose -f $(COMPOSE_FILE) exec Django sh
 
 
-.PHONY: all build up down stop restart re logs status remove prune
+.PHONY: all build up down stop restart re logs status remove prune shellPostgreSQL shellDjango
