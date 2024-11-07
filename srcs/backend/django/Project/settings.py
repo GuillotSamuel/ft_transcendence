@@ -25,9 +25,7 @@ SECRET_KEY = 'django-insecure-hb1d&ouy^o*z(tw*9z#yq#jy8e1h2z3kuo06oh$yos)zjl$##*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', 'votre_domaine']
-
-
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -73,6 +71,7 @@ WSGI_APPLICATION = 'Project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
 import os
 
 DATABASES = {
@@ -81,10 +80,11 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'postgresql',  # Assurez-vous que ce nom correspond au service dans docker-compose.yml
+        'HOST': 'postgresql',
         'PORT': '5432',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

@@ -48,7 +48,7 @@ Here’s the recommended approach in English to help structure the ft_transcende
 1. __Initial Planning and Configuration__
 * Set up development environments (Docker, containerization) to ensure consistency, especially for microservices management.
 * Select and install a Django framework (Module 1 - Major) _as the foundation for all other backend components, ensuring compatibility with a microservices architecture_ :
-    - Installation : 
+    - Installation : [Learn more about Django installation](https://youtu.be/N0x_koFpoVs?si=oRwYfxMb_j5t6PsY) ;
 2. __Core Backend Modules__
 * Standard User Management and Authentication (Module 2 - Major)
 _This functionality is crucial as it provides the foundation for all user interactions, including tournaments and scoring. Integrate authentication elements like sessions and secure storage for user information._
