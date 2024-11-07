@@ -24,4 +24,4 @@ done
 
 echo -e "${PINK}PostgreSQL is ready, starting Django...${NC}"
 
-exec python /app/manage.py runserver 0.0.0.0:8000
+exec python /app/Project/manage.py runserver 0.0.0.0:8000
