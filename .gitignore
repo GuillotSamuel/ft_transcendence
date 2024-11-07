@@ -1,9 +1,19 @@
-# Docker files
+# Env config
 # .env
+venv/
+env/
+#.env/
 
 # Backend
 
 # Frontend
 
+# Python
+__pycache__/
+*.pyc
+
 # IDE Configuration
 .vscode/
+.DS_Store
+.idea/
+Thumbs.db
