@@ -19,6 +19,7 @@ _To complete..._
 5. Remote players
 
 ### Minor modules
+
 1. Use a framework or a toolkit to build the frontend
 2. Use a database for the backend
 3. GDPRComplianceOptionswithUserAnonymization, Local Data Management, and Account Deletion
