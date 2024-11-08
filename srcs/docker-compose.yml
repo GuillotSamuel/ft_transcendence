@@ -15,6 +15,10 @@ services:
       - postgresql
     networks:
       - tsdc_network
+    # START TESTS
+    stdin_open: true 
+    tty: true
+    # END TESTS
 # --- POSTGRESQL --- #
   postgresql:
     container_name: postgresql
