@@ -7,7 +7,15 @@ COMPOSE_FILE = srcs/docker-compose.yml
 
 all: build up
 
-build:
+prepare_directories:
+	@echo "$(YELLOW)Preparing directories for Docker containers volumes...$(NC)"
+	@sudo mkdir -p $(HOME)/data/db
+	@sudo mkdir -p $(HOME)/data/static
+	@sudo mkdir -p $(HOME)/data/media
+	@sudo chown -R $(USER):$(USER) $(HOME)/data
+	@sudo chmod -R 755 $(HOME)/data
+
+build: prepare_directories
 	@echo "$(YELLOW)Building Docker images...$(NC)"
 	docker-compose -f $(COMPOSE_FILE) build
 
@@ -62,4 +70,4 @@ shellDjango:
 	docker-compose -f $(COMPOSE_FILE) exec django sh
 
 
-.PHONY: all build up down stop restart re logs status remove prune shellPostgreSQL shellDjango
+.PHONY: all prepare_directories build up down stop restart re logs status remove prune shellPostgreSQL shellDjango
