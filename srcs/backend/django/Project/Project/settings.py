@@ -49,9 +49,11 @@ INSTALLED_APPS = [
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=20),
-    'REFRES_TOKEN_LIFETIME': timedelta(minutes=2),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2),
+    'REFRES_TOKEN_LIFETIME': timedelta(minutes=4),
 }
+
+AUTH_USER_MODEL = 'AppAuthentification.GameUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
