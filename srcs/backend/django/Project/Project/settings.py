@@ -46,13 +46,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt'
 ]
 
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2),
-    'REFRES_TOKEN_LIFETIME': timedelta(minutes=4),
-}
-
 AUTH_USER_MODEL = 'AppAuthentification.GameUser'
 
 MIDDLEWARE = [

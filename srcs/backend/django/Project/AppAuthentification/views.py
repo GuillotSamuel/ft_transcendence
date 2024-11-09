@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,6 +6,7 @@ from .serializers import RegisterSerializer, LoginSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -67,3 +68,16 @@ def refreshToken(request):
         return response
     except TokenError:
         return Response({'message': 'Invalid refresh token'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def logout(request):
+    try:
+        response = Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        return response
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

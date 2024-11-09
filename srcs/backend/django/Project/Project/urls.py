@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from AppAuthentification.views import register, login, refreshToken
+from AppAuthentification.views import register, login, refreshToken, logout
 
 
 urlpatterns = [
@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/register/', register),
     path('api/login/', login),
     path('api/refreshToken/', refreshToken),
+    path('api/logout/', logout),
 ]
