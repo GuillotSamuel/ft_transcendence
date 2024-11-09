@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from AppAuthentification.views import register, login, refreshToken, logout
+from AppAuthentification.views import register, login, logout
 
 
 urlpatterns = [

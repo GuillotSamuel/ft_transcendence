@@ -1,5 +1,5 @@
-Django>=4.0,<5.0
-djangorestframework>=3.12,<4.0
-psycopg2-binary>=2.9
-djangorestframework-simplejwt
-django-otp
+Django==4.2.9
+djangorestframework==3.14.0
+psycopg2-binary==2.9.6
+djangorestframework-simplejwt==5.2.2
+django-otp==1.4.0

@@ -6,7 +6,8 @@ from .serializers import RegisterSerializer, LoginSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from .checkAuthentification import JWTCookieAuthentication
-from django_otp.models import TOTPDevice
+from django_otp.plugins.otp_totp.models import TOTPDevice
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
