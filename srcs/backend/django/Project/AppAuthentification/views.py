@@ -5,8 +5,8 @@ from rest_framework import status
 from .serializers import RegisterSerializer, LoginSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from .checkAuthentification import JWTCookieAuthentication
+from django_otp.models import TOTPDevice
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -49,29 +49,7 @@ def login(request):
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
-def refreshToken(request):
-    refresh_token = request.COOKIES.get('refresh_token')
-    if not refresh_token:
-        return Response({'message': 'Refresh token missing'}, status=status.HTTP_400_BAD_REQUEST)
-    try:
-        rtoken = RefreshToken(refresh_token)
-        access_token = rtoken.access_token
-        response = Response({'message': 'Token refreshed successfully'})
-        response.set_cookie(
-            'access_token',
-            str(access_token),
-            max_age=20,
-            httponly=True,
-            samesite='Lax',
-        )
-        return response
-    except TokenError:
-        return Response({'message': 'Invalid refresh token'}, status=status.HTTP_400_BAD_REQUEST)
-    
-
-@api_view(['POST'])
-@authentication_classes([JWTAuthentication])
+@authentication_classes([JWTCookieAuthentication])
 @permission_classes([IsAuthenticated])
 def logout(request):
     try:
