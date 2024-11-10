@@ -27,6 +27,11 @@ def login(request):
         user = serializer.validated_data['user']
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    if TOTPDevice.objects.filter(user=user, confirmed=True).exists():
+        device = TOTPDevice.objects.filter(user=user, confirmed=True).first()
+        if not device or not device.verify_token(request.data.get("opt")):
+            return Response({'error': 'Invalid 2FA token'}, status=status.HTTP_401_UNAUTHORIZED)
 
     refreshToken = RefreshToken.for_user(user)
     accessToken = refreshToken.access_token
@@ -35,14 +40,14 @@ def login(request):
     response.set_cookie(
         'access_token',
         str(accessToken),
-        max_age=20,
+        max_age=6000000,
         httponly=True,
         samesite='Lax',
     )
     response.set_cookie(
         'refresh_token',
         str(refreshToken),
-        max_age=30,
+        max_age=700000,
         httponly=True,
         samesite='Lax',
     )
@@ -60,3 +65,35 @@ def logout(request):
         return response
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def activate2FA(request):
+    user = request.user
+    devices = TOTPDevice.objects.filter(user=user)
+    if devices.exists():
+        return Response({"detail": "2FA est déjà activée."}, status=400)
+    
+    device = TOTPDevice.objects.create(user=user, confirmed=False)
+
+    return Response({
+        "detail": "2FA a été activée avec succès.",
+        "provisioning_uri": device.config_url
+    })
+
+
+@api_view(['POST'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def confirm2FA(request):
+    user = request.user
+    otpCode = request.data.get("otp")
+    device = TOTPDevice.objects.filter(user=user).first()
+    if device.verify_token(otpCode):
+        device.confirmed = True
+        device.save()
+        return Response({"detail": "2FA activée avec succès."})
+    else:
+        return Response({"detail": "Code OTP invalide."}, status=400)

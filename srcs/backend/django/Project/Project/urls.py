@@ -15,12 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from AppAuthentification.views import register, login, logout
-
+from AppAuthentification.views import register, login, logout, activate2FA, confirm2FA
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/register/', register),
     path('api/login/', login),
     path('api/logout/', logout),
+    path('api/activate2FA/', activate2FA),
+    path('api/confirm2FA/', confirm2FA),
 ]
