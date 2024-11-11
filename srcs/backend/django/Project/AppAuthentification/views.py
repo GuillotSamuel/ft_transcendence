@@ -73,13 +73,13 @@ def logout(request):
 def activate2FA(request):
     user = request.user
     devices = TOTPDevice.objects.filter(user=user)
-    if devices.exists():
+    if devices.exists() and devices.first().confirmed:
         return Response({"detail": "2FA est déjà activée."}, status=400)
-    
+    devices.delete()
     device = TOTPDevice.objects.create(user=user, confirmed=False)
 
     return Response({
-        "detail": "2FA a été activée avec succès.",
+        "detail": "QR code generate",
         "provisioning_uri": device.config_url
     })
 
@@ -91,6 +91,12 @@ def confirm2FA(request):
     user = request.user
     otpCode = request.data.get("otp")
     device = TOTPDevice.objects.filter(user=user).first()
+    if not device:
+        return Response({"detail": "2FA is not activate"}, status=400)
+    if device.confirmed:
+        return Response({"detail": "2FA is already confirm"}, status=400)
+    if not otpCode:
+        return Response({"detail": "OTP code is required."}, status=400)
     if device.verify_token(otpCode):
         device.confirmed = True
         device.save()
