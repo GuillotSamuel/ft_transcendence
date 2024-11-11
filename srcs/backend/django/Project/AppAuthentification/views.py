@@ -30,7 +30,7 @@ def login(request):
     
     if TOTPDevice.objects.filter(user=user, confirmed=True).exists():
         device = TOTPDevice.objects.filter(user=user, confirmed=True).first()
-        if not device or not device.verify_token(request.data.get("opt")):
+        if not device or not device.verify_token(request.data.get("otp")):
             return Response({'error': 'Invalid 2FA token'}, status=status.HTTP_401_UNAUTHORIZED)
 
     refreshToken = RefreshToken.for_user(user)
