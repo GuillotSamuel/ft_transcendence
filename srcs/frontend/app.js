@@ -2,14 +2,14 @@ const routes = {
     home: {
         template: `
             <section id="home" class="container mt-5 pt-5">
-    <div class="row text-center">
-        <div class="col-md-12">
-            <h1>Welcome to Online Pong Game!</h1>
-            <p class="lead">Play against friends or random opponents online. Are you ready to start?</p>
-            <a href="#game" class="btn btn-primary btn-lg mt-3">Start Game</a>
-        </div>
-    </div>
-</section>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <h1>Welcome to Online Pong Game!</h1>
+                        <p class="lead">Play against friends or random opponents online. Are you ready to start?</p>
+                        <a href="#game" class="btn btn-primary btn-lg mt-3">Start Game</a>
+                    </div>
+                </div>
+            </section>
         `
     },
     connexion: {
@@ -20,20 +20,19 @@ const routes = {
                         <h2>Login to your account</h2>
                         <form>
                             <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" required>
+                                <label for="login-username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="login-username" required>
                             </div>
                             <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" required>
+                                <label for="login-password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="login-password" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Log In</button>
+                            <button type="button" onclick="loginUser()" class="btn btn-primary w-100">Log In</button>
                         </form>
                         <p class="mt-3 text-center">Don't have an account? <a href="#registration">Sign up</a></p>
                     </div>
                 </div>
             </section>
-
         `
     },
     registration: {
@@ -44,18 +43,18 @@ const routes = {
                         <h2>Create a new account</h2>
                         <form>
                             <div class="mb-3">
-                                <label for="newUsername" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="newUsername" required>
+                                <label for="register-username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="register-username" required>
                             </div>
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" required>
+                                <label for="register-email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="register-email" required>
                             </div>
                             <div class="mb-3">
-                                <label for="newPassword" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="newPassword" required>
+                                <label for="register-password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="register-password" required>
                             </div>
-                            <button type="submit" class="btn btn-success w-100">Sign Up</button>
+                            <button type="button" onclick="registerUser()" class="btn btn-success w-100">Sign Up</button>
                         </form>
                         <p class="mt-3 text-center">Already have an account? <a href="#connexion">Log in</a></p>
                     </div>
@@ -74,7 +73,7 @@ const routes = {
                             <li class="list-group-item"><strong>Email:</strong> user123@example.com</li>
                         </ul>
                         <button class="btn btn-warning mt-3 w-100" onclick="location.hash = '#editPage'">Edit Profile</button>
-                        <button class="btn btn-danger mt-2 w-100">Log Out</button>
+                        <button class="btn btn-danger mt-2 w-100" onclick="disconnectUser()">Log Out</button>
                     </div>
                 </div>
             </section>
@@ -137,6 +136,10 @@ const routes = {
     }
 };
 
+function isAuthenticated() {
+    return localStorage.getItem('authToken') !== null;
+}
+
 function navigate() {
     const hash = window.location.hash.substring(1) || 'home';
     const route = routes[hash];
@@ -149,5 +152,101 @@ function navigate() {
     }
 }
 
+function navigate() {
+    const hash = window.location.hash.substring(1) || 'home';
+    const route = routes[hash];
+
+    if ((hash === 'profile' || hash === 'editPage' || hash === 'game') && !isAuthenticated()) {
+        alert('Please log in to access this page.');
+        location.hash = '#connexion';
+        return;
+    }
+
+    const appDiv = document.getElementById('app');
+    if (route) {
+        appDiv.innerHTML = route.template;
+    } else {
+        appDiv.innerHTML = "<h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p>";
+    }
+}
+
 window.addEventListener('hashchange', navigate);
 window.addEventListener('load', navigate);
+
+async function loginUser() {
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    try {
+        const response = await fetch('http://localhost:8000/api/login/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert('Login successful!');
+            location.hash = '#profile';
+        } else {
+            alert(`Error: ${data.message || 'Login failed'}`);
+        }
+    } catch (error) {
+        alert('Network error: Unable to login');
+    }
+}
+
+async function registerUser() {
+    const username = document.getElementById('register-username').value;
+    const email = document.getElementById('register-email').value;
+    const password = document.getElementById('register-password').value;
+
+    try {
+        const response = await fetch('http://localhost:8000/api/register/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert('Registration successful!');
+            location.hash = '#connexion';
+        } else {
+            alert(`Error: ${data.message || 'Registration failed'}`);
+        }
+    } catch (error) {
+        alert('Network error: Unable to register');
+    }
+}
+
+async function logoutUser() {
+    const response = await fetch('http://localhost:8000/api/logout/', {
+        method: 'POST',
+        credentials: 'include'
+    });
+    alert(response.ok ? 'Disconnexion success!' : `Error: ${await response.text()}`);
+}
+
+async function disconnectUser() {
+    try {
+        const response = await fetch('http://localhost:8000/api/logout/', {
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            localStorage.removeItem('authToken'); // to change
+            alert('Successfully logged out!');
+            location.hash = '#home';
+        } else {
+            alert(`Error: ${await response.text()}`);
+        }
+    } catch (error) {
+        alert('Network error: Unable to logout');
+    }
+}
+
+async function startNewGame()
+{
+
+}
