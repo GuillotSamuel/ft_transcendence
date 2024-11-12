@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-hb1d&ouy^o*z(tw*9z#yq#jy8e1h2z3kuo06oh$yos)zjl$##*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 
@@ -43,15 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'AppAuthentification',
     'rest_framework',
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
 ]
-
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2),
-    'REFRES_TOKEN_LIFETIME': timedelta(minutes=4),
-}
 
 AUTH_USER_MODEL = 'AppAuthentification.GameUser'
 
