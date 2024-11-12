@@ -15,7 +15,7 @@ prepare_directories:
 	@sudo chown -R $(USER):$(USER) $(HOME)/data
 	@sudo chmod -R 755 $(HOME)/data
 
-build: prepare_directories
+build: # prepare_directories
 	@echo "$(YELLOW)Building Docker images...$(NC)"
 	docker-compose -f $(COMPOSE_FILE) build
 
