@@ -137,7 +137,7 @@ const routes = {
 };
 
 function isAuthenticated() {
-    return localStorage.getItem('authToken') !== null;
+    return localStorage.getItem('authToken') !== null; // to change the auth token
 }
 
 function navigate() {
