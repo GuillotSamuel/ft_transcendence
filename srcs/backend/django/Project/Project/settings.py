@@ -43,15 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'AppAuthentification',
     'rest_framework',
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
 ]
-
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2),
-    'REFRES_TOKEN_LIFETIME': timedelta(minutes=4),
-}
 
 AUTH_USER_MODEL = 'AppAuthentification.GameUser'
 
