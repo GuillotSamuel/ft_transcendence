@@ -12,10 +12,10 @@ prepare_directories:
 	@sudo mkdir -p $(HOME)/data/db
 	@sudo mkdir -p $(HOME)/data/static
 	@sudo mkdir -p $(HOME)/data/media
-	@sudo chown -R $(USER):$(USER) $(HOME)/data
+	@sudo chown -R $(USER):staff $(HOME)/data
 	@sudo chmod -R 755 $(HOME)/data
 
-build: prepare_directories
+build: # prepare_directories
 	@echo "$(YELLOW)Building Docker images...$(NC)"
 	docker-compose -f $(COMPOSE_FILE) build
 

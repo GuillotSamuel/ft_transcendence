@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Définit les couleurs pour l'affichage
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -8,35 +7,38 @@ RED='\033[0;31m'
 PINK='\033[1;35m'
 NC='\033[0m'
 
-# Affiche un message d'initialisation
 echo -e "${YELLOW}Starting Django setup...${NC}"
 
-# Enregistre le temps de démarrage et définit un timeout de 60 secondes
+# Temps d'attente pour la connexion à PostgreSQL
 start_time=$(date +%s)
 end_time=$((start_time + 60))
 
-# Attend que le service PostgreSQL soit disponible
+# Attente de la disponibilité de PostgreSQL
 while ! nc -z postgresql 5432; do
   echo -e "${BLUE}Waiting for PostgreSQL...${NC}"
   sleep 2
 
-  # Si PostgreSQL n'est pas disponible après 60 secondes, échoue le script
   if [ $(date +%s) -ge $end_time ]; then
     echo -e "${RED}Failed to access the PostgreSQL container in 60 seconds.${NC}"
     exit 1
   fi
 done
 
-# Si PostgreSQL est prêt, continue le setup de Django
-echo -e "${PINK}PostgreSQL is ready, starting Django...${NC}"
+echo -e "${GREEN}PostgreSQL is ready, starting Django...${NC}"
 
-# Applique les migrations de Django (si elles existent)
-echo -e "${GREEN}Running makemigrations...${NC}"
-python /app/Project/manage.py makemigrations || true  # N'échoue pas si aucune migration n'est nécessaire
+# Exécution des migrations
+echo -e "${BLUE}Running makemigrations...${NC}"
+python /app/Project/manage.py makemigrations || true
 
-echo -e "${GREEN}Running migrations...${NC}"
+echo -e "${BLUE}Running migrations...${NC}"
 python /app/Project/manage.py migrate
 
-# Lance le serveur Django
-echo -e "${GREEN}Starting Django server...${NC}"
-exec python /app/Project/manage.py runserver 0.0.0.0:8000
+# Démarrage de Daphne
+echo -e "${PINK}Starting Daphne server...${NC}"
+
+# On s'assure que le chemin PYTHONPATH inclut le dossier contenant 'Project'
+export PYTHONPATH=$PYTHONPATH:/app/Project
+
+# Lancement de Daphne avec la bonne application ASGI
+exec daphne -b 0.0.0.0 -p 8000 Project.asgi:application
+
