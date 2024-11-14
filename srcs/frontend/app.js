@@ -1,3 +1,4 @@
+
 const routes = {
 
     game: {
@@ -72,23 +73,7 @@ const routes = {
                 <div class="row">
                     <div class="col-md-4">
                         <h2>Your Profile</h2>
-                        <ul class="list-group">
-                            <li class="list-group-item"><strong>Username:</strong> User123</li>
-                            <li class="list-group-item"><strong>Email:</strong> user123@example.com</li>
-                        </ul>
-                        <button class="btn btn-warning mt-3 w-100" onclick="location.hash = '#editPage'">Edit Profile</button>
-                        <button class="btn btn-danger mt-2 w-100" onclick="disconnectUser()">Log Out</button>
-                    </div>
-                </div>
-            </section>
-
-        `
-    },
-    editPage: {
-        template: `
-            <section id="edit-page" class="container mt-5 pt-5">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
+                    import './jeu/game.js';<div class="col-md-6">
                         <h2>Edit Your Profile</h2>
 
                         <!-- Change Password Form -->
@@ -124,21 +109,27 @@ const routes = {
             <section id="game" class="container mt-5 pt-5">
                 <div class="row text-center">
                     <div class="col-md-12">
-                        <h2>Play Pong!</h2>
-                        <p class="lead">Enjoy a game of Pong against a friend or a random opponent.</p>
-                        <!-- Placeholder for the game itself -->
-                        <div id="pong-game" class="bg-light border rounded mb-3" style="width: 100%; height: 400px;">
-                            <!-- Actual game rendering would go here -->
-                            <p class="text-muted">The game will appear here!</p>
+                        <!-- Styled heading -->
+                        <h2 class="display-1 text-gradient fw-bold arcade-text mb-4">Play Pong!</h2>
+                        <p class="lead text-muted">Challenge a friend or a random opponent and start your game!</p>
+                        <!-- Canvas for the game -->
+                        <div class="canvas-container p-4 rounded shadow">
+                            <canvas id="pong-canvas" class="bg-dark rounded border border-light" width="800" height="600"></canvas>
                         </div>
-                        <button class="btn btn-danger w-100" onclick="startNewGame()">Start New Game</button>
+                        <!-- Buttons for Local and Remote Game -->
+                        <div class="d-flex justify-content-center gap-3 mt-4">
+                            <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
+                            <button class="btn btn-info btn-lg" onclick="startRemoteGame()">Remote Game</button>
+                        </div>
                     </div>
                 </div>
             </section>
-
         `
     }
+    
+    
 };
+
 
 function isAuthenticated() {
     return localStorage.getItem('authToken') !== null; // to change the auth token
@@ -250,8 +241,23 @@ async function disconnectUser() {
     }
 }
 
-async function startNewGame()
-{
-    
-
+async function startLocalGame() {
+    // Obtenez l'élément canvas
+    const canvas = document.getElementById('pong-canvas');
+    if (canvas.getContext) {
+        const ctx = canvas.getContext('2d');
+        
+        // Effacez le canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Définissez les styles de texte
+        ctx.font = '48px Arial';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        
+        // Affichez le message "SALUT"
+        ctx.fillText('SALUT', canvas.width / 2, canvas.height / 2);
+    } else {
+        alert('Canvas is not supported in this browser.');
+    }
 }
