@@ -52,6 +52,13 @@ INSTALLED_APPS = [
 
 ASGI_APPLICATION = 'Project.asgi.application'
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
+
 AUTH_USER_MODEL = 'AppAuthentification.GameUser'
 
 MIDDLEWARE = [
