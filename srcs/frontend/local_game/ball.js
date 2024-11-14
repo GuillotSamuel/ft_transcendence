@@ -81,7 +81,6 @@ export class Ball {
         // Set the speed and direction after the pause
         this.speedX = player === 2 ? this.beginSpeedX : -this.beginSpeedX;
         this.speedY = Math.random() < 0.5 ? this.beginSpeedY : -this.beginSpeedY;
-        this.speedX *= Math.random() < 0.5 ? 1.5 : 2;
     }
     
 }

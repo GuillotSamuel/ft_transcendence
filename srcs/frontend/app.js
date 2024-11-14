@@ -1,3 +1,4 @@
+import { startGame } from './local_game/game.js';
 
 const routes = {
 
@@ -126,26 +127,10 @@ const routes = {
             </section>
         `
     }
-    
-    
 };
 
 
-function isAuthenticated() {
-    return localStorage.getItem('authToken') !== null; // to change the auth token
-}
 
-function navigate() {
-    const hash = window.location.hash.substring(1) || 'home';
-    const route = routes[hash];
-
-    const appDiv = document.getElementById('app');
-    if (route) {
-        appDiv.innerHTML = route.template;
-    } else {
-        appDiv.innerHTML = "<h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p>";
-    }
-}
 
 function navigate() {
     const hash = window.location.hash.substring(1) || 'home';
@@ -167,6 +152,18 @@ function navigate() {
 
 window.addEventListener('hashchange', navigate);
 window.addEventListener('load', navigate);
+
+// Expose functions to the global scope
+window.startLocalGame = startLocalGame;
+window.registerUser = registerUser;
+window.loginUser = loginUser;
+window.logoutUser = logoutUser;
+window.disconnectUser = disconnectUser;
+
+function isAuthenticated() {
+    return localStorage.getItem('authToken') !== null; // to change the auth token
+}
+
 
 async function loginUser() {
     const username = document.getElementById('login-username').value;
@@ -222,6 +219,7 @@ async function logoutUser() {
     alert(response.ok ? 'Disconnexion success!' : `Error: ${await response.text()}`);
 }
 
+
 async function disconnectUser() {
     try {
         const response = await fetch('http://localhost:8000/api/logout/', {
@@ -241,23 +239,7 @@ async function disconnectUser() {
     }
 }
 
-async function startLocalGame() {
-    // Obtenez l'élément canvas
-    const canvas = document.getElementById('pong-canvas');
-    if (canvas.getContext) {
-        const ctx = canvas.getContext('2d');
-        
-        // Effacez le canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Définissez les styles de texte
-        ctx.font = '48px Arial';
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-        
-        // Affichez le message "SALUT"
-        ctx.fillText('SALUT', canvas.width / 2, canvas.height / 2);
-    } else {
-        alert('Canvas is not supported in this browser.');
-    }
+// Function Definitions
+function startLocalGame() {
+    startGame();
 }
