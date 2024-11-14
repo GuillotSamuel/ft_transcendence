@@ -1,4 +1,8 @@
 const routes = {
+
+    game: {
+
+    },
     home: {
         template: `
             <section id="home" class="container mt-5 pt-5">
@@ -156,11 +160,11 @@ function navigate() {
     const hash = window.location.hash.substring(1) || 'home';
     const route = routes[hash];
 
-    if ((hash === 'profile' || hash === 'editPage' || hash === 'game') && !isAuthenticated()) {
-        alert('Please log in to access this page.');
-        location.hash = '#connexion';
-        return;
-    }
+    // if ((hash === 'profile' || hash === 'editPage' || hash === 'game') && !isAuthenticated()) {
+    //     alert('Please log in to access this page.');
+    //     location.hash = '#connexion';
+    //     return;
+    // }
 
     const appDiv = document.getElementById('app');
     if (route) {
@@ -248,5 +252,6 @@ async function disconnectUser() {
 
 async function startNewGame()
 {
+    
 
 }
