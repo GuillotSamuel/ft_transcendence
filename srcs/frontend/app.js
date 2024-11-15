@@ -1,10 +1,6 @@
 import { startGame } from './local_game/game.js';
 
 const routes = {
-
-    game: {
-
-    },
     home: {
         template: `
             <section id="home" class="container mt-5 pt-5">
@@ -74,7 +70,23 @@ const routes = {
                 <div class="row">
                     <div class="col-md-4">
                         <h2>Your Profile</h2>
-                    import './jeu/game.js';<div class="col-md-6">
+                        <ul class="list-group">
+                            <li class="list-group-item"><strong>Username:</strong> User123</li>
+                            <li class="list-group-item"><strong>Email:</strong> user123@example.com</li>
+                        </ul>
+                        <button class="btn btn-warning mt-3 w-100" onclick="location.hash = '#editPage'">Edit Profile</button>
+                        <button class="btn btn-danger mt-2 w-100" onclick="disconnectUser()">Log Out</button>
+                    </div>
+                </div>
+            </section>
+
+        `
+    },
+    editPage: {
+        template: `
+            <section id="edit-page" class="container mt-5 pt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
                         <h2>Edit Your Profile</h2>
 
                         <!-- Change Password Form -->
@@ -239,7 +251,6 @@ async function disconnectUser() {
     }
 }
 
-// Function Definitions
 function startLocalGame() {
     startGame();
 }

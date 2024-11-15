@@ -69,5 +69,9 @@ shellDjango:
 	@echo "$(YELLOW)Accessing the shell of the Django container...$(NC)"
 	docker-compose -f $(COMPOSE_FILE) exec django sh
 
+shellNginx:
+	@echo "$(YELLOW)Accessing the shell of the Nginx container...$(NC)"
+	docker-compose -f $(COMPOSE_FILE) exec nginx sh
 
-.PHONY: all prepare_directories build up down stop restart re logs status remove prune shellPostgreSQL shellDjango
+
+.PHONY: all prepare_directories build up down stop restart re logs status remove prune shellPostgreSQL shellDjango shellNginx
