@@ -14,6 +14,9 @@ start_time=$(date +%s)
 end_time=$((start_time + 60))
 
 # Attente de la disponibilité de PostgreSQL
+start_time=$(date +%s)
+end_time=$((start_time + 60))
+
 while ! nc -z postgresql 5432; do
   echo -e "${BLUE}Waiting for PostgreSQL...${NC}"
   sleep 2
@@ -42,3 +45,6 @@ export PYTHONPATH=$PYTHONPATH:/app/Project
 # Lancement de Daphne avec la bonne application ASGI
 exec daphne -b 0.0.0.0 -p 8000 Project.asgi:application
 
+=======
+echo -e "${PINK}Starting Django server...${NC}"
+exec python /app/Project/manage.py runserver 0.0.0.0:8000
