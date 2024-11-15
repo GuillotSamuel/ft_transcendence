@@ -1,5 +1,6 @@
 import { startGame } from './local_game/game.js';
 
+
 const routes = {
     home: {
         template: `
@@ -107,6 +108,13 @@ const routes = {
 
                         <hr class="my-4">
 
+                        <!-- 2FA activation Section -->
+                        <h3 class="mb-3">Two-Factor Authentication (2FA)</h3>
+                        <p class="text-muted">Enable or disable Two-Factor Authentication for added security.</p>
+                        <button id="toggle-2fa" class="btn btn-secondary w-100" onclick="toggle2FA()">Enable 2FA</button>
+
+                        <hr class="my-4">
+
                         <!-- Delete Account Section -->
                         <h3 class="text-danger">Delete Account</h3>
                         <p class="text-muted">If you want to permanently delete your account, click the button below. This action cannot be undone.</p>
@@ -140,7 +148,13 @@ const routes = {
     }
 };
 
-
+// Expose functions to the global scope
+window.startLocalGame = startLocalGame;
+window.registerUser = registerUser;
+window.loginUser = loginUser;
+window.logoutUser = logoutUser;
+window.disconnectUser = disconnectUser;
+window.toggle2FA = toggle2FA;
 
 
 function navigate() {
@@ -161,15 +175,62 @@ function navigate() {
     }
 }
 
+async function toggle2FA() {
+    try {
+        const response = await fetch('http://localhost:8000/api/activate2FA/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'}
+        });
+        if (response.ok) {
+            toggle2FAStatus();                
+        }
+        else {
+            alert('Error: error while changing 2FA status')
+        }
+    }
+    catch (error) {
+        alert('2FA error: Unable to change 2FA status')
+    }
+}
+
+
+async function toggle2FAStatus() {
+    if (window.location.pathname === '/edit') {
+        const button = document.getElementById('toggle-2fa');
+
+        try {
+            const response = await fetch('http://localhost:8000/api/is2FAactivate/', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+                const data = await response.text();
+                if (data === 'yes') {
+                    button.textContent = 'Disable 2FA';
+                }
+                else if (data === 'no') {
+                    button.textContent = 'Enable 2FA';
+                }
+                else {
+                    alert('Error: Unknown 2FA status');
+                }
+            }
+            else {
+                alert('Error: error while fetching 2FA status')
+            }
+        }
+        catch (error) {
+            alert('2FA error: Unable to get 2FA status')
+        }
+    }
+}
+
+
 window.addEventListener('hashchange', navigate);
 window.addEventListener('load', navigate);
+window.addEventListener('load', toggle2FAStatus);
 
-// Expose functions to the global scope
-window.startLocalGame = startLocalGame;
-window.registerUser = registerUser;
-window.loginUser = loginUser;
-window.logoutUser = logoutUser;
-window.disconnectUser = disconnectUser;
+
 
 function isAuthenticated() {
     return localStorage.getItem('authToken') !== null; // to change the auth token
