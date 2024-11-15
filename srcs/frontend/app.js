@@ -244,7 +244,7 @@ async function toggle2FAStatus() {
         const button = document.getElementById('toggle-2fa');
 
         try {
-            const response = await fetch('http://localhost:8000/api/is2FAactivate/', {
+            const response = await fetch('/api/is2FAactivate/', {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'
@@ -279,7 +279,7 @@ async function loginUser() {
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
     try {
-        const response = await fetch('http://localhost:8000/api/login/', {
+        const response = await fetch('/api/login/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -323,7 +323,7 @@ async function registerUser() {
     }
 
     try {
-        const response = await fetch('http://localhost:8000/api/register/', {
+        const response = await fetch('/api/register/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, email, password })
@@ -341,7 +341,7 @@ async function registerUser() {
 }
 
 async function logoutUser() {
-    const response = await fetch('http://localhost:8000/api/logout/', {
+    const response = await fetch('/api/logout/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
@@ -352,7 +352,7 @@ async function logoutUser() {
 async function displayUserInfos() {
     if (window.location.pathname === '/profile') {
         try {
-            const response = await fetch('http://localhost:8000/api/userInfos', {
+            const response = await fetch('/api/userInfos', {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -376,7 +376,7 @@ async function displayUserInfos() {
 
 async function disconnectUser() {
     try {
-        const response = await fetch('http://localhost:8000/api/logout/', {
+        const response = await fetch('/api/logout/', {
             method: 'POST',
             credentials: 'include'
         });

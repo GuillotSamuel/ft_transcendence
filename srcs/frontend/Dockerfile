@@ -16,7 +16,7 @@ RUN mkdir -p /var/www/transcendence/style
 COPY ./style/ /var/www/transcendence/style/
 COPY ./local_game/ /var/www/transcendence/local_game/
 COPY ./assets/ /var/www/transcendence/assets/
-COPY ./components/ /var/www/transcendence/components/
+#COPY ./components/ /var/www/transcendence/components/
 
 RUN chmod 755 /usr/local/bin/setup.sh
 
