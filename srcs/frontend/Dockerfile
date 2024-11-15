@@ -14,6 +14,7 @@ COPY ./index.html /var/www/transcendence/index.html
 COPY ./app.js /var/www/transcendence/app.js
 RUN mkdir -p /var/www/transcendence/style
 COPY ./style/style.css /var/www/transcendence/style/style.css
+COPY ./local_game/ /var/www/transcendence/local_game/
 
 RUN chmod 755 /usr/local/bin/setup.sh
 

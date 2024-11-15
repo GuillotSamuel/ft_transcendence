@@ -8,9 +8,9 @@ _To complete..._
 
 - .env file must be placed in the main folder.
 - On Linux (or other operating systems, it may vary),
-    you must modify the hosts file with the following command: sudo nano /etc/hosts,
+    you must modify the hosts file with the following command: sudo nano /etc/hosts ,
     and then add the following line: 127.0.0.1 transcendence.42.fr
-- To access at the school : https://localhost:8443/#connexion
+- To access at the school : https://localhost:8443
 
 ## Modules selection
 
