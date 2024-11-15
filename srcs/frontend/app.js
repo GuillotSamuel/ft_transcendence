@@ -1,4 +1,4 @@
-import { startGame } from './local_game/game.js';
+// import { startGame } from './local_game/game.js';
 
 const routes = {
     home: {
@@ -79,7 +79,6 @@ const routes = {
                     </div>
                 </div>
             </section>
-
         `
     },
     editPage: {
