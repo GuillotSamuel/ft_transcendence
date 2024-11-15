@@ -44,7 +44,7 @@ const routes = {
                 <div class="row justify-content-center">
                     <div class="col-md-6">
                         <h2>Create a new account</h2>
-                        <form>
+                        <form id="registration-form">
                             <div class="mb-3">
                                 <label for="register-username" class="form-label">Username</label>
                                 <input type="text" class="form-control" id="register-username" required>
@@ -57,6 +57,11 @@ const routes = {
                                 <label for="register-password" class="form-label">Password</label>
                                 <input type="password" class="form-control" id="register-password" required>
                             </div>
+                            <div class="mb-3">
+                                <label for="register-confirm-password" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="register-confirm-password" required>
+                            </div>
+                            <div id="password-error" class="text-danger d-none">Passwords do not match!</div>
                             <button type="button" onclick="registerUser()" class="btn btn-success w-100">Sign Up</button>
                         </form>
                         <p class="mt-3 text-center">Already have an account? <a href="#connexion">Log in</a></p>
@@ -64,12 +69,12 @@ const routes = {
                 </div>
             </section>
         `
-    },
+    },    
     profile: {
         template: `
             <section id="profile" class="container mt-5 pt-5">
-                <div class="row">
-                    <div class="col-md-4">
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-md-6 text-center">
                         <h2>Your Profile</h2>
                         <ul class="list-group">
                             <li class="list-group-item"><strong>Username:</strong> User123</li>
@@ -124,6 +129,18 @@ const routes = {
             </section>
         `
     },
+    confirm2FA: {
+        template: `
+            <section id="confirm-2FA-page" class="container mt-5 pt-5">
+                <div class="row text-center">
+                        <div class="col-md-12">
+                            <h3 class="mb-3">2FA Confirmation</h3>
+
+                        </div>
+                    </div>
+            </section>
+        `
+    },
     game: {
         template: `
             <section id="game" class="container mt-5 pt-5">
@@ -148,14 +165,12 @@ const routes = {
     }
 };
 
-// Expose functions to the global scope
 window.startLocalGame = startLocalGame;
 window.registerUser = registerUser;
 window.loginUser = loginUser;
 window.logoutUser = logoutUser;
 window.disconnectUser = disconnectUser;
 window.toggle2FA = toggle2FA;
-
 
 function navigate() {
     const hash = window.location.hash.substring(1) || 'home';
@@ -179,10 +194,11 @@ async function toggle2FA() {
     try {
         const response = await fetch('http://localhost:8000/api/activate2FA/', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json'}
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
         });
         if (response.ok) {
-            toggle2FAStatus();                
+            location.hash = '#confirm2FA';
         }
         else {
             alert('Error: error while changing 2FA status')
@@ -193,7 +209,6 @@ async function toggle2FA() {
     }
 }
 
-
 async function toggle2FAStatus() {
     if (window.location.pathname === '/edit') {
         const button = document.getElementById('toggle-2fa');
@@ -201,7 +216,8 @@ async function toggle2FAStatus() {
         try {
             const response = await fetch('http://localhost:8000/api/is2FAactivate/', {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
             });
             if (response.ok) {
                 const data = await response.text();
@@ -225,17 +241,9 @@ async function toggle2FAStatus() {
     }
 }
 
-
-window.addEventListener('hashchange', navigate);
-window.addEventListener('load', navigate);
-window.addEventListener('load', toggle2FAStatus);
-
-
-
 function isAuthenticated() {
     return localStorage.getItem('authToken') !== null; // to change the auth token
 }
-
 
 async function loginUser() {
     const username = document.getElementById('login-username').value;
@@ -263,6 +271,12 @@ async function registerUser() {
     const username = document.getElementById('register-username').value;
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
+    const confirmPassword = document.getElementById('register-confirm-password').value;
+
+    if (password !== confirmPassword) {
+        alert('Passwords are not matching !');
+        return;
+    }
 
     try {
         const response = await fetch('http://localhost:8000/api/register/', {
@@ -286,11 +300,11 @@ async function registerUser() {
 async function logoutUser() {
     const response = await fetch('http://localhost:8000/api/logout/', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
     });
     alert(response.ok ? 'Disconnexion success!' : `Error: ${await response.text()}`);
 }
-
 
 async function disconnectUser() {
     try {
@@ -314,3 +328,8 @@ async function disconnectUser() {
 function startLocalGame() {
     startGame();
 }
+
+window.addEventListener('hashchange', navigate);
+window.addEventListener('load', navigate);
+window.addEventListener('hashchange', toggle2FAStatus);
+window.addEventListener('load', toggle2FAStatus);
