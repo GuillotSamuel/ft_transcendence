@@ -69,7 +69,19 @@ const routes = {
                 </div>
             </section>
         `
-    },    
+    },
+    registrationSuccess: {
+        template: `
+            <section id="registrationSuccess" class="container mt-5 pt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6  text-center">
+                        <h2>You are now registred !</h2>
+                        <a href="#connexion" class="btn btn-primary btn-lg mt-3">Connexion</a>
+                    </div>
+                </div>
+            </section>
+        `
+    },
     profile: {
         template: `
             <section id="profile" class="container mt-5 pt-5">
@@ -77,8 +89,9 @@ const routes = {
                     <div class="col-md-6 text-center">
                         <h2>Your Profile</h2>
                         <ul class="list-group">
-                            <li class="list-group-item"><strong>Username:</strong> User123</li>
-                            <li class="list-group-item"><strong>Email:</strong> user123@example.com</li>
+                            <li class="list-group-item"><strong>Username:</strong><span id="profile-userName"></span></li>
+                            <li class="list-group-item"><strong>Email:</strong><span id="profile-userEmail"></span></li>
+                            <li class="list-group-item"><strong>2FA activated:</strong><span id="profile-userTwoFA"></span></li>
                         </ul>
                         <button class="btn btn-warning mt-3 w-100" onclick="location.hash = '#editPage'">Edit Profile</button>
                         <button class="btn btn-danger mt-2 w-100" onclick="disconnectUser()">Log Out</button>
@@ -135,7 +148,7 @@ const routes = {
                 <div class="row text-center">
                         <div class="col-md-12">
                             <h3 class="mb-3">2FA Confirmation</h3>
-
+                            <div id="qrcode"></div>
                         </div>
                     </div>
             </section>
@@ -192,20 +205,37 @@ function navigate() {
 
 async function toggle2FA() {
     try {
-        const response = await fetch('http://localhost:8000/api/activate2FA/', {
+        /* const response = await fetch('http://localhost:8000/api/activate2FA/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
         });
-        if (response.ok) {
-            location.hash = '#confirm2FA';
+        
+        if (response.ok) { */
+        // Simulation d'une URL de QR code reçue depuis le serveur
+        const QRURL = "otpauth://totp/OnlinePong?secret=EXAMPLESECRET";
+
+        // Naviguer vers la page de confirmation
+        location.hash = '#confirm2FA';
+
+        // Générer le QR code
+        const qrCodeElement = document.getElementById('qrcode');
+        if (qrCodeElement) {
+            QRCode.toCanvas(qrCodeElement, QRURL, function (error) {
+                if (error) {
+                    console.error('Error generating QR code:', error);
+                    alert('Error generating QR code');
+                }
+            });
+        } else {
+            console.error('Element with id "qrcode" not found');
         }
-        else {
-            alert('Error: error while changing 2FA status')
-        }
-    }
-    catch (error) {
-        alert('2FA error: Unable to change 2FA status')
+        /* } else {
+            alert('Error: Unable to change 2FA status');
+        } */
+    } catch (error) {
+        console.error('2FA error:', error);
+        alert('2FA error: Unable to change 2FA status');
     }
 }
 
@@ -242,7 +272,7 @@ async function toggle2FAStatus() {
 }
 
 function isAuthenticated() {
-    return localStorage.getItem('authToken') !== null; // to change the auth token
+    return document.cookie.split(';').some(cookie => cookie.trim().startsWith('access_token='));
 }
 
 async function loginUser() {
@@ -257,14 +287,23 @@ async function loginUser() {
 
         const data = await response.json();
         if (response.ok) {
-            alert('Login successful!');
-            location.hash = '#profile';
+            location.hash = '#game';
         } else {
             alert(`Error: ${data.message || 'Login failed'}`);
         }
     } catch (error) {
         alert('Network error: Unable to login');
     }
+}
+
+function isPasswordSecure(password) {
+    const minLength = 8;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    return password.length >= minLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
 }
 
 async function registerUser() {
@@ -278,6 +317,11 @@ async function registerUser() {
         return;
     }
 
+    if (!isPasswordSecure(password)) {
+        alert('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
+        return;
+    }
+
     try {
         const response = await fetch('http://localhost:8000/api/register/', {
             method: 'POST',
@@ -287,8 +331,7 @@ async function registerUser() {
 
         const data = await response.json();
         if (response.ok) {
-            alert('Registration successful!');
-            location.hash = '#connexion';
+            location.hash = '#registrationSuccess';
         } else {
             alert(`Error: ${data.message || 'Registration failed'}`);
         }
@@ -305,6 +348,31 @@ async function logoutUser() {
     });
     alert(response.ok ? 'Disconnexion success!' : `Error: ${await response.text()}`);
 }
+
+async function displayUserInfos() {
+    if (window.location.pathname === '/profile') {
+        try {
+            const response = await fetch('http://localhost:8000/api/userInfos', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                document.getElementById('profile-userName').textContent = userName;
+                document.getElementById('profile-userEmail').textContent = email;
+                document.getElementById('profile-userTwoFA').textContent = twoFA ? 'Enabled' : 'Disabled';
+            } else {
+                alert('Error: Unable to get user infos');
+                return;
+            }
+        } catch (error) {
+            alert('UserInfos error: Unable to get user infos');
+        }
+    }
+}
+
+
 
 async function disconnectUser() {
     try {
@@ -325,6 +393,25 @@ async function disconnectUser() {
     }
 }
 
+function manageDisplayAuth() {
+    if (isAuthenticated() == true) {
+        document.querySelectorAll('.toHideWhenConnected').forEach(element => {
+            element.style.display = 'none';
+        });   
+        document.querySelectorAll('.toDisplayWhenConnected').forEach(element => {
+            element.style.display = '';
+        });
+    }  else {
+        document.querySelectorAll('.toHideWhenConnected').forEach(element => {
+            element.style.display = '';
+        });
+        
+        document.querySelectorAll('.toDisplayWhenConnected').forEach(element => {
+            element.style.display = 'none';
+        });
+    }
+}
+
 function startLocalGame() {
     startGame();
 }
@@ -333,3 +420,7 @@ window.addEventListener('hashchange', navigate);
 window.addEventListener('load', navigate);
 window.addEventListener('hashchange', toggle2FAStatus);
 window.addEventListener('load', toggle2FAStatus);
+window.addEventListener('hashchange', displayUserInfos);
+window.addEventListener('load', displayUserInfos);
+window.addEventListener('hashchange', manageDisplayAuth);
+window.addEventListener('load', manageDisplayAuth);
