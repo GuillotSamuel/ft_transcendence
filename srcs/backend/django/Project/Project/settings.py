@@ -46,7 +46,18 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_otp',
     'django_otp.plugins.otp_totp',
+    'channels',
+    'AppGame',
 ]
+
+ASGI_APPLICATION = 'Project.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
 
 AUTH_USER_MODEL = 'AppAuthentification.GameUser'
 
