@@ -121,7 +121,7 @@ const routes = {
                                 <label for="confirm-password" class="form-label">Confirm New Password</label>
                                 <input type="password" class="form-control" id="confirm-password" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Change Password</button>
+                            <button type="submit" class="btn btn-primary w-100" onclick="changePassword()">Change Password</button>
                         </form>
 
                         <hr class="my-4">
@@ -144,13 +144,20 @@ const routes = {
     },
     confirm2FA: {
         template: `
-            <section id="confirm-2FA-page" class="container mt-5 pt-5">
-                <div class="row text-center">
-                        <div class="col-md-12">
-                            <h3 class="mb-3">2FA Confirmation</h3>
-                            <div id="qrcode"></div>
-                        </div>
+            <section id="confirm-2FA-page" class="container d-flex flex-column justify-content-center align-items-center vh-100">
+                <div class="row text-center w-100">
+                    <div class="col-md-12">
+                        <h3 class="mb-3">2FA Confirmation</h3>
+                        <div id="qrcode" class="mb-3"></div>
+                        <form id="check-otp-form">
+                            <div class="mb-3">
+                                <label for="otp-code" class="form-label">Enter OTP code :</label>
+                                <input type="text" class="form-control" id="otp-code-id" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" onclick="validateOTP()">Validate OTP code</button>
+                        </form>
                     </div>
+                </div>
             </section>
         `
     },
@@ -169,7 +176,7 @@ const routes = {
                         <!-- Buttons for Local and Remote Game -->
                         <div class="d-flex justify-content-center gap-3 mt-4">
                             <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
-                            <button class="btn btn-info btn-lg" onclick="startRemoteGame()">Remote Game</button>
+                            <button class="btn btn-info btn-lg toDisplayWhenConnected" onclick="startRemoteGame()">Remote Game</button>
                         </div>
                     </div>
                 </div>
@@ -181,9 +188,9 @@ const routes = {
 window.startLocalGame = startLocalGame;
 window.registerUser = registerUser;
 window.loginUser = loginUser;
-window.logoutUser = logoutUser;
 window.disconnectUser = disconnectUser;
 window.toggle2FA = toggle2FA;
+window.validateOTP = validateOTP;
 
 async function checkAuthentication() {
     try {
@@ -192,13 +199,9 @@ async function checkAuthentication() {
             headers: { 'Content-Type': 'application/json' }
         });
 
-        if (response.ok) {
-            return true
-        }
-        else {
-            return false;
-        }
+        return response.ok;
     } catch (error) {
+        console.error("Authentication check failed:", error);
         return false;
     }
 }
@@ -207,8 +210,7 @@ async function navigate() {
     const hash = window.location.hash.substring(1);
     const route = routes[hash];
 
-    if ((hash === 'profile' || hash === 'game') && !(await checkAuthentication())) {
-        alert('Error checking authentication.');
+    if ((hash === 'profile') && !(await checkAuthentication())) {
         location.hash = '#connexion';
         return;
     }
@@ -235,29 +237,29 @@ async function toggle2FA() {
 
             location.hash = '#confirm2FA';
             setTimeout(() => {
-            const qrCodeElement = document.getElementById('qrcode');
-            try {
-                new QRCode(qrCodeElement, {
-                text: QRURL,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-                });
+                const qrCodeElement = document.getElementById('qrcode');
+                try {
+                    new QRCode(qrCodeElement, {
+                        text: QRURL,
+                        width: 200,
+                        height: 200,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
                 }
                 catch (error) {
-                console.error('Error generating QR code with qrcode.js:', error);
-                alert('Error generating QR code');
+                    console.error('Error generating QR code with qrcode.js:', error);
+                    alert('Error generating QR code');
                 }
-                    } 
-                , 500);
             }
+                , 500);
+        }
         else {
             console.error('Provisioning URI not found in the response');
             alert('Error: Provisioning URI not found');
         }
-        }
+    }
     catch (error) {
         console.error('2FA error:', error);
         alert('2FA error: Unable to change 2FA status');
@@ -361,13 +363,16 @@ async function registerUser() {
     }
 }
 
-async function logoutUser() {
+async function disconnectUser() {
     const response = await fetch('/api/logout/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
     });
-    alert(response.ok ? 'Disconnexion success!' : `Error: ${await response.text()}`);
+    if (!response.ok) {
+        alert('Error while disconnecting')
+    }
+    location.hash = "#home";
 }
 
 async function displayUserInfos() {
@@ -394,41 +399,50 @@ async function displayUserInfos() {
 }
 
 
-async function disconnectUser() {
-    try {
-        const response = await fetch('/api/logout/', {
-            method: 'POST',
-            credentials: 'include'
+async function manageDisplayAuth() {
+    const isAuthenticated = await checkAuthentication();
+
+    if (isAuthenticated == true) {
+        document.querySelectorAll('.toHideWhenConnected').forEach(element => {
+            element.style.display = 'none';
+        });
+        document.querySelectorAll('.toDisplayWhenConnected').forEach(element => {
+            element.style.display = '';
+        });
+    } else {
+        document.querySelectorAll('.toHideWhenConnected').forEach(element => {
+            element.style.display = '';
         });
 
-        if (response.ok) {
-            localStorage.removeItem('authToken'); // to change
-            alert('Successfully logged out!');
-            location.hash = '#home';
-        } else {
-            alert(`Error: ${await response.text()}`);
-        }
-    } catch (error) {
-        alert('Network error: Unable to logout');
+        document.querySelectorAll('.toDisplayWhenConnected').forEach(element => {
+            element.style.display = 'none';
+        });
     }
 }
 
-function manageDisplayAuth() {
-    if (checkAuthentication() == true) {
-        document.querySelectorAll('.toHideWhenConnected').forEach(element => {
-            element.style.display = 'none';
-        });   
-        document.querySelectorAll('.toDisplayWhenConnected').forEach(element => {
-            element.style.display = '';
+async function changePassword() {
+
+}
+
+async function validateOTP() {
+
+    const otpCode = document.getElementById('otp-code-id').value;
+
+    try {
+        const response = await fetch('/api/confirm2FA/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ otpCode })
         });
-    }  else {
-        document.querySelectorAll('.toHideWhenConnected').forEach(element => {
-            element.style.display = '';
-        });
-        
-        document.querySelectorAll('.toDisplayWhenConnected').forEach(element => {
-            element.style.display = 'none';
-        });
+
+        const data = await response.json();
+        if (response.ok) {
+            location.hash = '#home';
+        } else {
+            alert("Invalid code OTP ! Try again");
+        }
+    } catch (error) {
+        alert('Network error: Unable to check OTP code');
     }
 }
 

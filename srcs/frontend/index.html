@@ -41,11 +41,10 @@
                             <a class="nav-link toHideWhenConnected" href="#registration">Sign up</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link toHideWhenConnected" href="#profile">Profile</a>
-                            <!-- <a class="nav-link toDisplayWhenConnected" href="#profile">Profile</a> -->
+                            <a class="nav-link toDisplayWhenConnected" href="#profile">Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link toDisplayWhenConnected" href="#" style="display: none;">Logout</a>
+                            <a class="nav-link toDisplayWhenConnected" onclick="disconnectUser()">Logout</a>
                         </li>
                     </ul>
                 </div>
@@ -67,8 +66,8 @@
                         <li><a href="#game" class="">Game</a></li>
                         <li><a href="#connexion" class="toHideWhenConnected">Connexion</a></li>
                         <li><a href="#registration" class="toHideWhenConnected">Sign up</a></li>
-                        <li><a href="#profile" class="toHideWhenConnected">Profile</a></li>
-                        <li><a href="#" class="toDisplayWhenConnected">Logout</a></li>
+                        <li><a href="#profile" class="toDisplayWhenConnected">Profile</a></li>
+                        <li><a class="toDisplayWhenConnected" onclick="disconnectUser()">Logout</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4 mb-3">
