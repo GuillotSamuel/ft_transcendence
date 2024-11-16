@@ -49,7 +49,7 @@ const routes = {
                                 <label for="otp-code" class="form-label">Enter OTP code :</label>
                                 <input type="text" class="form-control" id="connexion-otp-code-id" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100" onclick="connexionOTP()">Validate OTP code</button>
+                            <button type="button" class="btn btn-primary w-100" onclick="connexionOTP()">Validate OTP code</button>
                         </form>
                     </div>
                 </div>
@@ -108,13 +108,13 @@ const routes = {
                         <h2>Your Profile</h2>
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <strong>Username:</strong><span id="profile-userName"></span>
+                                <strong>Username:</strong><span id="profile-userName"> </span>
                             </li>
                             <li class="list-group-item">
-                                <strong>Email:</strong><span id="profile-userEmail"></span>
+                                <strong>Email:</strong><span id="profile-userEmail"> </span>
                             </li>
                             <li class="list-group-item">
-                                <strong>2FA activated:</strong><span id="profile-userTwoFA"></span>
+                                <strong>2FA activated:</strong><span id="profile-userTwoFA"> </span>
                             </li>
                         </ul>
                         <button class="btn btn-warning mt-3 w-100" onclick="location.hash = '#editPage'">Edit Profile</button>
@@ -138,11 +138,11 @@ const routes = {
                                 <input type="password" class="form-control" id="current-password" required>
                             </div>
                             <div class="mb-3">
-                                <label for="new-password" class="form-label">New Password</label>
+                                <label for="new-password-change" class="form-label">New Password</label>
                                 <input type="password" class="form-control" id="new-password-change" required>
                             </div>
                             <div class="mb-3">
-                                <label for="confirm-password" class="form-label">Confirm New Password</label>
+                                <label for="confirm-password-change" class="form-label">Confirm New Password</label>
                                 <input type="password" class="form-control" id="confirm-password-change" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-100" onclick="changePassword()">Change Password</button>
@@ -160,7 +160,7 @@ const routes = {
                         <!-- Delete Account Section -->
                         <h3 class="text-danger">Delete Account</h3>
                         <p class="text-muted">If you want to permanently delete your account, click the button below. This action cannot be undone.</p>
-                        <button id="delete-account" class="btn btn-danger w-100" onclick="location.hash = '#deleteAccount">Delete My Account</button>
+                        <button id="delete-account" class="btn btn-danger w-100" onclick="location.hash = '#deleteAccount'">Delete My Account</button>
                     </div>
                 </div>
             </section>
@@ -173,7 +173,7 @@ const routes = {
                     <div class="col-md-12">
                         <h3 class="mb-3">Account Suppression Confirmation</h3>
                         <p class="text-muted">The account suppression is definitive.</p>
-                        <button id="confirm-delete-btn" type="button" class="btn btn-primary w-100">Confirm account suppression</button>
+                        <button id="confirm-delete-btn" type="button" class="btn btn-primary w-100" onclick="deleteAccount()">Confirm account suppression</button>
                     </div>
                 </div>
             </section>
@@ -230,7 +230,7 @@ window.enable2FA = enable2FA;
 window.disable2FA = disable2FA;
 window.toggle2FAStatus = toggle2FAStatus;
 window.validateOTP = validateOTP;
-window.changePass = changePassword;
+window.changePassword = changePassword;
 window.connexionOTP = connexionOTP;
 window.deleteAccount = deleteAccount;
 
@@ -350,7 +350,7 @@ async function enable2FA() {
 async function disable2FA() {
     try {
         const response = await fetch('/api/disable2FA/', {
-            method: 'POST',
+            method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
         });
@@ -588,6 +588,7 @@ async function manageDisplayAuth() {
 }
 
 async function changePassword() {
+    const oldPwd = document.getElementById('current-password').value;
     const changePwd = document.getElementById('new-password-change').value;
     const confirmChangePwd = document.getElementById('confirm-password-change').value;
 
@@ -596,10 +597,17 @@ async function changePassword() {
         return;
     }
 
+    if (changePwd == oldPwd) {
+        alert('The current password and the new password are the same !');
+        return;
+    }
+
     if (!isPasswordSecure(changePwd)) {
         alert('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
         return;
     }
+
+    const password = changePwd;
 
     try {
         const response = await fetch('/api/changePassword/', {

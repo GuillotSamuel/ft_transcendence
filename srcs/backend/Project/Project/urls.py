@@ -29,7 +29,7 @@ urlpatterns = [
     path('api/confirm2FA/', confirm2FA),
     path('api/login2FA/', login2FA),
     path('api/is2FAactivate/', is2FAactivate),
-    path('api/disable2FA/', isUserAuthentified),
+    path('api/disable2FA/', disable2FA),
     #settings
     path('api/infosUser/', infosUser),
     path('api/changePassword/', changePassword),

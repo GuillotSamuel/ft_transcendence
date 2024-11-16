@@ -96,7 +96,7 @@ def enable2FA(request):
         "provisioning_uri": device.config_url
     }, status=status.HTTP_200_OK)
 
-@api_view(['POST'])
+@api_view(['DELETE'])
 @authentication_classes([JWTCookieAuthentication])
 @permission_classes([IsAuthenticated])
 def disable2FA(request):
