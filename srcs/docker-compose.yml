@@ -22,7 +22,7 @@ services:
   django:
     container_name: django
     build:
-      context: ./backend/django
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
