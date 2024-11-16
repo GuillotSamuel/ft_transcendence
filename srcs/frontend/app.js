@@ -108,13 +108,13 @@ const routes = {
                         <h2>Your Profile</h2>
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <strong>Username:</strong><span id="profile-userName"> </span>
+                                <strong>Username:  </strong><span id="profile-userName"></span>
                             </li>
                             <li class="list-group-item">
-                                <strong>Email:</strong><span id="profile-userEmail"> </span>
+                                <strong>Email:  </strong><span id="profile-userEmail"></span>
                             </li>
                             <li class="list-group-item">
-                                <strong>2FA activated:</strong><span id="profile-userTwoFA"> </span>
+                                <strong>2FA activated:  </strong><span id="profile-userTwoFA"></span>
                             </li>
                         </ul>
                         <button class="btn btn-warning mt-3 w-100" onclick="location.hash = '#editPage'">Edit Profile</button>
@@ -186,6 +186,7 @@ const routes = {
                     <div class="col-md-12">
                         <h3 class="mb-3">2FA Confirmation</h3>
                         <div id="qrcode" class="mb-3"></div>
+                        <p class="text-muted">You need to use the Google Authenticator App on Smartphone.</p>
                         <form id="check-otp-form">
                             <div class="mb-3">
                                 <label for="otp-code" class="form-label">Enter OTP code :</label>
@@ -211,9 +212,8 @@ const routes = {
                             <canvas id="pong-canvas" class="bg-dark rounded border border-light" width="800" height="600"></canvas>
                         </div>
                         <!-- Buttons for Local and Remote Game -->
-                        <div class="d-flex justify-content-center gap-3 mt-4">
-                            <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
-                            <button class="btn btn-info btn-lg toDisplayWhenConnected" onclick="startRemoteGame()">Remote Game</button>
+                        <div class="d-flex justify-content-center gap-3 mt-4" id="gameButtonDisplay">
+                            
                         </div>
                     </div>
                 </div>
@@ -278,7 +278,10 @@ async function navigate() {
     const hash = window.location.hash.substring(1);
     const route = routes[hash];
 
-    if ((hash === 'profile') && !(await checkAuthentication())) {
+    if ((hash !== 'home' && hash !== 'connexion'
+        && hash != 'connexion2FA' && hash !== 'registration'
+        && hash !== 'registrationSuccess')
+        && !(await checkAuthentication())) {
         location.hash = '#connexion';
         return;
     }
@@ -300,6 +303,12 @@ async function navigate() {
         appDiv.innerHTML = route.template;
         setTimeout(() => {
             displayUserInfos();
+        }, 0);
+    }
+    if (hash === 'editPage') {
+        appDiv.innerHTML = route.template;
+        setTimeout(() => {
+            toggle2FAStatus();
         }, 0);
     }
 }
@@ -394,47 +403,45 @@ async function is2FAactivate() {
 }
 
 async function toggle2FAStatus() {
-    if (window.location.hash === '#editPage') {
-        const button = document.getElementById('toggle-2fa');
+    const button = document.getElementById('toggle-2fa');
 
-        if (!button) {
-            console.error("2FA button not found in the DOM");
-            return;
-        }
+    if (!button) {
+        console.error("2FA button not found in the DOM");
+        return;
+    }
 
-        try {
-            const response = await fetch('/api/is2FAactivate/', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include'
-            });
-            if (response.ok) {
-                const data = await response.json();
-                if (data["2FA_activated"] === 'yes') {
-                    button.textContent = 'Disable 2FA';
-                    button.onclick = async () => {
-                        await disable2FA();
-                        toggle2FAStatus();
-                    };
-                }
-                else if (data["2FA_activated"] === 'no') {
-                    button.textContent = 'Enable 2FA';
-                    button.onclick = async () => {
-                        await enable2FA();
-                        toggle2FAStatus();
-                    };
-                }
-                else {
-                    alert('Error: Unknown 2FA status');
-                }
+    try {
+        const response = await fetch('/api/is2FAactivate/', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        if (response.ok) {
+            const data = await response.json();
+            if (data["2FA_activated"] === 'yes') {
+                button.textContent = 'Disable 2FA';
+                button.onclick = async () => {
+                    await disable2FA();
+                    toggle2FAStatus();
+                };
+            }
+            else if (data["2FA_activated"] === 'no') {
+                button.textContent = 'Enable 2FA';
+                button.onclick = async () => {
+                    await enable2FA();
+                    toggle2FAStatus();
+                };
             }
             else {
-                alert('Error: error while fetching 2FA status')
+                alert('Error: Unknown 2FA status');
             }
         }
-        catch (error) {
-            alert('2FA error: Unable to get 2FA status')
+        else {
+            alert('Error: error while fetching 2FA status')
         }
+    }
+    catch (error) {
+        alert('2FA error: Unable to get 2FA status')
     }
 }
 
@@ -568,24 +575,73 @@ async function disconnectUser() {
 
 async function manageDisplayAuth() {
     const isAuthenticated = await checkAuthentication();
+    const navbarNav = document.getElementById('navbarNav');
+    const navFooter = document.getElementById('navFooter');
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
 
-    if (isAuthenticated == true) {
-        document.querySelectorAll('.toHideWhenConnected').forEach(element => {
-            element.style.display = 'none';
-        });
-        document.querySelectorAll('.toDisplayWhenConnected').forEach(element => {
-            element.style.display = '';
-        });
+    navbarNav.innerHTML = '';
+    navFooter.innerHTML = '';
+
+    if (isAuthenticated) {
+        navbarNav.innerHTML = `
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#game">Game</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#profile">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="disconnectUser()">Logout</a>
+                </li>
+            </ul>
+        `;
+        navFooter.innerHTML = `
+            <li><a href="#home">Home</a></li>
+            <li><a href="#game">Game</a></li>
+            <li><a href="#profile">Profile</a></li>
+            <li><a onclick="disconnectUser()">Logout</a></li>
+        `;
+        gameButtonDisplay.innerHTML = `
+            <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
+            <button class="btn btn-info btn-lg" onclick="startRemoteGame()">Remote Game</button>
+        `;
     } else {
-        document.querySelectorAll('.toHideWhenConnected').forEach(element => {
-            element.style.display = '';
-        });
-
-        document.querySelectorAll('.toDisplayWhenConnected').forEach(element => {
-            element.style.display = 'none';
-        });
+        navbarNav.innerHTML = `
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#game">Game</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#connexion">Connexion</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#registration">Sign up</a>
+                </li>
+            </ul>
+        `;
+        navFooter.innerHTML = `
+            <li><a href="#home">Home</a></li>
+            <li><a href="#game">Game</a></li>
+            <li><a href="#connexion">Connexion</a></li>
+            <li><a href="#registration">Sign up</a></li>
+        `;
+        gameButtonDisplay.innerHTML = `
+            <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
+        `;
     }
 }
+
 
 async function changePassword() {
     const oldPwd = document.getElementById('current-password').value;
@@ -656,7 +712,5 @@ function startLocalGame() {
 
 window.addEventListener('hashchange', navigate);
 window.addEventListener('load', navigate);
-window.addEventListener('hashchange', toggle2FAStatus);
-window.addEventListener('load', toggle2FAStatus);
 window.addEventListener('hashchange', manageDisplayAuth);
 window.addEventListener('load', manageDisplayAuth);
