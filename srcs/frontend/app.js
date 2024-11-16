@@ -429,7 +429,7 @@ async function connexionOTP() {
         else
         {
             alert('Wrong 2FA code');
-            location.hash = "#login";
+            location.hash = "#connexion";
         }
     }
     catch (error) {
