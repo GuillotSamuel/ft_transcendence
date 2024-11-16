@@ -115,11 +115,11 @@ const routes = {
                             </div>
                             <div class="mb-3">
                                 <label for="new-password" class="form-label">New Password</label>
-                                <input type="password" class="form-control" id="new-password" required>
+                                <input type="password" class="form-control" id="new-password-change" required>
                             </div>
                             <div class="mb-3">
                                 <label for="confirm-password" class="form-label">Confirm New Password</label>
-                                <input type="password" class="form-control" id="confirm-password" required>
+                                <input type="password" class="form-control" id="confirm-password-change" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-100" onclick="changePassword()">Change Password</button>
                         </form>
@@ -191,6 +191,7 @@ window.loginUser = loginUser;
 window.disconnectUser = disconnectUser;
 window.toggle2FA = toggle2FA;
 window.validateOTP = validateOTP;
+window.changePass = changePassword;
 
 async function checkAuthentication() {
     try {
@@ -421,18 +422,46 @@ async function manageDisplayAuth() {
 }
 
 async function changePassword() {
+    const changePwd = document.getElementById('new-password-change').value;
+    const confirmChangePwd = document.getElementById('confirm-password-change').value;
 
+    if (changePwd != confirmChangePwd) {
+        alert('Passwords are not matching !');
+        return;
+    }
+
+    if (!isPasswordSecure(changePwd)) {
+        alert('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/changePassword/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            location.hash = '#editPage';
+        } else {
+            alert(`Error: ${data.message || 'Change password failed'}`);
+        }
+    } catch (error) {
+        alert('Network error: Unable to change the password');
+    }
 }
 
 async function validateOTP() {
 
-    const otpCode = document.getElementById('otp-code-id').value;
+    const otp = document.getElementById('otp-code-id').value;
 
     try {
         const response = await fetch('/api/confirm2FA/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ otpCode })
+            body: JSON.stringify({ otp })
         });
 
         const data = await response.json();
