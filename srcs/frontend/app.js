@@ -38,6 +38,24 @@ const routes = {
             </section>
         `
     },
+    connexion2FA: {
+        template: `
+            <section id="connexion-2FA-page" class="container d-flex flex-column justify-content-center align-items-center vh-100">
+                <div class="row text-center w-100">
+                    <div class="col-md-12">
+                        <h3 class="mb-3">2FA Login</h3>
+                        <form id="connexion-otp-form">
+                            <div class="mb-3">
+                                <label for="otp-code" class="form-label">Enter OTP code :</label>
+                                <input type="text" class="form-control" id="connexion-otp-code-id" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" onclick="connexionOTP()">Validate OTP code</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        `
+    },
     registration: {
         template: `
             <section id="registration" class="container mt-5 pt-5">
@@ -129,7 +147,7 @@ const routes = {
                         <!-- 2FA activation Section -->
                         <h3 class="mb-3">Two-Factor Authentication (2FA)</h3>
                         <p class="text-muted">Enable or disable Two-Factor Authentication for added security.</p>
-                        <button id="toggle-2fa" class="btn btn-secondary w-100" onclick="toggle2FA()">Enable 2FA</button>
+                        <button id="toggle-2fa" class="btn btn-secondary w-100"></button>
 
                         <hr class="my-4">
 
@@ -189,9 +207,12 @@ window.startLocalGame = startLocalGame;
 window.registerUser = registerUser;
 window.loginUser = loginUser;
 window.disconnectUser = disconnectUser;
-window.toggle2FA = toggle2FA;
+window.enable2FA = enable2FA;
+window.disable2FA = disable2FA;
+window.toggle2FAStatus = toggle2FAStatus;
 window.validateOTP = validateOTP;
 window.changePass = changePassword;
+window.connexionOTP = connexionOTP;
 
 async function checkAuthentication() {
     try {
@@ -222,11 +243,16 @@ async function navigate() {
     } else {
         appDiv.innerHTML = "<h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p>";
     }
+
+    if (hash === 'editPage') {
+        appDiv.innerHTML = route.template;
+        setTimeout(() => toggle2FAStatus(), 0);
+    }
 }
 
-async function toggle2FA() {
+async function enable2FA() {
     try {
-        const response = await fetch('/api/activate2FA/', {
+        const response = await fetch('/api/enable2FA/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
@@ -267,9 +293,60 @@ async function toggle2FA() {
     }
 }
 
+async function disable2FA() {
+    try {
+        const response = await fetch('/api/disable2FA/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            alert('2FA disabled successfully');
+        } else {
+            alert('Error disabling 2FA');
+        }
+    } catch (error) {
+        alert('Network error while disabling 2FA');
+    }
+}
+
+async function is2FAactivate() {
+    try {
+        const response = await fetch('/api/is2FAactivate/', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        if (response.ok) {
+            const data = await response.json();
+            if (data["2FA_activated"] === 'yes') {
+                return (true);
+            }
+            else if (data["2FA_activated"] === 'no') {
+                return (false);
+            }
+            else {
+                alert('Error: Unknown 2FA status');
+            }
+        }
+        else {
+            alert('Error: error while fetching 2FA status')
+        }
+    }
+    catch (error) {
+        alert('2FA error: Unable to get 2FA status')
+    }
+}
+
 async function toggle2FAStatus() {
-    if (window.location.pathname === '/edit') {
+    if (window.location.hash === '#editPage') {
         const button = document.getElementById('toggle-2fa');
+
+        if (!button) {
+            console.error("2FA button not found in the DOM");
+            return;
+        }
 
         try {
             const response = await fetch('/api/is2FAactivate/', {
@@ -278,12 +355,20 @@ async function toggle2FAStatus() {
                 credentials: 'include'
             });
             if (response.ok) {
-                const data = await response.text();
-                if (data === 'yes') {
+                const data = await response.json();
+                if (data["2FA_activated"] === 'yes') {
                     button.textContent = 'Disable 2FA';
+                    button.onclick = async () => {
+                        await disable2FA();
+                        toggle2FAStatus();
+                    };
                 }
-                else if (data === 'no') {
+                else if (data["2FA_activated"] === 'no') {
                     button.textContent = 'Enable 2FA';
+                    button.onclick = async () => {
+                        await enable2FA();
+                        toggle2FAStatus();
+                    };
                 }
                 else {
                     alert('Error: Unknown 2FA status');
@@ -311,12 +396,44 @@ async function loginUser() {
 
         const data = await response.json();
         if (response.ok) {
-            location.hash = '#game';
+            if (await is2FAactivate() === true) {
+                location.hash = '#connexion2FA';
+            }
+            else {
+                location.hash = '#game';
+            }
+
         } else {
             alert(`Error: ${data.message || 'Login failed'}`);
         }
     } catch (error) {
         alert('Network error: Unable to login');
+    }
+}
+
+async function connexionOTP() {
+    const otp = document.getElementById('connexion-otp-code-id').value;
+
+    try {
+        const response = await fetch('/api/login2FA/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ otp }),
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            location.hash = "#game";
+        }
+        else
+        {
+            alert('Wrong 2FA code');
+            location.hash = "#login";
+        }
+    }
+    catch (error) {
+        alert('Error: OTP connexion failed');
     }
 }
 
@@ -466,7 +583,7 @@ async function validateOTP() {
 
         const data = await response.json();
         if (response.ok) {
-            location.hash = '#home';
+            location.hash = '#editPage';
         } else {
             alert("Invalid code OTP ! Try again");
         }
