@@ -107,9 +107,15 @@ const routes = {
                     <div class="col-md-6 text-center">
                         <h2>Your Profile</h2>
                         <ul class="list-group">
-                            <li class="list-group-item"><strong>Username:</strong><span id="profile-userName"></span></li>
-                            <li class="list-group-item"><strong>Email:</strong><span id="profile-userEmail"></span></li>
-                            <li class="list-group-item"><strong>2FA activated:</strong><span id="profile-userTwoFA"></span></li>
+                            <li class="list-group-item">
+                                <strong>Username:</strong><span id="profile-userName"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Email:</strong><span id="profile-userEmail"></span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>2FA activated:</strong><span id="profile-userTwoFA"></span>
+                            </li>
                         </ul>
                         <button class="btn btn-warning mt-3 w-100" onclick="location.hash = '#editPage'">Edit Profile</button>
                         <button class="btn btn-danger mt-2 w-100" onclick="disconnectUser()">Log Out</button>
@@ -154,7 +160,20 @@ const routes = {
                         <!-- Delete Account Section -->
                         <h3 class="text-danger">Delete Account</h3>
                         <p class="text-muted">If you want to permanently delete your account, click the button below. This action cannot be undone.</p>
-                        <button id="delete-account" class="btn btn-danger w-100">Delete My Account</button>
+                        <button id="delete-account" class="btn btn-danger w-100" onclick="location.hash = '#deleteAccount">Delete My Account</button>
+                    </div>
+                </div>
+            </section>
+        `
+    },
+    deleteAccount: {
+        template: `
+            <section id="confirm-delete-account-page" class="container d-flex flex-column justify-content-center align-items-center vh-100">
+                <div class="row text-center w-100">
+                    <div class="col-md-12">
+                        <h3 class="mb-3">Account Suppression Confirmation</h3>
+                        <p class="text-muted">The account suppression is definitive.</p>
+                        <button id="confirm-delete-btn" type="button" class="btn btn-primary w-100">Confirm account suppression</button>
                     </div>
                 </div>
             </section>
@@ -213,6 +232,7 @@ window.toggle2FAStatus = toggle2FAStatus;
 window.validateOTP = validateOTP;
 window.changePass = changePassword;
 window.connexionOTP = connexionOTP;
+window.deleteAccount = deleteAccount;
 
 async function checkAuthentication() {
     try {
@@ -225,6 +245,32 @@ async function checkAuthentication() {
     } catch (error) {
         console.error("Authentication check failed:", error);
         return false;
+    }
+}
+
+async function displayUserInfos() {
+    try {
+        const response = await fetch('/api/infosUser/', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            creadentials: 'include'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const userName = data["username"];
+            const email = data["email"];
+            const twoFA = data["2FA_activated"];
+
+            document.getElementById('profile-userName').textContent = userName;
+            document.getElementById('profile-userEmail').textContent = email;
+            document.getElementById('profile-userTwoFA').textContent = twoFA === 'yes' ? 'Enabled' : 'Disabled';
+        } else {
+            alert('Error fetching user info');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error while fetching user information');
     }
 }
 
@@ -246,7 +292,15 @@ async function navigate() {
 
     if (hash === 'editPage') {
         appDiv.innerHTML = route.template;
-        setTimeout(() => toggle2FAStatus(), 0);
+        setTimeout(() => {
+            toggle2FAStatus();
+        }, 0);
+    }
+    if (hash === 'profile') {
+        appDiv.innerHTML = route.template;
+        setTimeout(() => {
+            displayUserInfos();
+        }, 0);
     }
 }
 
@@ -384,6 +438,26 @@ async function toggle2FAStatus() {
     }
 }
 
+async function deleteAccount() {
+    try {
+        const response = await fetch('/api/deleteUser/', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            location.hash = '#home';
+        }
+        else {
+            alert('Error: Account deletion failed');
+        }
+    } catch (error) {
+        alert('Error: Unable to delete account');
+    }
+}
+
 async function loginUser() {
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
@@ -426,8 +500,7 @@ async function connexionOTP() {
         if (response.ok) {
             location.hash = "#game";
         }
-        else
-        {
+        else {
             alert('Wrong 2FA code');
             location.hash = "#connexion";
         }
@@ -493,30 +566,6 @@ async function disconnectUser() {
     location.hash = "#home";
 }
 
-async function displayUserInfos() {
-    if (window.location.pathname === '/profile') {
-        try {
-            const response = await fetch('/api/userInfos', {
-                method: 'GET',
-                credentials: 'include'
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                document.getElementById('profile-userName').textContent = userName;
-                document.getElementById('profile-userEmail').textContent = email;
-                document.getElementById('profile-userTwoFA').textContent = twoFA ? 'Enabled' : 'Disabled';
-            } else {
-                alert('Error: Unable to get user infos');
-                return;
-            }
-        } catch (error) {
-            alert('UserInfos error: Unable to get user infos');
-        }
-    }
-}
-
-
 async function manageDisplayAuth() {
     const isAuthenticated = await checkAuthentication();
 
@@ -556,12 +605,13 @@ async function changePassword() {
         const response = await fetch('/api/changePassword/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password })
+            body: JSON.stringify({ password }),
+            credentials: 'include'
         });
 
         const data = await response.json();
         if (response.ok) {
-            location.hash = '#editPage';
+            alert('Password has been changed successfuly !')
         } else {
             alert(`Error: ${data.message || 'Change password failed'}`);
         }
@@ -600,7 +650,5 @@ window.addEventListener('hashchange', navigate);
 window.addEventListener('load', navigate);
 window.addEventListener('hashchange', toggle2FAStatus);
 window.addEventListener('load', toggle2FAStatus);
-window.addEventListener('hashchange', displayUserInfos);
-window.addEventListener('load', displayUserInfos);
 window.addEventListener('hashchange', manageDisplayAuth);
 window.addEventListener('load', manageDisplayAuth);

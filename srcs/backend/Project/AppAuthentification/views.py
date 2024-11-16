@@ -67,8 +67,19 @@ def isUserAuthentified(request):
     else:
         return Response({"Authentication": "yes"}, status=status.HTTP_200_OK)
 
-#2FA
 
+@api_view(['DELETE'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def deleteUser(request):
+    user = request.user
+    response = Response({'message': 'account delete successfully'}, status=status.HTTP_200_OK)
+    response.delete_cookie('access_token')
+    response.delete_cookie('refresh_token')
+    user.delete()
+    return response
+
+#2FA
 @api_view(['POST'])
 @authentication_classes([JWTCookieAuthentication])
 @permission_classes([IsAuthenticated])
@@ -139,3 +150,30 @@ def login2FA(request):
             response.delete_cookie('refresh_token')
             return response
     return Response({'error': 'No valid 2FA device found for this user'}, status=status.HTTP_400_BAD_REQUEST)
+
+#settings 
+
+@api_view(['GET'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def infosUser(request):
+    user = request.user
+    is_2fa_activated = TOTPDevice.objects.filter(user=user, confirmed=True).exists()
+    response_data = {
+        "2FA_activated": "yes" if is_2fa_activated else "no",
+        "email": user.email,
+        "username": user.username
+    }
+    return Response(response_data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def changePassword(request):
+    user = request.user
+    new_password = request.data.get("password")
+    if not new_password:
+        return Response({"error": "Password is required."}, status=status.HTTP_400_BAD_REQUEST)
+    user.set_password(new_password)
+    user.save()
+    return Response({"message": "Password change successful!"}, status=status.HTTP_200_OK)
