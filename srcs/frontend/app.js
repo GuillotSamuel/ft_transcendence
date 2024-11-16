@@ -185,15 +185,33 @@ window.logoutUser = logoutUser;
 window.disconnectUser = disconnectUser;
 window.toggle2FA = toggle2FA;
 
-function navigate() {
-    const hash = window.location.hash.substring(1) || 'home';
+async function checkAuthentication() {
+    try {
+        const response = await fetch('/api/isUserAuthentified/', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+            return true
+        }
+        else {
+            return false;
+        }
+    } catch (error) {
+        return false;
+    }
+}
+
+async function navigate() {
+    const hash = window.location.hash.substring(1);
     const route = routes[hash];
 
-    // if ((hash === 'profile' || hash === 'editPage' || hash === 'game') && !isAuthenticated()) {
-    //     alert('Please log in to access this page.');
-    //     location.hash = '#connexion';
-    //     return;
-    // }
+    if ((hash === 'profile' || hash === 'game') && !(await checkAuthentication())) {
+        alert('Error checking authentication.');
+        location.hash = '#connexion';
+        return;
+    }
 
     const appDiv = document.getElementById('app');
     if (route) {
@@ -205,35 +223,42 @@ function navigate() {
 
 async function toggle2FA() {
     try {
-        /* const response = await fetch('http://localhost:8000/api/activate2FA/', {
+        const response = await fetch('/api/activate2FA/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
         });
-        
-        if (response.ok) { */
-        // Simulation d'une URL de QR code reçue depuis le serveur
-        const QRURL = "otpauth://totp/OnlinePong?secret=EXAMPLESECRET";
 
-        // Naviguer vers la page de confirmation
-        location.hash = '#confirm2FA';
+        if (response.ok) {
+            const data = await response.json();
+            const QRURL = data.provisioning_uri;
 
-        // Générer le QR code
-        const qrCodeElement = document.getElementById('qrcode');
-        if (qrCodeElement) {
-            QRCode.toCanvas(qrCodeElement, QRURL, function (error) {
-                if (error) {
-                    console.error('Error generating QR code:', error);
-                    alert('Error generating QR code');
+            location.hash = '#confirm2FA';
+            setTimeout(() => {
+            const qrCodeElement = document.getElementById('qrcode');
+            try {
+                new QRCode(qrCodeElement, {
+                text: QRURL,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+                });
                 }
-            });
-        } else {
-            console.error('Element with id "qrcode" not found');
+                catch (error) {
+                console.error('Error generating QR code with qrcode.js:', error);
+                alert('Error generating QR code');
+                }
+                    } 
+                , 500);
+            }
+        else {
+            console.error('Provisioning URI not found in the response');
+            alert('Error: Provisioning URI not found');
         }
-        /* } else {
-            alert('Error: Unable to change 2FA status');
-        } */
-    } catch (error) {
+        }
+    catch (error) {
         console.error('2FA error:', error);
         alert('2FA error: Unable to change 2FA status');
     }
@@ -269,10 +294,6 @@ async function toggle2FAStatus() {
             alert('2FA error: Unable to get 2FA status')
         }
     }
-}
-
-function isAuthenticated() {
-    return document.cookie.split(';').some(cookie => cookie.trim().startsWith('access_token='));
 }
 
 async function loginUser() {
@@ -373,7 +394,6 @@ async function displayUserInfos() {
 }
 
 
-
 async function disconnectUser() {
     try {
         const response = await fetch('/api/logout/', {
@@ -394,7 +414,7 @@ async function disconnectUser() {
 }
 
 function manageDisplayAuth() {
-    if (isAuthenticated() == true) {
+    if (checkAuthentication() == true) {
         document.querySelectorAll('.toHideWhenConnected').forEach(element => {
             element.style.display = 'none';
         });   

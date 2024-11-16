@@ -44,6 +44,15 @@ def is2FAactivate(request):
     else:
         return Response({"2FA_activated": "no"}, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def isUserAuthentified(request):
+    auth_result = JWTCookieAuthentication().authenticate(request)
+    if auth_result is None:
+        return Response({'Authentication': 'no'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({"Authentication": "yes"}, status=status.HTTP_200_OK)
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
