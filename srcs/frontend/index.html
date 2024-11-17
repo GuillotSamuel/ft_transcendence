@@ -21,12 +21,14 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#home">Online Pong Game</a>
+                <a class="navbar-brand" href="#home" data-translate="brand-navbar"></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNav"></div>
+                <div class="collapse navbar-collapse" id="navbarNav">
+
+                </div>
             </div>
         </nav>
     </header>
@@ -39,37 +41,33 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-3">
-                    <h2>Navigation</h2>
-                    <ul class="list-unstyled" id="navFooter">
-                        <li><a href="#home" class="">Home</a></li>
-                        <li><a href="#game" class="">Game</a></li>
-                        <li><a href="#connexion" class="toHideWhenConnected">Connexion</a></li>
-                        <li><a href="#registration" class="toHideWhenConnected">Sign up</a></li>
-                        <li><a href="#profile" class="toDisplayWhenConnected">Profile</a></li>
-                        <li><a class="toDisplayWhenConnected" onclick="disconnectUser()">Logout</a></li>
-                    </ul>
+                    <h2 data-translate="navigation-footer-title"></h2>
+                    <ul class="list-unstyled" id="navFooter"></ul>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <h2>About Us</h2>
-                    <p class="small">
-                        This project was created for the Transcendence Project at 42 School. Play and enjoy the game
-                        with others!
-                    </p>
-                    <a href="https://github.com/GuillotSamuel/ft_transcendence" class=""><i class="bi bi-github"></i>
-                        Project Source Code</a>
+                    <h2 data-translate="about-footer-title"></h2>
+                    <p class="small" data-translate="about-footer-text"></p>
+                    <a href="https://github.com/GuillotSamuel/ft_transcendence" class=""
+                        data-translate="sourceCode-footer-link"><i class="bi bi-github"></i>
+                    </a>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <h2>Follow Us</h2>
-                    <a href="https://github.com/azbk42" class=""><i class="bi bi-github"></i>
-                        Elouan Mauduit</a>
-                    <a href="https://github.com/GuillotSamuel" class=""><i class="bi bi-github"></i>
-                        Samuel Guillot</a>
-                    <a href="https://github.com/ThomasIBurtin" class=""><i class="bi bi-github"></i>
-                        Thomas Burtin</a>
+                    <h2 data-translate="followUs-footer-title"></h2>
+                    <div class="d-flex flex-column">
+                        <a href="https://github.com/azbk42" class="" data-translate="elouan-footer-link"><i
+                                class="bi bi-github"></i>
+                        </a>
+                        <a href="https://github.com/GuillotSamuel" class="" data-translate="samuel-footer-link"><i
+                                class="bi bi-github"></i>
+                        </a>
+                        <a href="https://github.com/ThomasIBurtin" class="" data-translate="thomas-footer-link"><i
+                                class="bi bi-github"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
             <hr class="bg-white">
-            <p class="small mb-0">© 2024 Online Pong Game. All rights reserved.</p>
+            <p class="small mb-0" data-translate="legalMentions-footer-text"></p>
         </div>
     </footer>
 

@@ -7,9 +7,9 @@ const routes = {
             <section id="home" class="container mt-5 pt-5">
                 <div class="row text-center">
                     <div class="col-md-12">
-                        <h1>Welcome to Online Pong Game!</h1>
-                        <p class="lead">Play against friends or random opponents online. Are you ready to start?</p>
-                        <a href="#game" class="btn btn-primary btn-lg mt-3">Start Game</a>
+                        <h1 data-translate="welcome-home-title"></h1>
+                        <p class="lead" data-translate="presentation-home-text"></p>
+                        <a href="#game" class="btn btn-primary btn-lg mt-3" data-translate="startGame-home-button"></a>
                     </div>
                 </div>
             </section>
@@ -20,19 +20,19 @@ const routes = {
             <section id="connexion" class="container mt-5 pt-5">
                 <div class="row justify-content-center">
                     <div class="col-md-6">
-                        <h2>Login to your account</h2>
+                        <h2 data-translate="login-connexion-title"></h2>
                         <form>
                             <div class="mb-3">
-                                <label for="login-username" class="form-label">Username</label>
+                                <label for="login-username" class="form-label" data-translate="username-connexion-label"></label>
                                 <input type="text" class="form-control" id="login-username" required>
                             </div>
                             <div class="mb-3">
-                                <label for="login-password" class="form-label">Password</label>
+                                <label for="login-password" class="form-label" data-translate="password-connexion-label"></label>
                                 <input type="password" class="form-control" id="login-password" required>
                             </div>
-                            <button type="button" onclick="loginUser()" class="btn btn-primary w-100">Log In</button>
+                            <button type="button" onclick="loginUser()" class="btn btn-primary w-100" data-translate="login-connexion-button"></button>
                         </form>
-                        <p class="mt-3 text-center">Don't have an account? <a href="#registration">Sign up</a></p>
+                        <p class="mt-3 text-center"><div data-translate="signUp-connexion-text"></div> <a href="#registration" data-translate="signUp-connexion-link"></a></p>
                     </div>
                 </div>
             </section>
@@ -43,13 +43,13 @@ const routes = {
             <section id="connexion-2FA-page" class="container d-flex flex-column justify-content-center align-items-center vh-100">
                 <div class="row text-center w-100">
                     <div class="col-md-12">
-                        <h3 class="mb-3">2FA Login</h3>
+                        <h3 class="mb-3" data-translate="2fa-connexion2fa-title"></h3>
                         <form id="connexion-otp-form">
                             <div class="mb-3">
-                                <label for="otp-code" class="form-label">Enter OTP code :</label>
+                                <label for="otp-code" class="form-label" data-translate="enterOtp-connexion2fa-label"></label>
                                 <input type="text" class="form-control" id="connexion-otp-code-id" required>
                             </div>
-                            <button type="button" class="btn btn-primary w-100" onclick="connexionOTP()">Validate OTP code</button>
+                            <button type="button" class="btn btn-primary w-100" onclick="connexionOTP()" data-translate="validate-connexion2fa-button"></button>
                         </form>
                     </div>
                 </div>
@@ -61,28 +61,28 @@ const routes = {
             <section id="registration" class="container mt-5 pt-5">
                 <div class="row justify-content-center">
                     <div class="col-md-6">
-                        <h2>Create a new account</h2>
+                        <h2 data-translate="create-registration-title"></h2>
                         <form id="registration-form">
                             <div class="mb-3">
-                                <label for="register-username" class="form-label">Username</label>
+                                <label for="register-username" class="form-label" data-translate="userName-registration-label"></label>
                                 <input type="text" class="form-control" id="register-username" required>
                             </div>
                             <div class="mb-3">
-                                <label for="register-email" class="form-label">Email</label>
+                                <label for="register-email" class="form-label" data-translate="email-registration-label"></label>
                                 <input type="email" class="form-control" id="register-email" required>
                             </div>
                             <div class="mb-3">
-                                <label for="register-password" class="form-label">Password</label>
+                                <label for="register-password" class="form-label" data-translate="password-registration-label"></label>
                                 <input type="password" class="form-control" id="register-password" required>
                             </div>
                             <div class="mb-3">
-                                <label for="register-confirm-password" class="form-label">Confirm Password</label>
+                                <label for="register-confirm-password" class="form-label" data-translate="passwordConfirmation-registration-label"></label>
                                 <input type="password" class="form-control" id="register-confirm-password" required>
                             </div>
-                            <div id="password-error" class="text-danger d-none">Passwords do not match!</div>
-                            <button type="button" onclick="registerUser()" class="btn btn-success w-100">Sign Up</button>
+                            <div id="password-error" class="text-danger d-none" data-translate="passwordError-registration-label"></div>
+                            <button type="button" onclick="registerUser()" class="btn btn-success w-100" data-translate="signUp-registration-button"></button>
                         </form>
-                        <p class="mt-3 text-center">Already have an account? <a href="#connexion">Log in</a></p>
+                        <p class="mt-3 text-center"><div data-translate="logIn-registration-text"></div><a href="#connexion" data-translate="logIn-registration-link"></a></p>
                     </div>
                 </div>
             </section>
@@ -93,8 +93,8 @@ const routes = {
             <section id="registrationSuccess" class="container mt-5 pt-5">
                 <div class="row justify-content-center">
                     <div class="col-md-6  text-center">
-                        <h2>You are now registred !</h2>
-                        <a href="#connexion" class="btn btn-primary btn-lg mt-3">Connexion</a>
+                        <h2 data-translate="title-registrationSuccess-title"></h2>
+                        <a href="#connexion" class="btn btn-primary btn-lg mt-3" data-translate="connexion-registrationSuccess-button"></a>
                     </div>
                 </div>
             </section>
@@ -105,20 +105,20 @@ const routes = {
             <section id="profile" class="container mt-5 pt-5">
                 <div class="row justify-content-center align-items-center">
                     <div class="col-md-6 text-center">
-                        <h2>Your Profile</h2>
+                        <h2 data-translate="title-profile-title"></h2>
                         <ul class="list-group">
                             <li class="list-group-item">
-                                <strong>Username:  </strong><span id="profile-userName"></span>
+                                <strong data-translate="username-profile-text"></strong><span id="profile-userName"></span>
                             </li>
                             <li class="list-group-item">
-                                <strong>Email:  </strong><span id="profile-userEmail"></span>
+                                <strong data-translate="email-profile-text"></strong><span id="profile-userEmail"></span>
                             </li>
                             <li class="list-group-item">
-                                <strong>2FA activated:  </strong><span id="profile-userTwoFA"></span>
+                                <strong data-translate="2fa-profile-text"></strong><span id="profile-userTwoFA"></span>
                             </li>
                         </ul>
-                        <button class="btn btn-warning mt-3 w-100" onclick="location.hash = '#editPage'">Edit Profile</button>
-                        <button class="btn btn-danger mt-2 w-100" onclick="disconnectUser()">Log Out</button>
+                        <button class="btn btn-warning mt-3 w-100" onclick="location.hash = '#editPage'" data-translate="edit-profile-button"></button>
+                        <button class="btn btn-danger mt-2 w-100" onclick="disconnectUser()" data-translate="logOut-profile-button"></button>
                     </div>
                 </div>
             </section>
@@ -129,38 +129,38 @@ const routes = {
             <section id="edit-page" class="container mt-5 pt-5">
                 <div class="row justify-content-center">
                     <div class="col-md-6">
-                        <h2>Edit Your Profile</h2>
+                        <h2 data-translate="title-editPage-title"></h2>
 
                         <!-- Change Password Form -->
                         <form id="change-password-form">
                             <div class="mb-3">
-                                <label for="current-password" class="form-label">Current Password</label>
+                                <label for="current-password" class="form-label" data-translate="currentPassword-editPage-label"></label>
                                 <input type="password" class="form-control" id="current-password" required>
                             </div>
                             <div class="mb-3">
-                                <label for="new-password-change" class="form-label">New Password</label>
+                                <label for="new-password-change" class="form-label" data-translate="newPassword-editPage-label"></label>
                                 <input type="password" class="form-control" id="new-password-change" required>
                             </div>
                             <div class="mb-3">
-                                <label for="confirm-password-change" class="form-label">Confirm New Password</label>
+                                <label for="confirm-password-change" class="form-label" data-translate="confirmNewPassword-editPage-label"></label>
                                 <input type="password" class="form-control" id="confirm-password-change" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100" onclick="changePassword()">Change Password</button>
+                            <button type="submit" class="btn btn-primary w-100" onclick="changePassword()" data-translate="changePassword-profile-button"></button>
                         </form>
 
                         <hr class="my-4">
 
                         <!-- 2FA activation Section -->
-                        <h3 class="mb-3">Two-Factor Authentication (2FA)</h3>
-                        <p class="text-muted">Enable or disable Two-Factor Authentication for added security.</p>
+                        <h3 class="mb-3" data-translate="2fa-editPage-title"></h3>
+                        <p class="text-muted" data-translate="enableDisable-editPage-text"></p>
                         <button id="toggle-2fa" class="btn btn-secondary w-100"></button>
 
                         <hr class="my-4">
 
                         <!-- Delete Account Section -->
-                        <h3 class="text-danger">Delete Account</h3>
-                        <p class="text-muted">If you want to permanently delete your account, click the button below. This action cannot be undone.</p>
-                        <button id="delete-account" class="btn btn-danger w-100" onclick="location.hash = '#deleteAccount'">Delete My Account</button>
+                        <h3 class="text-danger" data-translate="delete-editPage-title"></h3>
+                        <p class="text-muted" data-translate="delete-editPage-text"></p>
+                        <button id="delete-account" class="btn btn-danger w-100" onclick="location.hash = '#deleteAccount'" data-translate="delete-profile-button"></button>
                     </div>
                 </div>
             </section>
@@ -171,9 +171,9 @@ const routes = {
             <section id="confirm-delete-account-page" class="container d-flex flex-column justify-content-center align-items-center vh-100">
                 <div class="row text-center w-100">
                     <div class="col-md-12">
-                        <h3 class="mb-3">Account Suppression Confirmation</h3>
-                        <p class="text-muted">The account suppression is definitive.</p>
-                        <button id="confirm-delete-btn" type="button" class="btn btn-primary w-100" onclick="deleteAccount()">Confirm account suppression</button>
+                        <h3 class="mb-3" data-translate="title-deleteAccount-title"></h3>
+                        <p class="text-muted" data-translate="suppresion-deleteAccount-text"></p>
+                        <button id="confirm-delete-btn" type="button" class="btn btn-primary w-100" onclick="deleteAccount()" data-translate="suppresion-deleteAccount-button"></button>
                     </div>
                 </div>
             </section>
@@ -184,15 +184,15 @@ const routes = {
             <section id="confirm-2FA-page" class="container d-flex flex-column justify-content-center align-items-center vh-100">
                 <div class="row text-center w-100">
                     <div class="col-md-12">
-                        <h3 class="mb-3">2FA Confirmation</h3>
+                        <h3 class="mb-3" data-translate="title-confirm2FA-title"></h3>
                         <div id="qrcode" class="mb-3"></div>
-                        <p class="text-muted">You need to use the Google Authenticator App on Smartphone.</p>
+                        <p class="text-muted" data-translate="authentificator-confirm2FA-text"></p>
                         <form id="check-otp-form">
                             <div class="mb-3">
-                                <label for="otp-code" class="form-label">Enter OTP code :</label>
+                                <label for="otp-code" class="form-label" data-translate="enterCode-confirm2FA-text"></label>
                                 <input type="text" class="form-control" id="otp-code-id" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100" onclick="validateOTP()">Validate OTP code</button>
+                            <button type="submit" class="btn btn-primary w-100" onclick="validateOTP()" data-translate="validateCode-confirm2FA-button"></button>
                         </form>
                     </div>
                 </div>
@@ -205,16 +205,14 @@ const routes = {
                 <div class="row text-center">
                     <div class="col-md-12">
                         <!-- Styled heading -->
-                        <h2 class="display-1 text-gradient fw-bold arcade-text mb-4">Play Pong!</h2>
-                        <p class="lead text-muted">Challenge a friend or a random opponent and start your game!</p>
+                        <h2 class="display-1 text-gradient fw-bold arcade-text mb-4" data-translate="title-game-title"></h2>
+                        <p class="lead text-muted" data-translate="presentation-game-text"></p>
                         <!-- Canvas for the game -->
                         <div class="canvas-container p-4 rounded shadow">
                             <canvas id="pong-canvas" class="bg-dark rounded border border-light" width="800" height="600"></canvas>
                         </div>
                         <!-- Buttons for Local and Remote Game -->
-                        <div class="d-flex justify-content-center gap-3 mt-4" id="gameButtonDisplay">
-                            
-                        </div>
+                        <div class="d-flex justify-content-center gap-3 mt-4" id="gameButtonDisplay"></div>
                     </div>
                 </div>
             </section>
@@ -611,7 +609,52 @@ async function validateOTP() {
 }
 
 
+/* Language management */
+
+function translatePage(data) {
+    document.querySelectorAll("[data-translate]").forEach(element => {
+        const key = element.getAttribute("data-translate");
+        if (data[key]) {
+            element.innerText = data[key];
+        } else {
+            console.warn(`Error : Missing translation for key: ${key}`);
+        }
+    });
+}
+
+function loadLanguage(lang) {
+    fetch(`./translations/${lang}.json`)
+        .then(response => response.json())
+        .then(data => {
+            translatePage(data);
+        })
+        .catch(err => console.error("Error while loading the language:", err));
+}
+
+function changeLanguage(language) {
+    loadLanguage(language);
+    localStorage.setItem("language", language);
+}
+
 /* Page Management */
+
+async function manageDisplayGame() {
+    const isAuthenticated = await checkAuthentication();
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+
+    gameButtonDisplay.innerHTML = '';
+
+    if (isAuthenticated) {
+        gameButtonDisplay.innerHTML = `
+            <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
+            <button class="btn btn-info btn-lg" onclick="startRemoteGame()" data-translate="game-remote-button"></button>
+        `;
+    } else {
+        gameButtonDisplay.innerHTML = `
+            <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
+        `;
+    }
+}
 
 async function navigate() {
     const hash = window.location.hash.substring(1);
@@ -634,44 +677,16 @@ async function navigate() {
 
     if (hash === 'editPage') {
         appDiv.innerHTML = route.template;
-        setTimeout(() => {
-            toggle2FAStatus();
-        }, 0);
+        await toggle2FAStatus();
+
     }
     if (hash === 'profile') {
         appDiv.innerHTML = route.template;
-        setTimeout(() => {
-            displayUserInfos();
-        }, 0);
-    }
-    if (hash === 'editPage') {
-        appDiv.innerHTML = route.template;
-        setTimeout(() => {
-            toggle2FAStatus();
-        }, 0);
+        await displayUserInfos();
     }
     if (hash === 'game') {
         appDiv.innerHTML = route.template;
-        setTimeout(() => {
-            manageDisplayGame();
-        }, 0);
-    }
-}
-
-async function manageDisplayGame() {
-    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
-
-    gameButtonDisplay.innerHTML = '';
-
-    if (isAuthenticated) {
-        gameButtonDisplay.innerHTML = `
-            <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
-            <button class="btn btn-info btn-lg" onclick="startRemoteGame()">Remote Game</button>
-        `;
-    } else {
-        gameButtonDisplay.innerHTML = `
-            <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
-        `;
+        await manageDisplayGame();
     }
 }
 
@@ -687,52 +702,82 @@ async function manageDisplayAuth() {
         navbarNav.innerHTML = `
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#home">Home</a>
+                    <a class="nav-link" href="#home" data-translate="home-navbar-button"></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#game">Game</a>
+                    <a class="nav-link" href="#game" data-translate="game-navbar-button"></a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#profile">Profile</a>
+                    <a class="nav-link" href="#profile" data-translate="profile-navbar-button"></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" onclick="disconnectUser()">Logout</a>
+                    <a class="nav-link" onclick="disconnectUser()" data-translate="logout-navbar-button"></a>
+                </li>
+                <li class="nav-item">
+                    <select id="language-selector">
+                        <option value="en">English</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="ja">日本語</option>
+                        <option value="ar">عربي</option>
+                        <option value="ru">Русский</option>
+                    </select>
                 </li>
             </ul>
         `;
         navFooter.innerHTML = `
-            <li><a href="#home">Home</a></li>
-            <li><a href="#game">Game</a></li>
-            <li><a href="#profile">Profile</a></li>
-            <li><a onclick="disconnectUser()">Logout</a></li>
+            <li><a href="#home" data-translate="home-footer-button"></a></li>
+            <li><a href="#game" data-translate="game-footer-button"></a></li>
+            <li><a href="#profile" data-translate="profile-footer-button"></a></li>
+            <li><a onclick="disconnectUser()" data-translate="logout-footer-button"></a></li>
         `;
     } else {
         navbarNav.innerHTML = `
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#home">Home</a>
+                    <a class="nav-link" href="#home" data-translate="home-navbar-button"></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#game">Game</a>
+                    <a class="nav-link" href="#game"  data-translate="game-navbar-button"></a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#connexion">Connexion</a>
+                    <a class="nav-link" href="#connexion" data-translate="connexion-navbar-button"></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#registration">Sign up</a>
+                    <a class="nav-link" href="#registration" data-translate="registration-navbar-button"></a>
+                </li>
+                <li class="nav-item">
+                    <select id="language-selector">
+                        <option value="en">English</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="ja">日本語</option>
+                        <option value="ar">عربي</option>
+                        <option value="ru">Русский</option>
+                    </select>
                 </li>
             </ul>
         `;
         navFooter.innerHTML = `
-            <li><a href="#home">Home</a></li>
-            <li><a href="#game">Game</a></li>
-            <li><a href="#connexion">Connexion</a></li>
-            <li><a href="#registration">Sign up</a></li>
+            <li><a href="#home" data-translate="home-footer-button"></a></li>
+            <li><a href="#game" data-translate="game-footer-button"></a></li>
+            <li><a href="#connexion" data-translate="connexion-footer-button"></a></li>
+            <li><a href="#registration" data-translate="registration-footer-button"></a></li>
         `;
+    }
+
+    const languageSelect = document.getElementById('language-selector');
+    if (languageSelect) {
+        languageSelect.addEventListener('change', function () {
+            const selectedLanguage = this.value;
+            changeLanguage(selectedLanguage);
+        });
+    } else {
+        console.log("Error: language-selector id not found");
     }
 }
 
@@ -746,7 +791,28 @@ function startLocalGame() {
 
 /* Event listener */
 
-window.addEventListener('hashchange', navigate);
-window.addEventListener('load', navigate);
-window.addEventListener('hashchange', manageDisplayAuth);
-window.addEventListener('load', manageDisplayAuth);
+window.addEventListener('load', async () => {
+    await navigate();
+    await manageDisplayAuth();
+
+    const savedLanguage = localStorage.getItem('language') || 'en';
+    localStorage.setItem('language', savedLanguage);
+    const languageSelector = document.getElementById('language-selector');
+    if (languageSelector) {
+        languageSelector.value = savedLanguage;
+    }
+    changeLanguage(savedLanguage);
+});
+
+window.addEventListener('hashchange', async () => {
+    await navigate();
+    await manageDisplayAuth();
+
+    const savedLanguage = localStorage.getItem('language') || 'en';
+    localStorage.setItem('language', savedLanguage);
+    const languageSelector = document.getElementById('language-selector');
+    if (languageSelector) {
+        languageSelector.value = savedLanguage;
+    }
+    changeLanguage(savedLanguage);
+});
