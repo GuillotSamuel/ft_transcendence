@@ -256,12 +256,18 @@ async function checkAuthentication() {
             headers: { 'Content-Type': 'application/json' }
         });
 
-        return response.ok;
+        if (response.ok) {
+            const data = await response.json();
+            return data.Authentication === 'yes';
+        }
+
+        return false;
     } catch (error) {
         console.error("Authentication check failed:", error);
         return false;
     }
 }
+
 
 async function loginUser() {
     const username = document.getElementById('login-username').value;

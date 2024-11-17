@@ -63,7 +63,7 @@ def logout(request):
 def isUserAuthentified(request):
     auth_result = JWTCookieAuthentication().authenticate(request)
     if auth_result is None:
-        return Response({'Authentication': 'no'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Authentication': 'no'}, status=status.HTTP_200_OK)
     else:
         return Response({"Authentication": "yes"}, status=status.HTTP_200_OK)
 
