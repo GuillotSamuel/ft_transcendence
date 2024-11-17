@@ -19,11 +19,11 @@ html, body {
 }
 
 footer a {
-    color: rgba(255, 255, 255, 0.55);
+    color: rgb(255, 255, 255);
     text-decoration: none;
     transition: color 0.2s ease-in-out;
 }
 
 footer a:hover {
-    color: rgba(255, 255, 255, 0.85);
+    color: #0d6efd;
 }

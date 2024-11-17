@@ -222,6 +222,7 @@ const routes = {
     }
 };
 
+
 window.startLocalGame = startLocalGame;
 window.registerUser = registerUser;
 window.loginUser = loginUser;
@@ -233,6 +234,22 @@ window.validateOTP = validateOTP;
 window.changePassword = changePassword;
 window.connexionOTP = connexionOTP;
 window.deleteAccount = deleteAccount;
+
+
+/* Utils */
+
+function isPasswordSecure(password) {
+    const minLength = 8;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    return password.length >= minLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
+}
+
+
+/* Authentication & User Management */
 
 async function checkAuthentication() {
     try {
@@ -248,70 +265,142 @@ async function checkAuthentication() {
     }
 }
 
-async function displayUserInfos() {
+async function loginUser() {
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
     try {
-        const response = await fetch('/api/infosUser/', {
-            method: 'GET',
+        const response = await fetch('/api/login/', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            creadentials: 'include'
+            body: JSON.stringify({ username, password })
         });
 
+        const data = await response.json();
         if (response.ok) {
-            const data = await response.json();
-            const userName = data["username"];
-            const email = data["email"];
-            const twoFA = data["2FA_activated"];
+            if (await is2FAactivate() === true) {
+                location.hash = '#connexion2FA';
+            }
+            else {
+                location.hash = '#game';
+            }
 
-            document.getElementById('profile-userName').textContent = userName;
-            document.getElementById('profile-userEmail').textContent = email;
-            document.getElementById('profile-userTwoFA').textContent = twoFA === 'yes' ? 'Enabled' : 'Disabled';
         } else {
-            alert('Error fetching user info');
+            alert(`Error: ${data.message || 'Login failed'}`);
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('Error while fetching user information');
+        alert('Network error: Unable to login');
     }
 }
 
-async function navigate() {
-    const hash = window.location.hash.substring(1);
-    const route = routes[hash];
+async function disconnectUser() {
+    const response = await fetch('/api/logout/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+    });
+    if (!response.ok) {
+        alert('Error while disconnecting')
+    }
+    location.hash = "#home";
+}
 
-    if ((hash !== 'home' && hash !== 'connexion'
-        && hash != 'connexion2FA' && hash !== 'registration'
-        && hash !== 'registrationSuccess')
-        && !(await checkAuthentication())) {
-        location.hash = '#connexion';
+async function registerUser() {
+    const username = document.getElementById('register-username').value;
+    const email = document.getElementById('register-email').value;
+    const password = document.getElementById('register-password').value;
+    const confirmPassword = document.getElementById('register-confirm-password').value;
+
+    if (password !== confirmPassword) {
+        alert('Passwords are not matching !');
         return;
     }
 
-    const appDiv = document.getElementById('app');
-    if (route) {
-        appDiv.innerHTML = route.template;
-    } else {
-        appDiv.innerHTML = "<h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p>";
+    if (!isPasswordSecure(password)) {
+        alert('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
+        return;
     }
 
-    if (hash === 'editPage') {
-        appDiv.innerHTML = route.template;
-        setTimeout(() => {
-            toggle2FAStatus();
-        }, 0);
-    }
-    if (hash === 'profile') {
-        appDiv.innerHTML = route.template;
-        setTimeout(() => {
-            displayUserInfos();
-        }, 0);
-    }
-    if (hash === 'editPage') {
-        appDiv.innerHTML = route.template;
-        setTimeout(() => {
-            toggle2FAStatus();
-        }, 0);
+    try {
+        const response = await fetch('/api/register/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            location.hash = '#registrationSuccess';
+        } else {
+            alert(`Error: ${data.message || 'Registration failed'}`);
+        }
+    } catch (error) {
+        alert('Network error: Unable to register');
     }
 }
+
+async function deleteAccount() {
+    try {
+        const response = await fetch('/api/deleteUser/', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            location.hash = '#home';
+        }
+        else {
+            alert('Error: Account deletion failed');
+        }
+    } catch (error) {
+        alert('Error: Unable to delete account');
+    }
+}
+
+async function changePassword() {
+    const oldPwd = document.getElementById('current-password').value;
+    const changePwd = document.getElementById('new-password-change').value;
+    const confirmChangePwd = document.getElementById('confirm-password-change').value;
+
+    if (changePwd != confirmChangePwd) {
+        alert('Passwords are not matching !');
+        return;
+    }
+
+    if (changePwd == oldPwd) {
+        alert('The current password and the new password are the same !');
+        return;
+    }
+
+    if (!isPasswordSecure(changePwd)) {
+        alert('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
+        return;
+    }
+
+    const password = changePwd;
+
+    try {
+        const response = await fetch('/api/changePassword/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password }),
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert('Password has been changed successfuly !')
+        } else {
+            alert(`Error: ${data.message || 'Change password failed'}`);
+        }
+    } catch (error) {
+        alert('Network error: Unable to change the password');
+    }
+}
+
+
+/* 2FA (Two-Factor Authentication) */
 
 async function enable2FA() {
     try {
@@ -445,53 +534,6 @@ async function toggle2FAStatus() {
     }
 }
 
-async function deleteAccount() {
-    try {
-        const response = await fetch('/api/deleteUser/', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            location.hash = '#home';
-        }
-        else {
-            alert('Error: Account deletion failed');
-        }
-    } catch (error) {
-        alert('Error: Unable to delete account');
-    }
-}
-
-async function loginUser() {
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
-    try {
-        const response = await fetch('/api/login/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            if (await is2FAactivate() === true) {
-                location.hash = '#connexion2FA';
-            }
-            else {
-                location.hash = '#game';
-            }
-
-        } else {
-            alert(`Error: ${data.message || 'Login failed'}`);
-        }
-    } catch (error) {
-        alert('Network error: Unable to login');
-    }
-}
-
 async function connexionOTP() {
     const otp = document.getElementById('connexion-otp-code-id').value;
 
@@ -517,67 +559,126 @@ async function connexionOTP() {
     }
 }
 
-function isPasswordSecure(password) {
-    const minLength = 8;
-    const hasUppercase = /[A-Z]/.test(password);
-    const hasLowercase = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-    return password.length >= minLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
+/* Profile & User Information */
+
+async function displayUserInfos() {
+    try {
+        const response = await fetch('/api/infosUser/', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            creadentials: 'include'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const userName = data["username"];
+            const email = data["email"];
+            const twoFA = data["2FA_activated"];
+
+            document.getElementById('profile-userName').textContent = userName;
+            document.getElementById('profile-userEmail').textContent = email;
+            document.getElementById('profile-userTwoFA').textContent = twoFA === 'yes' ? 'Enabled' : 'Disabled';
+        } else {
+            alert('Error fetching user info');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error while fetching user information');
+    }
 }
 
-async function registerUser() {
-    const username = document.getElementById('register-username').value;
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-password').value;
-    const confirmPassword = document.getElementById('register-confirm-password').value;
+async function validateOTP() {
 
-    if (password !== confirmPassword) {
-        alert('Passwords are not matching !');
-        return;
-    }
-
-    if (!isPasswordSecure(password)) {
-        alert('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
-        return;
-    }
+    const otp = document.getElementById('otp-code-id').value;
 
     try {
-        const response = await fetch('/api/register/', {
+        const response = await fetch('/api/confirm2FA/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password })
+            body: JSON.stringify({ otp })
         });
 
         const data = await response.json();
         if (response.ok) {
-            location.hash = '#registrationSuccess';
+            location.hash = '#editPage';
         } else {
-            alert(`Error: ${data.message || 'Registration failed'}`);
+            alert("Invalid code OTP ! Try again");
         }
     } catch (error) {
-        alert('Network error: Unable to register');
+        alert('Network error: Unable to check OTP code');
     }
 }
 
-async function disconnectUser() {
-    const response = await fetch('/api/logout/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
-    });
-    if (!response.ok) {
-        alert('Error while disconnecting')
+
+/* Page Management */
+
+async function navigate() {
+    const hash = window.location.hash.substring(1);
+    const route = routes[hash];
+
+    if ((hash !== 'home' && hash !== 'connexion'
+        && hash != 'connexion2FA' && hash !== 'registration'
+        && hash !== 'registrationSuccess')
+        && !(await checkAuthentication())) {
+        location.hash = '#connexion';
+        return;
     }
-    location.hash = "#home";
+
+    const appDiv = document.getElementById('app');
+    if (route) {
+        appDiv.innerHTML = route.template;
+    } else {
+        appDiv.innerHTML = "<h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p>";
+    }
+
+    if (hash === 'editPage') {
+        appDiv.innerHTML = route.template;
+        setTimeout(() => {
+            toggle2FAStatus();
+        }, 0);
+    }
+    if (hash === 'profile') {
+        appDiv.innerHTML = route.template;
+        setTimeout(() => {
+            displayUserInfos();
+        }, 0);
+    }
+    if (hash === 'editPage') {
+        appDiv.innerHTML = route.template;
+        setTimeout(() => {
+            toggle2FAStatus();
+        }, 0);
+    }
+    if (hash === 'game') {
+        appDiv.innerHTML = route.template;
+        setTimeout(() => {
+            manageDisplayGame();
+        }, 0);
+    }
+}
+
+async function manageDisplayGame() {
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+
+    gameButtonDisplay.innerHTML = '';
+
+    if (isAuthenticated) {
+        gameButtonDisplay.innerHTML = `
+            <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
+            <button class="btn btn-info btn-lg" onclick="startRemoteGame()">Remote Game</button>
+        `;
+    } else {
+        gameButtonDisplay.innerHTML = `
+            <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
+        `;
+    }
 }
 
 async function manageDisplayAuth() {
     const isAuthenticated = await checkAuthentication();
     const navbarNav = document.getElementById('navbarNav');
     const navFooter = document.getElementById('navFooter');
-    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
 
     navbarNav.innerHTML = '';
     navFooter.innerHTML = '';
@@ -607,10 +708,6 @@ async function manageDisplayAuth() {
             <li><a href="#profile">Profile</a></li>
             <li><a onclick="disconnectUser()">Logout</a></li>
         `;
-        gameButtonDisplay.innerHTML = `
-            <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
-            <button class="btn btn-info btn-lg" onclick="startRemoteGame()">Remote Game</button>
-        `;
     } else {
         navbarNav.innerHTML = `
             <ul class="navbar-nav me-auto">
@@ -636,79 +733,18 @@ async function manageDisplayAuth() {
             <li><a href="#connexion">Connexion</a></li>
             <li><a href="#registration">Sign up</a></li>
         `;
-        gameButtonDisplay.innerHTML = `
-            <button class="btn btn-primary btn-lg" onclick="startLocalGame()">Local Game</button>
-        `;
     }
 }
 
 
-async function changePassword() {
-    const oldPwd = document.getElementById('current-password').value;
-    const changePwd = document.getElementById('new-password-change').value;
-    const confirmChangePwd = document.getElementById('confirm-password-change').value;
-
-    if (changePwd != confirmChangePwd) {
-        alert('Passwords are not matching !');
-        return;
-    }
-
-    if (changePwd == oldPwd) {
-        alert('The current password and the new password are the same !');
-        return;
-    }
-
-    if (!isPasswordSecure(changePwd)) {
-        alert('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
-        return;
-    }
-
-    const password = changePwd;
-
-    try {
-        const response = await fetch('/api/changePassword/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password }),
-            credentials: 'include'
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            alert('Password has been changed successfuly !')
-        } else {
-            alert(`Error: ${data.message || 'Change password failed'}`);
-        }
-    } catch (error) {
-        alert('Network error: Unable to change the password');
-    }
-}
-
-async function validateOTP() {
-
-    const otp = document.getElementById('otp-code-id').value;
-
-    try {
-        const response = await fetch('/api/confirm2FA/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ otp })
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            location.hash = '#editPage';
-        } else {
-            alert("Invalid code OTP ! Try again");
-        }
-    } catch (error) {
-        alert('Network error: Unable to check OTP code');
-    }
-}
+/* Game */
 
 function startLocalGame() {
     startGame();
 }
+
+
+/* Event listener */
 
 window.addEventListener('hashchange', navigate);
 window.addEventListener('load', navigate);
