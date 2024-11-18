@@ -7,7 +7,7 @@ import { createBoostPNG } from "./spicy_game/managePNG.js";
 let canvas, ctx;
 let gameRunning = false;
 
-let ball, leftPaddle, rightPaddle, score, mushroom;
+let ball, leftPaddle, rightPaddle, score, boost, begin_time;
 
 let leftPaddleUp = false;
 let leftPaddleDown = false;
@@ -15,6 +15,8 @@ let rightPaddleUp = false;
 let rightPaddleDown = false;
 
 function initializeGame() {
+
+    begin_time = Date.now();
     // Sélection du canvas
     canvas = document.getElementById("pong-canvas");
     ctx = canvas.getContext("2d");
@@ -28,7 +30,7 @@ function initializeGame() {
     score = new Score(canvas, ctx);
 
     // Initialisation du champignon au centre
-    mushroom = createBoostPNG("Skinny", canvas);
+    boost = createBoostPNG("Skinny", canvas);
 
     // Écouteurs d'événements
     document.addEventListener("keydown", keyDownHandler);
@@ -111,6 +113,24 @@ export function stopGame() {
     resetLocal();
 }
 
+function check_time() {
+    let time_now = Date.now();
+
+    let diff_time = (time_now - begin_time) / 1000;
+
+    console.log(diff_time);
+
+    if (diff_time >= 10)
+    {
+        begin_time = time_now;
+        return false;
+    }
+    if (diff_time >= 5)
+        return true;
+
+    
+}
+
 function gameLoop() {
     if (!gameRunning) return;
 
@@ -126,8 +146,8 @@ function gameLoop() {
 
     score.draw();
 
-    // Dessiner le champignon
-    mushroom.draw(ctx);
+    if (check_time())
+        boost.draw(ctx);
 
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer2();
