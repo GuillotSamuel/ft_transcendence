@@ -10,7 +10,7 @@ export function createBoostPNG(Name, canvas) {
             canvas.height / 2,
             80, // Largeur du champignon
             80, // Hauteur du champignon
-            "./local_game/spicy_game/fat_mushroom.png"
+            "./local_game/spicy_game/png/fat_mushroom.png"
         ) // Chemin vers l'image
     }
     else if (Name == "Skinny"){
@@ -19,7 +19,7 @@ export function createBoostPNG(Name, canvas) {
             canvas.height / 2,
             80, // Largeur du champignon
             80, // Hauteur du champignon
-            "./local_game/spicy_game/pink_mushroom.png"
+            "./local_game/spicy_game/png/pink_mushroom.png"
         ) // Chemin vers l'image
     }
     else{
@@ -28,7 +28,7 @@ export function createBoostPNG(Name, canvas) {
             canvas.height / 2,
             80, // Largeur du champignon
             80, // Hauteur du champignon
-            "./local_game/spicy_game/speed.png"
+            "./local_game/spicy_game/png/speed.png"
         ) // Chemin vers l'image
     }
     return boostPNG;
