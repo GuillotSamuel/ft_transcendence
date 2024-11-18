@@ -31,7 +31,6 @@ export function startLocalGame() {
     toggleLocalGameButton(false);
     // Démarrer le jeu
     startGame();
-
 }
 
 export function resetGameStateOnPageChange() {

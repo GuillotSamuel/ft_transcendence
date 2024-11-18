@@ -1,14 +1,13 @@
-// game.js
-
 import { Ball } from "./ball.js";
 import { Paddle } from "./paddle.js";
 import { Score } from "./score.js";
-import { resetLocal} from './gameManager.js';
+import { resetLocal } from './gameManager.js';
+import { Mushroom } from "./mushroom.js"; // Import de la classe Mushroom
 
 let canvas, ctx;
 let gameRunning = false;
 
-let ball, leftPaddle, rightPaddle, score;
+let ball, leftPaddle, rightPaddle, score, mushroom;
 
 let leftPaddleUp = false;
 let leftPaddleDown = false;
@@ -16,19 +15,28 @@ let rightPaddleUp = false;
 let rightPaddleDown = false;
 
 function initializeGame() {
-    // Select the canvas after it's rendered in the DOM
+    // Sélection du canvas
     canvas = document.getElementById("pong-canvas");
     ctx = canvas.getContext("2d");
     canvas.width = 800;
     canvas.height = 600;
 
-    // Initialize game objects
+    // Initialisation des objets de jeu
     ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 2, 2);
     leftPaddle = new Paddle(10, canvas.height / 2 - 50, 10, 100, canvas);
     rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 50, 10, 100, canvas);
     score = new Score(canvas, ctx);
 
-    // Add event listeners
+    // Initialisation du champignon au centre
+    mushroom = new Mushroom(
+        canvas.width / 2,
+        canvas.height / 2,
+        80, // Largeur du champignon
+        80, // Hauteur du champignon
+        "./local_game/fat_mushroom.png" // Chemin vers l'image
+    );
+
+    // Écouteurs d'événements
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
 }
@@ -38,14 +46,13 @@ function keyDownHandler(event) {
     if (event.key === "s") leftPaddleDown = true;
     if (event.key === "ArrowUp") {
         rightPaddleUp = true;
-        event.preventDefault(); // Prevent default scrolling
+        event.preventDefault();
     }
     if (event.key === "ArrowDown") {
         rightPaddleDown = true;
-        event.preventDefault(); // Prevent default scrolling
+        event.preventDefault();
     }
-    if (event.key === "Escape") 
-        stopGame();
+    if (event.key === "Escape") stopGame();
 }
 
 function keyUpHandler(event) {
@@ -53,18 +60,16 @@ function keyUpHandler(event) {
     if (event.key === "s") leftPaddleDown = false;
     if (event.key === "ArrowUp") {
         rightPaddleUp = false;
-        event.preventDefault(); // Prevent default scrolling
+        event.preventDefault();
     }
     if (event.key === "ArrowDown") {
         rightPaddleDown = false;
-        event.preventDefault(); // Prevent default scrolling
+        event.preventDefault();
     }
 }
 
 export function startGame() {
-    if (gameRunning) {
-        return;
-    }
+    if (gameRunning) return;
 
     initializeGame();
     ball.resetPosition();
@@ -82,49 +87,41 @@ export function stopGame() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Determine who won and set message color
     let winnerMessage = '';
     if (score.scorePlayer1 > score.scorePlayer2) {
         winnerMessage = 'Player 1 Wins!';
-        ctx.fillStyle = "#FF4136"; // Red for Player 2
+        ctx.fillStyle = "#FF4136";
     } else if (score.scorePlayer2 > score.scorePlayer1) {
         winnerMessage = 'Player 2 Wins!';
-        ctx.fillStyle = "#0074D9"; // Blue for Player 1
+        ctx.fillStyle = "#0074D9";
     } else {
         winnerMessage = 'It\'s a Draw!';
-        ctx.fillStyle = "#FFFFFF"; // White for a draw
+        ctx.fillStyle = "#FFFFFF";
     }
 
-    if (ctx){
-        // Display the winner message
+    if (ctx) {
         ctx.font = "bold 60px 'Press Start 2P', cursive";
         ctx.textAlign = "center";
         ctx.fillText(winnerMessage, canvas.width / 2, canvas.height / 2);
 
-        // Display instructions to restart the game
         ctx.font = "bold 30px 'Press Start 2P', cursive";
-        ctx.fillStyle = "#FFFFFF"; // White for instructions
+        ctx.fillStyle = "#FFFFFF";
         ctx.fillText("Press 'Start' to play again", canvas.width / 2, canvas.height / 2 + 50);
     }
-    
-    if (score){
-        // Reset the score for the next game
-        score.resetScore();
-    }
-    
 
-    // Remove event listeners to prevent further input
+    if (score) score.resetScore();
+
     document.removeEventListener("keydown", keyDownHandler);
     document.removeEventListener("keyup", keyUpHandler);
 
     resetLocal();
 }
 
-
 function gameLoop() {
     if (!gameRunning) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
 
@@ -134,7 +131,10 @@ function gameLoop() {
     rightPaddle.draw(ctx);
 
     score.draw();
-    
+
+    // Dessiner le champignon
+    mushroom.draw(ctx);
+
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer2();
         ball.resetPosition(1);
@@ -144,6 +144,5 @@ function gameLoop() {
         ball.resetPosition(2);
     }
 
-    
     requestAnimationFrame(gameLoop);
 }
