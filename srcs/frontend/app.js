@@ -660,7 +660,8 @@ async function navigate() {
 
     if ((hash !== 'home' && hash !== 'connexion'
         && hash !== 'connexion2FA' && hash !== 'registration'
-        && hash !== 'registrationSuccess' && hash !== 'game')
+        && hash !== 'registrationSuccess' && hash !== 'game'
+        && hash !== '')
         && !(await checkAuthentication())) {
         location.hash = '#connexion';
         return;
