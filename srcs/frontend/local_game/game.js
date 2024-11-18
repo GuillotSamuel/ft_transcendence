@@ -13,6 +13,8 @@ let leftPaddleUp = false;
 let leftPaddleDown = false;
 let rightPaddleUp = false;
 let rightPaddleDown = false;
+let actionPerformed = false;
+let currentRandomHeight = null;
 
 function initializeGame() {
 
@@ -115,20 +117,20 @@ export function stopGame() {
 
 function check_time() {
     let time_now = Date.now();
-
     let diff_time = (time_now - begin_time) / 1000;
 
-    console.log(diff_time);
-
-    if (diff_time >= 10)
-    {
-        begin_time = time_now;
+    if (diff_time >= 5) {
+        begin_time = time_now; // Réinitialiser le temps
+        actionPerformed = false; // Réinitialiser le drapeau
+        currentRandomHeight = null; // Réinitialiser la position
         return false;
     }
-    if (diff_time >= 5)
-        return true;
 
-    
+    if (diff_time >= 2) {
+        return true; // Indique qu'une image doit être affichée
+    }
+
+    return false;
 }
 
 function gameLoop() {
@@ -146,8 +148,15 @@ function gameLoop() {
 
     score.draw();
 
-    if (check_time())
-        boost.draw(ctx);
+    // Générer une position unique si diff_time >= 2
+    if (check_time()) {
+        if (!actionPerformed) {
+            currentRandomHeight = boost.getRandomPosition(); // Génère une position unique
+            console.log("Random height generated:", currentRandomHeight);
+            actionPerformed = true; // Empêche une nouvelle génération jusqu'à un reset
+        }
+        boost.draw(ctx, canvas.height, currentRandomHeight); // Affiche à la position unique
+    }
 
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer2();

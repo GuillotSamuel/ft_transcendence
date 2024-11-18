@@ -18,12 +18,19 @@ export class imagePNG {
     }
 
 
-    draw(ctx) {
-        if (this.imageLoaded) {
+    getRandomPosition() {
+        const pos = [100, 200 , 300, 400, 500];
+        const randomIndex = Math.floor(Math.random() * pos.length);
+        return pos[randomIndex];
+    }
+
+    draw(ctx, y, randomValue) {
+
+        if (this.imageLoaded && randomValue != 0) {
             ctx.drawImage(
                 this.image,
                 this.x - this.width / 2,
-                this.y - this.height / 2,
+                (y - randomValue) - this.height / 2,
                 this.width,
                 this.height
             );
