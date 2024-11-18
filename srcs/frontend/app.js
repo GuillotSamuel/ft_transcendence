@@ -1,5 +1,4 @@
-import { startGame } from './local_game/game.js';
-
+import { startLocalGame } from './local_game/gameManager.js';
 
 const routes = {
     home: {
@@ -786,12 +785,6 @@ async function manageDisplayAuth() {
     }
 }
 
-
-/* Game */
-
-function startLocalGame() {
-    startGame();
-}
 
 
 /* Event listener */

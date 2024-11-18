@@ -43,7 +43,8 @@ function keyDownHandler(event) {
         rightPaddleDown = true;
         event.preventDefault(); // Prevent default scrolling
     }
-    if (event.key === "Escape") stopGame();
+    if (event.key === "Escape") 
+        stopGame();
 }
 
 function keyUpHandler(event) {
@@ -60,12 +61,17 @@ function keyUpHandler(event) {
 }
 
 export function startGame() {
+    if (gameRunning) {
+        return;
+    }
+
     initializeGame();
+    ball.resetPosition();
     gameRunning = true;
     gameLoop();
 }
 
-function stopGame() {
+export function stopGame() {
     gameRunning = false;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
