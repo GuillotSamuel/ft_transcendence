@@ -1,6 +1,7 @@
 import { imagePNG } from "./imagePNG.js";
 
-export function createBoostPNG(Name, canvas) {
+export function createBoostPNG(Name, canvas)
+{
 
     let boostPNG;
 

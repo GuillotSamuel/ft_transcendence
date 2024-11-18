@@ -1,4 +1,5 @@
-export class Paddle {
+export class Paddle
+{
     constructor(x, y, width, height, canvas) {
         this.x = x;
         this.y = y;
@@ -10,12 +11,14 @@ export class Paddle {
         this.canvas = canvas;
     }
 
-    draw(ctx) {
+    draw(ctx)
+    {
         ctx.fillStyle = "#0095DD";
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 
-    move(up, down) {
+    move(up, down)
+    {
         if (up && this.y > 0) {
             this.y -= this.speed;
             this.topPaddle -= this.speed;

@@ -1,4 +1,5 @@
-export class Ball {
+export class Ball 
+{
     constructor(x, y, radius, speedX, speedY, speedIncrement = 0.5) {
         this.x = x;
         this.y = y;
@@ -10,9 +11,11 @@ export class Ball {
         this.beginSpeedX = speedX; // Used for resetting the ball
         this.beginSpeedY = speedY; // Used for resetting the ball
         this.speedIncrement = speedIncrement; // Amount to increase speed after each paddle hit
+        this.lastPaddletouch = "left";
     }
 
-    draw(ctx) {
+    draw(ctx) 
+    {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fillStyle = "#00FF00";
@@ -20,7 +23,13 @@ export class Ball {
         ctx.closePath();
     }
 
-    update(canvas, leftPaddle, rightPaddle) {
+    getLastPaddleTouch()
+    {
+        return this.lastPaddletouch;
+    }
+
+    update(canvas, leftPaddle, rightPaddle)
+    {
         this.x += this.speedX;
         this.y += this.speedY;
 
@@ -40,6 +49,7 @@ export class Ball {
             // Increase speed slightly after each paddle collision
             this.speedX += this.speedX > 0 ? this.speedIncrement : -this.speedIncrement;
             this.speedY += this.speedY > 0 ? this.speedIncrement : -this.speedIncrement;
+            this.lastPaddletouch = "right";
         }
         // Collision with the left paddle (similar to right paddle logic)
         else if (this.x - this.radius <= leftPaddle.x + leftPaddle.width &&
@@ -55,6 +65,7 @@ export class Ball {
 
             this.speedX += this.speedX > 0 ? this.speedIncrement : -this.speedIncrement;
             this.speedY += this.speedY > 0 ? this.speedIncrement : -this.speedIncrement;
+            this.lastPaddletouch = "left";
         }
         // Reverse y direction if the ball hits the top or bottom edges of the canvas
         if (this.y + this.radius > canvas.height || this.y - this.radius < 0) {

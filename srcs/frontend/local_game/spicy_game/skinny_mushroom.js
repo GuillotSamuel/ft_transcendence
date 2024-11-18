@@ -1,3 +1,4 @@
-export class skinnyMushroom {
+export class skinnyMushroom
+{
     
 }

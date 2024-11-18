@@ -1,4 +1,5 @@
-export class Score {
+export class Score
+{
     constructor(canvas, ctx) {
         this.canvas = canvas;
         this.ctx = ctx;
@@ -7,7 +8,8 @@ export class Score {
     }
 
     // Méthode pour dessiner le score dans le canvas
-    draw() {
+    draw()
+    {
         this.ctx.font = "bold 48px 'Arial Black', sans-serif";
         this.ctx.fillStyle = "#333";
         this.ctx.textAlign = "center";
@@ -28,15 +30,18 @@ export class Score {
     }
 
     // Méthodes pour mettre à jour les scores
-    incrementPlayer1() {
+    incrementPlayer1()
+    {
         this.scorePlayer1++;
     }
 
-    incrementPlayer2() {
+    incrementPlayer2()
+    {
         this.scorePlayer2++;
     }
 
-    resetScore() {
+    resetScore()
+    {
         this.scorePlayer1 = 0;
         this.scorePlayer2 = 0;
     }

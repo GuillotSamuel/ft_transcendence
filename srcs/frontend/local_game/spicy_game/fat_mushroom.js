@@ -1,3 +1,4 @@
-export class fatMushroom {
-    
+export class fatMushroom
+{
+
 }

@@ -16,8 +16,8 @@ let rightPaddleDown = false;
 let actionPerformed = false;
 let currentRandomHeight = null;
 
-function initializeGame() {
-
+function initializeGame()
+{
     begin_time = Date.now();
     // Sélection du canvas
     canvas = document.getElementById("pong-canvas");
@@ -39,7 +39,8 @@ function initializeGame() {
     document.addEventListener("keyup", keyUpHandler);
 }
 
-function keyDownHandler(event) {
+function keyDownHandler(event)
+{
     if (event.key === "w") leftPaddleUp = true;
     if (event.key === "s") leftPaddleDown = true;
     if (event.key === "ArrowUp") {
@@ -53,7 +54,8 @@ function keyDownHandler(event) {
     if (event.key === "Escape") stopGame();
 }
 
-function keyUpHandler(event) {
+function keyUpHandler(event)
+{
     if (event.key === "w") leftPaddleUp = false;
     if (event.key === "s") leftPaddleDown = false;
     if (event.key === "ArrowUp") {
@@ -66,7 +68,8 @@ function keyUpHandler(event) {
     }
 }
 
-export function startGame() {
+export function startGame()
+{
     if (gameRunning) return;
 
     initializeGame();
@@ -75,7 +78,8 @@ export function startGame() {
     gameLoop();
 }
 
-export function stopGame() {
+export function stopGame()
+{
     gameRunning = false;
 
     if (!ctx || !canvas) {
@@ -115,7 +119,8 @@ export function stopGame() {
     resetLocal();
 }
 
-function check_time() {
+function check_time() 
+{
     let time_now = Date.now();
     let diff_time = (time_now - begin_time) / 1000;
 
@@ -133,13 +138,30 @@ function check_time() {
     return false;
 }
 
-function gameLoop() {
+check_ball_and_bonus(ball, (canvas.width / 2), currentRandomHeight )
+{
+
+}
+
+function gameLoop()
+{
     if (!gameRunning) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
+
+    check_ball_and_bonus(ball, (canvas.width / 2), currentRandomHeight )
+
+    if (ball.getLastPaddleTouch() === "right") {
+    console.log("The last paddle to touch the ball was the right paddle.");
+    // Appliquez une logique ici, comme un bonus pour le joueur de droite
+    } else if (ball.getLastPaddleTouch() === "left") {
+        console.log("The last paddle to touch the ball was the left paddle.");
+        // Appliquez une logique ici, comme un bonus pour le joueur de gauche
+    }
+
 
     leftPaddle.move(leftPaddleUp, leftPaddleDown);
     rightPaddle.move(rightPaddleUp, rightPaddleDown);
