@@ -268,7 +268,6 @@ async function checkAuthentication() {
     }
 }
 
-
 async function loginUser() {
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
@@ -667,8 +666,8 @@ async function navigate() {
     const route = routes[hash];
 
     if ((hash !== 'home' && hash !== 'connexion'
-        && hash != 'connexion2FA' && hash !== 'registration'
-        && hash !== 'registrationSuccess')
+        && hash !== 'connexion2FA' && hash !== 'registration'
+        && hash !== 'registrationSuccess' && hash !== 'game')
         && !(await checkAuthentication())) {
         location.hash = '#connexion';
         return;
