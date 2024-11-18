@@ -119,15 +119,15 @@ function check_time() {
     let time_now = Date.now();
     let diff_time = (time_now - begin_time) / 1000;
 
-    if (diff_time >= 5) {
-        begin_time = time_now; // Réinitialiser le temps
-        actionPerformed = false; // Réinitialiser le drapeau
-        currentRandomHeight = null; // Réinitialiser la position
+    if (diff_time >= 8) {
+        begin_time = time_now;
+        actionPerformed = false;
+        currentRandomHeight = null;
         return false;
     }
 
-    if (diff_time >= 2) {
-        return true; // Indique qu'une image doit être affichée
+    if (diff_time >= 1) {
+        return true; // time where you can draw 
     }
 
     return false;
@@ -148,23 +148,25 @@ function gameLoop() {
 
     score.draw();
 
-    // Générer une position unique si diff_time >= 2
+    // rand pos unique si diff time > 2
     if (check_time()) {
         if (!actionPerformed) {
-            currentRandomHeight = boost.getRandomPosition(); // Génère une position unique
+            currentRandomHeight = boost.getRandomPosition(); // find unique pos with the height of canvas
             console.log("Random height generated:", currentRandomHeight);
-            actionPerformed = true; // Empêche une nouvelle génération jusqu'à un reset
+            actionPerformed = true;
         }
-        boost.draw(ctx, canvas.height, currentRandomHeight); // Affiche à la position unique
+        boost.draw(ctx, canvas.height, currentRandomHeight); 
     }
 
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer2();
         ball.resetPosition(1);
+        begin_time = Date.now();
     }
     if (ball.x + ball.radius >= canvas.width) {
         score.incrementPlayer1();
         ball.resetPosition(2);
+        begin_time = Date.now();
     }
 
     requestAnimationFrame(gameLoop);

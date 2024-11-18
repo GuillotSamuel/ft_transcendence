@@ -1,5 +1,6 @@
 export class imagePNG {
-    constructor(x, y, width, height, imagePath, onImageLoadCallback) {
+    constructor(name, x, y, width, height, imagePath, onImageLoadCallback) {
+        this.name = name;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -17,20 +18,22 @@ export class imagePNG {
         };
     }
 
-
+    getName(){
+        return this.name;
+    }
     getRandomPosition() {
         const pos = [100, 200 , 300, 400, 500];
         const randomIndex = Math.floor(Math.random() * pos.length);
         return pos[randomIndex];
     }
 
-    draw(ctx, y, randomValue) {
+    draw(ctx, heightCanvas, randomValue) {
 
         if (this.imageLoaded && randomValue != 0) {
             ctx.drawImage(
                 this.image,
                 this.x - this.width / 2,
-                (y - randomValue) - this.height / 2,
+                (heightCanvas - randomValue) - this.height / 2,
                 this.width,
                 this.height
             );

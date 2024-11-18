@@ -1,4 +1,4 @@
-import { imagePNG } from "./mushroom.js";
+import { imagePNG } from "./imagePNG.js";
 
 export function createBoostPNG(Name, canvas) {
 
@@ -6,6 +6,7 @@ export function createBoostPNG(Name, canvas) {
 
     if (Name == "Fat"){
         boostPNG = new imagePNG (
+            "Fat",
             canvas.width / 2,
             canvas.height / 2,
             80, // Largeur du champignon
@@ -15,6 +16,7 @@ export function createBoostPNG(Name, canvas) {
     }
     else if (Name == "Skinny"){
         boostPNG = new imagePNG (
+            "Skinny",
             canvas.width / 2,
             canvas.height / 2,
             80, // Largeur du champignon
@@ -24,6 +26,7 @@ export function createBoostPNG(Name, canvas) {
     }
     else{
         boostPNG = new imagePNG (
+            "default",
             canvas.width / 2,
             canvas.height / 2,
             80, // Largeur du champignon
