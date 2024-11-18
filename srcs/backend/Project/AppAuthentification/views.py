@@ -171,9 +171,12 @@ def infosUser(request):
 @permission_classes([IsAuthenticated])
 def changePassword(request):
     user = request.user
-    new_password = request.data.get("password")
-    if not new_password:
-        return Response({"error": "Password is required."}, status=status.HTTP_400_BAD_REQUEST)
-    user.set_password(new_password)
+    oldPwd = request.data.get("oldPwd")
+    newPwd = request.data.get("newPwd")
+    if not oldPwd or not newPwd:
+        return Response({"error": "Both old password and new password are required."}, status=status.HTTP_400_BAD_REQUEST)
+    if not user.check_password(oldPwd):
+        return Response({"error": "Old password is incorrect."}, status=status.HTTP_400_BAD_REQUEST)
+    user.set_password(newPwd)
     user.save()
     return Response({"message": "Password change successful!"}, status=status.HTTP_200_OK)

@@ -363,31 +363,24 @@ async function deleteAccount() {
 
 async function changePassword() {
     const oldPwd = document.getElementById('current-password').value;
-    const changePwd = document.getElementById('new-password-change').value;
+    const newPwd = document.getElementById('new-password-change').value;
     const confirmChangePwd = document.getElementById('confirm-password-change').value;
 
-    if (changePwd != confirmChangePwd) {
+    if (newPwd != confirmChangePwd) {
         alert('Passwords are not matching !');
         return;
     }
 
-    if (changePwd == oldPwd) {
-        alert('The current password and the new password are the same !');
-        return;
-    }
-
-    if (!isPasswordSecure(changePwd)) {
+    if (!isPasswordSecure(newPwd)) {
         alert('Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.');
         return;
     }
-
-    const password = changePwd;
 
     try {
         const response = await fetch('/api/changePassword/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password }),
+            body: JSON.stringify({oldPwd, newPwd}),
             credentials: 'include'
         });
 
