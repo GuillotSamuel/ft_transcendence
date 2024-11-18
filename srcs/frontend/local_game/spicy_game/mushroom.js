@@ -1,5 +1,5 @@
-export class Mushroom {
-    constructor(x, y, width, height, imagePath) {
+export class imagePNG {
+    constructor(x, y, width, height, imagePath, onImageLoadCallback) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -11,8 +11,12 @@ export class Mushroom {
         this.imageLoaded = false;
         this.image.onload = () => {
             this.imageLoaded = true;
+            if (onImageLoadCallback) {
+                onImageLoadCallback(); // Appeler le callback lorsque l'image est prête
+            }
         };
     }
+
 
     draw(ctx) {
         if (this.imageLoaded) {
@@ -23,8 +27,6 @@ export class Mushroom {
                 this.width,
                 this.height
             );
-        } else {
-            console.warn("Image not loaded yet: ", this.image.src);
         }
     }
 }

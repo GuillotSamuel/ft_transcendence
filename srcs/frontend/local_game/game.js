@@ -2,7 +2,7 @@ import { Ball } from "./ball.js";
 import { Paddle } from "./paddle.js";
 import { Score } from "./score.js";
 import { resetLocal } from './gameManager.js';
-import { Mushroom } from "./mushroom.js"; // Import de la classe Mushroom
+import { createBoostPNG } from "./spicy_game/managePNG.js";
 
 let canvas, ctx;
 let gameRunning = false;
@@ -28,13 +28,7 @@ function initializeGame() {
     score = new Score(canvas, ctx);
 
     // Initialisation du champignon au centre
-    mushroom = new Mushroom(
-        canvas.width / 2,
-        canvas.height / 2,
-        80, // Largeur du champignon
-        80, // Hauteur du champignon
-        "./local_game/fat_mushroom.png" // Chemin vers l'image
-    );
+    mushroom = createBoostPNG("Skinny", canvas);
 
     // Écouteurs d'événements
     document.addEventListener("keydown", keyDownHandler);
