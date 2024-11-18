@@ -3,6 +3,7 @@
 import { Ball } from "./ball.js";
 import { Paddle } from "./paddle.js";
 import { Score } from "./score.js";
+import { resetLocal} from './gameManager.js';
 
 let canvas, ctx;
 let gameRunning = false;
@@ -74,6 +75,11 @@ export function startGame() {
 export function stopGame() {
     gameRunning = false;
 
+    if (!ctx || !canvas) {
+        console.warn("Canvas or context not initialized. Skipping cleanup.");
+        return;
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Determine who won and set message color
@@ -89,24 +95,30 @@ export function stopGame() {
         ctx.fillStyle = "#FFFFFF"; // White for a draw
     }
 
-    // Display the winner message
-    ctx.font = "bold 60px 'Press Start 2P', cursive";
-    ctx.textAlign = "center";
-    ctx.fillText(winnerMessage, canvas.width / 2, canvas.height / 2);
+    if (ctx){
+        // Display the winner message
+        ctx.font = "bold 60px 'Press Start 2P', cursive";
+        ctx.textAlign = "center";
+        ctx.fillText(winnerMessage, canvas.width / 2, canvas.height / 2);
 
-    // Display instructions to restart the game
-    ctx.font = "bold 30px 'Press Start 2P', cursive";
-    ctx.fillStyle = "#FFFFFF"; // White for instructions
-    ctx.fillText("Press 'Start' to play again", canvas.width / 2, canvas.height / 2 + 50);
-
-    // Reset the score for the next game
-    score.resetScore();
+        // Display instructions to restart the game
+        ctx.font = "bold 30px 'Press Start 2P', cursive";
+        ctx.fillStyle = "#FFFFFF"; // White for instructions
+        ctx.fillText("Press 'Start' to play again", canvas.width / 2, canvas.height / 2 + 50);
+    }
+    
+    if (score){
+        // Reset the score for the next game
+        score.resetScore();
+    }
+    
 
     // Remove event listeners to prevent further input
     document.removeEventListener("keydown", keyDownHandler);
     document.removeEventListener("keyup", keyUpHandler);
-}
 
+    resetLocal();
+}
 
 
 function gameLoop() {
