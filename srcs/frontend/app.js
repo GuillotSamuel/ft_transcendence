@@ -1,3 +1,4 @@
+import { startRemoteGame } from './remote_game/websocket.js';
 import { startLocalGame } from './local_game/gameManager.js';
 
 const routes = {
@@ -212,6 +213,11 @@ const routes = {
                         </div>
                         <!-- Buttons for Local and Remote Game -->
                         <div class="d-flex justify-content-center gap-3 mt-4" id="gameButtonDisplay"></div>
+                        
+                        <!-- Messages from the WebSocket -->
+                        <div id="gameMessageDisplay" class="mt-4 p-3 bg-light rounded shadow-sm">
+                            <!-- Messages will be dynamically appended here -->
+                        </div>
                     </div>
                 </div>
             </section>
@@ -231,6 +237,7 @@ window.validateOTP = validateOTP;
 window.changePassword = changePassword;
 window.connexionOTP = connexionOTP;
 window.deleteAccount = deleteAccount;
+window.startRemoteGame = startRemoteGame;
 
 
 /* Utils */
@@ -656,7 +663,8 @@ async function manageDisplayGame() {
     } else {
         gameButtonDisplay.innerHTML = `
             <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
-        `;
+            <button class="btn btn-info btn-lg" onclick="startRemoteGame()" data-translate="game-remote-button"></button>
+            `;
     }
 }
 
