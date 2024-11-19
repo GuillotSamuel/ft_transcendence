@@ -138,10 +138,10 @@ function check_time()
     return false;
 }
 
-check_ball_and_bonus(ball, (canvas.width / 2), currentRandomHeight )
-{
+// check_ball_and_bonus(ball, (canvas.width / 2), currentRandomHeight )
+// {
 
-}
+// }
 
 function gameLoop()
 {
@@ -152,7 +152,7 @@ function gameLoop()
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
 
-    check_ball_and_bonus(ball, (canvas.width / 2), currentRandomHeight )
+    //check_ball_and_bonus(ball, (canvas.width / 2), currentRandomHeight )
 
     if (ball.getLastPaddleTouch() === "right") {
     console.log("The last paddle to touch the ball was the right paddle.");
