@@ -11,13 +11,25 @@ html, body {
 #app {
     padding-top: 80px;
     flex-grow: 1;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .content {
     padding: 20px;
 }
 
-footer {
-    
+#language-selector {
+    margin-top: 8px;
+    background-color: #212529;
+    color: white;
+}
+
+footer a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+footer a:hover {
+    color: #0d6efd;
 }

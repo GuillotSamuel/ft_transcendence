@@ -12,7 +12,7 @@ prepare_directories:
 	@sudo mkdir -p $(HOME)/data/db
 	@sudo mkdir -p $(HOME)/data/static
 	@sudo mkdir -p $(HOME)/data/media
-	@sudo chown -R $(USER):staff $(HOME)/data
+	@sudo chown -R $(USER):$(USER) $(HOME)/data
 	@sudo chmod -R 755 $(HOME)/data
 
 build: # prepare_directories
@@ -69,5 +69,9 @@ shellDjango:
 	@echo "$(YELLOW)Accessing the shell of the Django container...$(NC)"
 	docker-compose -f $(COMPOSE_FILE) exec django sh
 
+shellNginx:
+	@echo "$(YELLOW)Accessing the shell of the Nginx container...$(NC)"
+	docker-compose -f $(COMPOSE_FILE) exec nginx sh
 
-.PHONY: all prepare_directories build up down stop restart re logs status remove prune shellPostgreSQL shellDjango
+
+.PHONY: all prepare_directories build up down stop restart re logs status remove prune shellPostgreSQL shellDjango shellNginx
