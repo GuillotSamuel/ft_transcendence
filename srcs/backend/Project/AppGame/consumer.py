@@ -18,8 +18,9 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.group_name,
             {
-                'type': 'match_started', 
-                'message': message
+                'type': 'send_event',
+                'event_name': 'PRINTFORUSER',
+                'data': message
             }
         )
         await self.accept()
@@ -29,7 +30,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json.get('message')
+        direction = text_data_json.get('direction')
+
 
     @database_sync_to_async
     def get_user_match(self):
@@ -55,8 +57,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             return user
         except (InvalidToken, TokenError):
             return None
-
-    async def match_started(self, event):
+        
+    async def send_event(self, event):
+        event_name = event.get("event_name")
+        data = event.get("data")
         await self.send(text_data=json.dumps({
-            'message': event['message']
+            'event': event_name,
+            'data': data
         }))
