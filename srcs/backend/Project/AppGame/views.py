@@ -12,20 +12,20 @@ from AppAuthentification.check import JWTCookieAuthentication
 def manageMatch(request):
     user = request.user
     if user.matches_player1.exists() or user.matches_player2.exists():
-        return Response({"message": "You are already in a match"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "You already are in a match"}, status=status.HTTP_400_BAD_REQUEST)
 
     matchs = Match.objects.filter(status=1)
 
     if matchs.exists():
         match = matchs.first()
-        match.player2 = request.user
+        match.player2 = user
         match.status = 2
         match.save()
         return Response({"message": "match join"}, status=status.HTTP_200_OK)
 
     newMatch = Match.objects.create(
-        player1=request.user,
-        status=1
+        player1 = user,
+        status = 1
     )
     newMatch.save()
     return Response({"message": "match create"}, status=status.HTTP_200_OK)
