@@ -72,9 +72,10 @@ export class Ball
             this.speedY = -this.speedY;
         }
     }
-    
+
     // Static sleep function to create a delay
-    static sleep(ms) {
+    static sleep(ms)
+    {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 

@@ -7,7 +7,7 @@ import { createBoostPNG } from "./spicy_game/managePNG.js";
 let canvas, ctx;
 let gameRunning = false;
 
-let ball, leftPaddle, rightPaddle, score, boost, begin_time;
+let ball, leftPaddle, rightPaddle, score, imageBoost, begin_time;
 
 let leftPaddleUp = false;
 let leftPaddleDown = false;
@@ -22,8 +22,8 @@ function initializeGame()
     // Sélection du canvas
     canvas = document.getElementById("pong-canvas");
     ctx = canvas.getContext("2d");
-    canvas.width = 800;
-    canvas.height = 600;
+    canvas.width = 600;
+    canvas.height = 400;
 
     // Initialisation des objets de jeu
     ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 2, 2);
@@ -32,7 +32,7 @@ function initializeGame()
     score = new Score(canvas, ctx);
 
     // Initialisation du champignon au centre
-    boost = createBoostPNG("Skinny", canvas);
+    imageBoost = createBoostPNG("Skinny", canvas);
 
     // Écouteurs d'événements
     document.addEventListener("keydown", keyDownHandler);
@@ -138,10 +138,27 @@ function check_time()
     return false;
 }
 
-// check_ball_and_bonus(ball, (canvas.width / 2), currentRandomHeight )
-// {
+function check_ball_and_bonus(ball, imageBoost)
+{
+    console.log("pos x= ", ball.x);
+    console.log("pos y= ", ball.y);
 
-// }
+    console.log("draw y = ", imageBoost.drawY);
+    console.log("draw x = ", imageBoost.drawX);
+    let y = imageBoost.drawY;
+    let x = imageBoost.drawX;
+    let hauteur = imageBoost.drawY + imageBoost.height;
+    let largeur = imageBoost.drawX + imageBoost.width;
+
+    console.log("hauteur y = ", hauteur);
+    console.log("largeur x = ", largeur);
+    let xball = ball.x + ball.radius; 
+    let yball = ball.y + ball.radius;
+    if ( (xball >= x && xball <= largeur) && (yball >= y && yball <= hauteur)) {
+        console.log("CA TOUUCHE");
+    }
+
+}
 
 function gameLoop()
 {
@@ -152,7 +169,7 @@ function gameLoop()
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
 
-    //check_ball_and_bonus(ball, (canvas.width / 2), currentRandomHeight )
+    check_ball_and_bonus(ball, imageBoost);
 
     if (ball.getLastPaddleTouch() === "right") {
     console.log("The last paddle to touch the ball was the right paddle.");
@@ -173,11 +190,11 @@ function gameLoop()
     // rand pos unique si diff time > 2
     if (check_time()) {
         if (!actionPerformed) {
-            currentRandomHeight = boost.getRandomPosition(); // find unique pos with the height of canvas
+            currentRandomHeight = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
             console.log("Random height generated:", currentRandomHeight);
             actionPerformed = true;
         }
-        boost.draw(ctx, canvas.height, currentRandomHeight); 
+        imageBoost.draw(ctx, canvas.height, currentRandomHeight); 
     }
 
     if (ball.x - ball.radius <= 0) {

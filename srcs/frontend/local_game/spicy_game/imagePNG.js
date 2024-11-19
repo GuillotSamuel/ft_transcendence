@@ -8,6 +8,8 @@ export class imagePNG
         this.height = height;
         this.image = new Image();
         this.image.src = imagePath;
+        this.drawY = 0;
+        this.drawX = 0;
 
         // Ajouter un indicateur pour vérifier si l'image est chargée
         this.imageLoaded = false;
@@ -25,19 +27,20 @@ export class imagePNG
     }
     getRandomPosition() 
     {
-        const pos = [100, 200 , 300, 400, 500];
+        const pos = [50, 100, 150, 200, 250, 300];
         const randomIndex = Math.floor(Math.random() * pos.length);
         return pos[randomIndex];
     }
 
     draw(ctx, heightCanvas, randomValue)
     {
-
+        this.drawY = (heightCanvas - randomValue) - this.height / 2;
+        this.drawX = this.x - this.width / 2; // Start draw image, moins la moite de la largeur de l'image.
         if (this.imageLoaded && randomValue != 0) {
             ctx.drawImage(
                 this.image,
-                this.x - this.width / 2,
-                (heightCanvas - randomValue) - this.height / 2,
+                this.drawX,
+                this.drawY,
                 this.width,
                 this.height
             );
