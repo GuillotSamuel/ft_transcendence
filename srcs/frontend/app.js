@@ -665,14 +665,23 @@ async function navigate() {
     const hash = window.location.hash.substring(1);
     const route = routes[hash];
 
+    const isConnected = await checkAuthentication();
+
     if ((hash !== 'home' && hash !== 'connexion'
         && hash !== 'connexion2FA' && hash !== 'registration'
         && hash !== 'registrationSuccess' && hash !== 'game'
         && hash !== '')
-        && !(await checkAuthentication())) {
+        && !isConnected) {
         location.hash = '#connexion';
         return;
     }
+
+    if ((hash === 'connexion' || hash === 'connexion2FA'
+        || hash == 'regitration' || hash == 'registrationSuccess')
+        && isConnected) {
+            location.hash = '#home';
+            return;
+        }
 
     const appDiv = document.getElementById('app');
     if (route) {
