@@ -14,8 +14,8 @@ _To complete..._
 
 ### Major modules
 1. Use a Framework to build the backend OK
-2. Standard user management, authentication, users across tournaments ?
-3. Implementing a remote authentication sguillot
+2. Standard user management, authentication, users across tournaments tburtin sguillot
+3. Implementing a remote authentication tburtin sguillot
 4. Implement Two-Factor Authentication (2FA) and JWT OK
 5. Remote players tburtin emauduit
 6. Replacing Basic Pong with Server-Side Pong and Implementing an API tburtin emauduit
@@ -23,7 +23,7 @@ _To complete..._
 ### Minor modules
 1. Use a framework or a toolkit to build the frontend OK
 2. Use a database for the backend OK
-3. GDPRComplianceOptionswithUserAnonymization, Local Data Management, and Account Deletion 
+3. GDPRComplianceOptionswithUserAnonymization, Local Data Management, and Account Deletion tburtin sguillot
 4. Multiple language supports OK
 5. Add accessibility for Visually Impaired Users OK
 6. Support on all devices sguillot

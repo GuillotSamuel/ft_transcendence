@@ -899,6 +899,7 @@ async function addingFriend() {
         if (response.ok) {
             const data = await response.json();
             if (data.detail === 'yes') {
+                document.getElementById('friend-username-input').value = '';
                 listFriend();
             } else {
                 alert(data.detail);
@@ -944,17 +945,22 @@ async function displayFriendsInfos(friends) {
 
     friends.forEach(friend => {
         const friendItem = document.createElement('div');
-        friendItem.classList.add('friend-item');
-        friendItem.setAttribute('data-username', friend);
-        // friendItem.textContent = `${friend.username} - ${friend.isConnected ? 'Online' : 'Offline'} - ${friend.isPlaying ? 'Playing' : 'Idle'}`;
-        friendItem.textContent = friend;
+        friendItem.classList.add('card', 'mb-3');
+
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body', 'd-flex', 'justify-content-between', 'align-items-center');
+
+        const friendName = document.createElement('span');
+        friendName.textContent = friend;
+        cardBody.appendChild(friendName);
 
         const removeButton = document.createElement('button');
         removeButton.classList.add('btn', 'btn-danger');
         removeButton.textContent = 'Remove Friend';
         removeButton.onclick = () => removeFriend(friend);
+        cardBody.appendChild(removeButton);
 
-        friendItem.appendChild(removeButton);
+        friendItem.appendChild(cardBody);
 
         friendList.appendChild(friendItem);
     });
