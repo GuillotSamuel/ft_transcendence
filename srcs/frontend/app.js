@@ -900,17 +900,42 @@ async function addingFriend() {
             const data = await response.json();
             if (data.detail === 'yes') {
                 alert(`${friend_id} has been added successfully.`);
-                // location.reload();
                 return;
             } else {
-                alert(f`${data.detail}`);
+                alert(data.detail);
             }
         } else {
-            alert('Failed to add friend. Please try again.');
+            const errorData = await response.json();
+            alert(errorData.detail || 'Failed to add friend. Please try again.');
         }
     } catch (error) {
         console.error("Adding friend failed:", error);
         alert('Network error: Unable to add friend.');
+    }
+}
+
+async function removeFriend(friendUserName) {
+    try {
+        const response = await fetch('/api/removeFriend/', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ friend: friendUserName }),
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.AddingFriend === 'yes') {
+                alert(`${friendUserName} has been removed successfully.`);
+            } else {
+                alert(`${friendUserName} not found.`);
+            }
+        } else {
+            alert('Failed to remove friend. Please try again.');
+        }
+    } catch (error) {
+        console.error("Removing friend failed:", error);
+        alert('Network error: Unable to remove friend.');
     }
 }
 

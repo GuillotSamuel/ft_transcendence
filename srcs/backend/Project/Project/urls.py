@@ -15,7 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from AppAuthentification.views import register, changePassword, infosUser, deleteUser, login, logout, enable2FA, confirm2FA, login2FA, is2FAactivate, isUserAuthentified, disable2FA, addFriend, listFriends
+from AppAuthentification.views import (
+    register,
+    changePassword,
+    infosUser,
+    deleteUser,
+    login,
+    logout,
+    enable2FA,
+    confirm2FA,
+    login2FA,
+    is2FAactivate,
+    isUserAuthentified,
+    disable2FA,
+    addFriend,
+    listFriends,
+    removeFriend
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,4 +52,6 @@ urlpatterns = [
     #Friends
     path('api/addFriend/', addFriend),
     path('api/listFriends/', listFriends),
+    path('api/removeFriend/', removeFriend),
+    
 ]
