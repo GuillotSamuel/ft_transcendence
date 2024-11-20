@@ -256,6 +256,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         event_name = event.get("event_name")
         data = event.get("data")
         await self.send(text_data=json.dumps({
-            'event': event_name,
+            'event_name': event_name,
             'data': data
         }))

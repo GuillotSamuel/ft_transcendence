@@ -35,5 +35,5 @@ urlpatterns = [
     path('api/infosUser/', infosUser),
     path('api/changePassword/', changePassword),
     #Match
-     path('api/manageMatch/', manageMatch),
+    path('api/manageMatch/', manageMatch),
 ]

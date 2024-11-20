@@ -787,8 +787,6 @@ async function manageDisplayAuth() {
     }
 }
 
-
-
 /* Event listener */
 
 window.addEventListener('load', async () => {
