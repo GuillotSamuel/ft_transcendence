@@ -42,7 +42,11 @@ class GameState:
                 "data": {
                     'uuid': str(self.match_uuid),
                     'p1_score': self.player1_score,
-                    'p2_score': self.player2_score
+                    'p2_score': self.player2_score,
+                    'b_x': self.ball_x,
+                    'b_y': self.ball_y,
+                    "p1_pos": self.paddle1_y,
+                    "p2_pos": self.paddle2_y,
                 }
             }
         )
@@ -80,6 +84,8 @@ class GameState:
                 "p2_pos": self.paddle2_y,
                 "b_x": self.ball_x,
                 "b_y": self.ball_y,
+                'p1_score': self.player1_score,
+                'p2_score': self.player2_score
             }
 
             await self.channel_layer.group_send(

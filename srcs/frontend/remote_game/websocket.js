@@ -1,4 +1,4 @@
-import {draw_ball, draw_paddle} from './draw.js';
+import {draw_ball, draw_paddle, draw_score} from './draw.js';
 
 let websocket = null; // Variable globale pour gérer la connexion WebSocket
 
@@ -59,46 +59,79 @@ export async function startRemoteGame() {
 
 function handleWebSocketMessage(event) {
     try {
+        // Parse le message WebSocket
         const data = JSON.parse(event.data);
         console.log("Message reçu via WebSocket :", data);
 
+        // Vérifie si le message contient un `event_name`
         if (!data.event_name) {
             console.warn("Message mal formé reçu :", data);
             return;
         }
 
+        // Gestion des différents événements
         switch (data.event_name) {
             case 'PRINTFORUSER':
-                console.log("PRINTFORUSER: Message reçu :", data.data);
-                drawMessageOnCanvas(data.data);
+                handlePrintForUser(data.data);
                 break;
+
             case 'GAME_STATE_UPDATE':
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                // balle y,x et paddle1 y, paddle2 y
-                console.log("Game state update: Message reçu :", data.data);
-                console.log("player 1 pos:", data.data.p1_pos);
-                console.log("player 2 pos:", data.data.p2_pos);
-                console.log("balle pos x:", data.data.b_x);
-                console.log("balle pos y:", data.data.b_y);
-
-                draw_ball(ctx, data.data.b_x, data.data.b_y, 10);
-                draw_paddle(ctx, 10, data.data.p1_pos);
-                draw_paddle(ctx, (canvas.width - 20), data.data.p2_pos);
-
+                handleGameStateUpdate(data.data);
                 break;
+
             case 'GAME_START':
-                console.log("GAME_START: Message reçu :", data.data);
+                handleGameStart(data.data);
                 break;
-            case 'GAME_SCORE_UPDATE':
-                //p1 score, p2 score
-                console.log("GAME_START: Message reçu :", data.data);
-                break;
+
             default:
                 console.warn("Type de message inconnu :", data.event_name);
         }
     } catch (error) {
         console.error("Erreur lors du traitement du message WebSocket :", error, event.data);
     }
+}
+
+function handlePrintForUser(message) {
+    console.log("PRINTFORUSER: Message reçu :", message);
+    drawMessageOnCanvas(message);
+}
+
+
+function handleGameStart(state) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface le canvas
+
+    const { b_x, b_y, p1_pos, p2_pos, p1_score, p2_score } = state;
+
+    console.log("GAME_START: Initialisation du jeu avec :", state);
+
+    // Dessiner la balle
+    draw_ball(ctx, b_x, b_y, 10);
+
+    // Dessiner les paddles
+    draw_paddle(ctx, 10, p1_pos); // Paddle gauche
+    draw_paddle(ctx, canvas.width - 20, p2_pos); // Paddle droite
+
+    // Dessiner les scores
+    draw_score(canvas, ctx, p1_score, p2_score);
+}
+
+
+function handleGameStateUpdate(state) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface le canvas
+
+    const { b_x, b_y, p1_pos, p2_pos, p1_score, p2_score } = state;
+
+    console.log("Game state update: ", state);
+
+    // Dessiner la balle
+    draw_ball(ctx, b_x, b_y, 10);
+
+    // Dessiner les paddles
+    draw_paddle(ctx, 10, p1_pos); // Paddle gauche
+    draw_paddle(ctx, canvas.width - 20, p2_pos); // Paddle droite
+
+    // Mettre à jour les scores
+    draw_score(canvas, ctx, p1_score, p2_score);
 }
 
 
@@ -115,11 +148,11 @@ function handleWebSocketMessage(event) {
 document.addEventListener('keydown', (event) => {
     switch (event.key) {
         case 'ArrowUp':
-            sendPlayerDirection(1); // Envoie la direction "haut"
+            sendPlayerDirection(-1); // Envoie la direction "haut"
             event.preventDefault(); // Empêche le comportement par défaut
             break;
         case 'ArrowDown':
-            sendPlayerDirection(-1); // Envoie la direction "bas"
+            sendPlayerDirection(1); // Envoie la direction "bas"
             event.preventDefault(); // Empêche le comportement par défaut
             break;
     }
