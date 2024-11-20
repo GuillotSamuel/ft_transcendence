@@ -4,6 +4,8 @@
     "game-navbar-button": "Jeu",
     "connexion-navbar-button": "Connexion",
     "registration-navbar-button": "Inscription",
+    "friends-navbar-button": "Amis",
+    "statsHistory-navbar-button": "Statistiques",
     "profile-navbar-button": "Profil",
     "logout-navbar-button": "Déconnexion",
 
@@ -12,10 +14,12 @@
     "game-footer-button": "Jeu",
     "connexion-footer-button": "Connexion",
     "registration-footer-button": "Inscription",
+    "friend-footer-button": "Amis",
+    "statsHistory-footer-button": "Statistiques",
     "profile-footer-button": "Profil",
     "logout-footer-button": "Déconnexion",
-    "about-footer-title": "À propos de nous",
-    "about-footer-text": "Ce projet a été créé pour le projet Transcendence à l'école 42. Jouez et profitez du jeu avec les autres !",
+    "about-footer-title": "À propos",
+    "about-footer-text": "Ce projet a été créé pour le projet Transcendance à l'école 42. Jouez et profitez du jeu avec d'autres !",
     "sourceCode-footer-link": "Code source du projet",
     "followUs-footer-title": "Suivez-nous",
     "elouan-footer-link": "Elouan Mauduit",
@@ -23,16 +27,16 @@
     "thomas-footer-link": "Thomas Burtin",
     "legalMentions-footer-text": "© 2024 Jeu Pong en ligne. Tous droits réservés.",
 
-    "welcome-home-title": "Bienvenue sur Jeu Pong en ligne !",
+    "welcome-home-title": "Bienvenue dans le Jeu Pong en ligne !",
     "presentation-home-text": "Jouez contre vos amis ou des adversaires aléatoires en ligne. Prêt à commencer ?",
     "startGame-home-button": "Commencer le jeu",
 
-    "login-connexion-title": "Connexion à votre compte",
+    "login-connexion-title": "Connectez-vous à votre compte",
     "username-connexion-label": "Nom d'utilisateur",
     "password-connexion-label": "Mot de passe",
     "login-connexion-button": "Se connecter",
-    "signUp-connexion-text": "Vous n'avez pas de compte ?",
-    "signUp-connexion-link": "Inscription",
+    "signUp-connexion-text": "Pas de compte ?",
+    "signUp-connexion-link": "Inscrivez-vous",
 
     "2fa-connexion2fa-title": "Connexion 2FA",
     "enterOtp-connexion2fa-label": "Entrez le code OTP :",
@@ -52,11 +56,11 @@
     "connexion-registrationSuccess-button": "Connexion",
 
     "title-profile-title": "Votre Profil",
-    "username-profile-text": "Nom d'utilisateur : ",
-    "email-profile-text": "Email : ",
-    "2fa-profile-text": "2FA activé : ",
+    "username-profile-text": "Nom d'utilisateur :  ",
+    "email-profile-text": "Email :  ",
+    "2fa-profile-text": "2FA activé :  ",
     "edit-profile-button": "Modifier le profil",
-    "logOut-profile-button": "Se déconnecter",
+    "logOut-profile-button": "Déconnexion",
 
     "title-editPage-title": "Modifier votre profil",
     "currentPassword-editPage-label": "Mot de passe actuel",
@@ -66,7 +70,7 @@
     "2fa-editPage-title": "Authentification à deux facteurs (2FA)",
     "enableDisable-editPage-text": "Activez ou désactivez l'authentification à deux facteurs pour plus de sécurité.",
     "delete-editPage-title": "Supprimer le compte",
-    "delete-editPage-text": "Si vous voulez supprimer définitivement votre compte, cliquez sur le bouton ci-dessous. Cette action est irréversible.",
+    "delete-editPage-text": "Si vous souhaitez supprimer définitivement votre compte, cliquez sur le bouton ci-dessous. Cette action est irréversible.",
     "delete-profile-button": "Supprimer mon compte",
 
     "title-deleteAccount-title": "Confirmation de suppression du compte",
@@ -79,8 +83,17 @@
     "validateCode-confirm2FA-button": "Valider le code OTP",
 
     "title-game-title": "Jouer à Pong !",
-    "presentation-game-text": "Défiez un ami ou un adversaire aléatoire et commencez votre partie !",
+    "presentation-game-text": "Affrontez un ami ou un adversaire aléatoire et commencez votre jeu !",
 
     "game-local-button": "Jeu local",
-    "game-remote-button": "Jeu à distance"
+    "game-remote-button": "Jeu à distance",
+
+    "title-friend-title": "Amis",
+    "adding-friend-title": "Ajouter des amis",
+    "adding-friend-button": "Valider l'ajout",
+    "list-friend-title": "Liste des amis",
+
+    "title-statsHistory-title": "Statistiques et historique des jeux",
+    "stats-statsHistory-title": "Statistiques",
+    "history-statsHistory-title": "Historique"
 }

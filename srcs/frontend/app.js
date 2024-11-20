@@ -222,6 +222,45 @@ const routes = {
                 </div>
             </section>
         `
+    },
+    friend: {
+        template: `
+            <section id="friend" class="container mt-5 pt-5">
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <h2 class="display-1 text-gradient fw-bold arcade-text mb-4" data-translate="title-friend-title"></h2>
+                        <div class="card p-4 mb-4 bg-light">
+                            <div class="card-body">
+                                <h3 class="mb-3" data-translate="adding-friend-title"></h3>
+                                <input type="text" id="friend-username-input" class="form-control mb-3" placeholder="Enter friend's username">
+                                <button id="add-friend-button" class="btn btn-primary" onclick="addingFriend()" data-translate="adding-friend-button"></button>
+                            </div>
+                        </div>
+                        <h3 class="mb-3" data-translate="list-friend-title"></h3>
+                        <div id="friend-list"></div>
+                    </div>
+                </div>
+            </section>
+        `
+    },
+    statsHistory: {
+        template: `
+            <section id="statsHistory" class="container mt-5 pt-5">
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <h2 class="display-1 text-gradient fw-bold arcade-text mb-4" data-translate="title-statsHistory-title"></h2>
+                        <div class="card p-4 mb-4 bg-light">
+                            <div class="card-body">
+                                <h3 class="mb-3" data-translate="stats-statsHistory-title"></h3>
+                                <div id="user-stats"></div>
+                            </div>
+                        </div>
+                        <h3 class="mb-3" data-translate="history-statsHistory-title"></h3>
+                        <div id="user-history"></div>
+                    </div>
+                </div>
+            </section>
+        `
     }
 };
 
@@ -724,6 +763,12 @@ async function manageDisplayAuth() {
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                    <a class="nav-link" href="#friend" data-translate="friends-navbar-button"></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#statsHistory" data-translate="statsHistory-navbar-button"></a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#profile" data-translate="profile-navbar-button"></a>
                 </li>
@@ -745,6 +790,8 @@ async function manageDisplayAuth() {
         navFooter.innerHTML = `
             <li><a href="#home" data-translate="home-footer-button"></a></li>
             <li><a href="#game" data-translate="game-footer-button"></a></li>
+            <li><a href="#friend" data-translate="friend-footer-button"></a></li>
+            <li><a href="#statsHistory" data-translate="statsHistory-footer-button"></a></li>
             <li><a href="#profile" data-translate="profile-footer-button"></a></li>
             <li><a onclick="disconnectUser()" data-translate="logout-footer-button"></a></li>
         `;

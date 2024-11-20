@@ -4,6 +4,8 @@
     "game-navbar-button": "Game",
     "connexion-navbar-button": "Connexion",
     "registration-navbar-button": "Sign up",
+    "friends-navbar-button": "Friends",
+    "statsHistory-navbar-button": "Stats",
     "profile-navbar-button": "Profile",
     "logout-navbar-button": "Logout",
 
@@ -12,6 +14,8 @@
     "game-footer-button": "Game",
     "connexion-footer-button": "Connexion",
     "registration-footer-button": "Sign up",
+    "friend-footer-button": "Friends",
+    "statsHistory-footer-button": "Stats",
     "profile-footer-button": "Profile",
     "logout-footer-button": "Logout",
     "about-footer-title": "About Us",
@@ -82,5 +86,14 @@
     "presentation-game-text": "Challenge a friend or a random opponent and start your game!",
 
     "game-local-button": "Local Game",
-    "game-remote-button": "Remote Game"
+    "game-remote-button": "Remote Game",
+
+    "title-friend-title": "Friends",
+    "adding-friend-title": "Adding friends",
+    "adding-friend-button": "Validate input",
+    "list-friend-title": "Friends list",
+
+    "title-statsHistory-title": "Games stats and history",
+    "stats-statsHistory-title": "Stats",
+    "history-statsHistory-title": "History"
 }
