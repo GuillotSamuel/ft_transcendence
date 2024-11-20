@@ -277,6 +277,7 @@ window.changePassword = changePassword;
 window.connexionOTP = connexionOTP;
 window.deleteAccount = deleteAccount;
 window.startRemoteGame = startRemoteGame;
+window.addingFriend = addingFriend;
 
 
 /* Utils */
@@ -742,6 +743,10 @@ async function navigate() {
         appDiv.innerHTML = route.template;
         await manageDisplayGame();
     }
+    if (hash === 'friend') {
+        appDiv.innerHTML = route.template;
+        await listFriend();
+    }
 }
 
 async function manageDisplayAuth() {
@@ -872,3 +877,83 @@ window.addEventListener('hashchange', async () => {
     }
     changeLanguage(savedLanguage);
 });
+
+/* Friends */
+
+async function addingFriend() {
+    const friend_id = document.getElementById('friend-username-input').value;
+
+    if (!friend_id) {
+        alert('Please enter a username.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/addFriend/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ friend_id }),
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.detail === 'yes') {
+                alert(`${friend_id} has been added successfully.`);
+                // location.reload();
+                return;
+            } else {
+                alert(f`${data.detail}`);
+            }
+        } else {
+            alert('Failed to add friend. Please try again.');
+        }
+    } catch (error) {
+        console.error("Adding friend failed:", error);
+        alert('Network error: Unable to add friend.');
+    }
+}
+
+async function displayFriendsInfos(friends) {
+    const friendList = document.getElementById('friend-list');
+    friendList.innerHTML = '';
+
+    friends.forEach(friend => {
+        const friendItem = document.createElement('div');
+        friendItem.classList.add('friend-item');
+        friendItem.setAttribute('data-username', friend);
+        // friendItem.textContent = `${friend.username} - ${friend.isConnected ? 'Online' : 'Offline'} - ${friend.isPlaying ? 'Playing' : 'Idle'}`;
+        friendItem.textContent = `${friend.username}`;
+
+        const removeButton = document.createElement('button');
+        removeButton.classList.add('btn', 'btn-danger');
+        removeButton.textContent = 'Remove Friend';
+        removeButton.onclick = () => removeFriend(friend);
+
+        friendItem.appendChild(removeButton);
+
+        friendList.appendChild(friendItem);
+    });
+}
+
+async function listFriend() {
+    try {
+        const response = await fetch('/api/listFriends/', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            alert('Failed to fetch friends list.');
+            return;
+        }
+
+        const data = await response.json();
+
+        displayFriendsInfos(data.friends);
+    } catch (error) {
+        console.error('Getting friend list failed: ', error);
+        alert('Network error: Unable to get friend list.');
+    }
+}

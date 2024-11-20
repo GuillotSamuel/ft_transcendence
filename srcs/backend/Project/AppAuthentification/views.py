@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from .check import JWTCookieAuthentication
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from .models import GameUser
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -180,3 +181,36 @@ def changePassword(request):
     user.set_password(newPwd)
     user.save()
     return Response({"message": "Password change successful!"}, status=status.HTTP_200_OK)
+
+# Friends
+
+@api_view(['POST'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def addFriend(request):
+    user = request.user
+    friendUsername = request.data.get('friend_id')
+    if not friendUsername:
+        return Response({'detail': 'Friend ID not provided.'}, status=status.HTTP_200_OK)
+    try:
+        friend = User.objects.get(username=friendUsername)
+    except Exception:
+        return Response({'detail': 'User not found.'}, status=status.HTTP_200_OK)
+    if friend.username == user.username:
+        return Response({'detail': 'You cannot add yourself as a friend.'}, status=status.HTTP_200_OK)
+    if user.friends.filter(username=friend.username).exists():
+        return Response({'detail': 'This user is already your friend.'}, status=status.HTTP_200_OK)
+    user.friends.add(friend)
+    return Response({'detail': 'yes'}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def listFriends(request):
+    user = request.user
+    friends = user.friends.all()
+    friendlist = []
+    for friend in friends:
+        friendlist.append(friend.username)
+    return Response({'friends': friendlist}, status=status.HTTP_200_OK)

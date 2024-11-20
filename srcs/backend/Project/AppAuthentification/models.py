@@ -5,3 +5,5 @@ class GameUser(AbstractUser):
     email = models.EmailField(unique=True, blank=False)
     username = models.CharField(max_length=150, unique=True, blank=False)
     password = models.CharField(max_length=128, blank=False)
+    friends = models.ManyToManyField('GameUser', blank=True)
+
