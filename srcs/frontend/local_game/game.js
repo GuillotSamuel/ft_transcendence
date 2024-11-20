@@ -24,7 +24,7 @@ function initializeGame()
     ctx = canvas.getContext("2d");
     canvas.width = 600;
     canvas.height = 400;
-
+    
     // Initialisation des objets de jeu
     ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 2, 2);
     leftPaddle = new Paddle(10, canvas.height / 2 - 50, 10, 100, canvas);

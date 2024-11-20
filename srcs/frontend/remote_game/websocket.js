@@ -1,9 +1,14 @@
+import {draw_ball, draw_paddle} from './draw.js';
+
 let websocket = null; // Variable globale pour gérer la connexion WebSocket
 
-
+let canvas, ctx;
 //PRINTFORUSER
 
 export async function startRemoteGame() {
+    canvas = document.getElementById("pong-canvas");
+    ctx = canvas.getContext("2d");
+    
     try {
         const response = await fetch('api/manageMatch/', {
             method: 'POST',
@@ -68,9 +73,24 @@ function handleWebSocketMessage(event) {
                 drawMessageOnCanvas(data.data);
                 break;
             case 'GAME_STATE_UPDATE':
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // balle y,x et paddle1 y, paddle2 y
                 console.log("Game state update: Message reçu :", data.data);
+                console.log("player 1 pos:", data.data.p1_pos);
+                console.log("player 2 pos:", data.data.p2_pos);
+                console.log("balle pos x:", data.data.b_x);
+                console.log("balle pos y:", data.data.b_y);
+
+                draw_ball(ctx, data.data.b_x, data.data.b_y, 10);
+                draw_paddle(ctx, 10, data.data.p1_pos);
+                draw_paddle(ctx, (canvas.width - 20), data.data.p2_pos);
+
                 break;
             case 'GAME_START':
+                console.log("GAME_START: Message reçu :", data.data);
+                break;
+            case 'GAME_SCORE_UPDATE':
+                //p1 score, p2 score
                 console.log("GAME_START: Message reçu :", data.data);
                 break;
             default:
@@ -124,7 +144,6 @@ function sendPlayerDirection(direction) {
         console.warn("WebSocket non connectée. Impossible d'envoyer la direction.");
     }
 }
-
 
 export function drawMessageOnCanvas(message) {
     const canvas = document.getElementById('pong-canvas');
