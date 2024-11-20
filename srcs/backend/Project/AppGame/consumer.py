@@ -1,7 +1,8 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from remote_game.game_state import GameState
+import math
+import random
 import asyncio
 
 class GameConsumer(AsyncWebsocketConsumer):
@@ -11,7 +12,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         
         self.group_name = f"Match{self.match.uuid}"
         await self.channel_layer.group_add(self.group_name, self.channel_name)
-        self.game = GameState(self.match.uuid, self.channel_layer)
+        self.game = Game(self.match.uuid, self.channel_layer)
 
         if self.match.status == 2:
             message = f"Le match {self.match.uuid} a commence!"

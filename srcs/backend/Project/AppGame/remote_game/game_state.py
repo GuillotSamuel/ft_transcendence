@@ -1,8 +1,11 @@
 import math
 import random
 import asyncio
+import json
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 
-class GameState:
+class Game:
     def __init__(self, match_uuid, channel_layer):
         self.match_uuid = match_uuid
         self.channel_layer = channel_layer
