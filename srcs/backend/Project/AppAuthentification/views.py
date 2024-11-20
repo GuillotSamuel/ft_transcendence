@@ -191,18 +191,17 @@ def addFriend(request):
     user = request.user
     friendUsername = request.data.get('friend_id')
     if not friendUsername:
-        return Response({'detail': 'Friend ID not provided.'}, status=HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Friend ID not provided.'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         friend = GameUser.objects.get(username=friendUsername)
     except Exception:
-        return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'User not found.'}, status=status.HTTP_400_BAD_REQUEST)
     if friend.username == user.username:
-        return Response({'detail': 'You cannot add yourself as a friend.'}, status=HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'You cannot add yourself as a friend.'}, status=status.HTTP_400_BAD_REQUEST)
     if user.friends.filter(username=friend.username).exists():
-        return Response({'detail': 'This user is already your friend.'}, status=HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'This user is already your friend.'}, status=status.HTTP_400_BAD_REQUEST)
     user.friends.add(friend)
     return Response({'detail': 'yes'}, status=status.HTTP_200_OK)
-
 
 @api_view(['GET'])
 @authentication_classes([JWTCookieAuthentication])
@@ -220,7 +219,7 @@ def listFriends(request):
 @permission_classes([IsAuthenticated])
 def removeFriend(request):
     user = request.user
-    friendUsername = request.data.get('friend_id')
+    friendUsername = request.data.get('friendUserName')
     friend = GameUser.objects.get(username=friendUsername)
     user.friends.remove(friend)
     return Response({'detail': 'yes'}, status=status.HTTP_200_OK)

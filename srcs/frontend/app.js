@@ -899,8 +899,7 @@ async function addingFriend() {
         if (response.ok) {
             const data = await response.json();
             if (data.detail === 'yes') {
-                alert(`${friend_id} has been added successfully.`);
-                return;
+                listFriend();
             } else {
                 alert(data.detail);
             }
@@ -919,14 +918,14 @@ async function removeFriend(friendUserName) {
         const response = await fetch('/api/removeFriend/', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ friend: friendUserName }),
+            body: JSON.stringify({ friendUserName }),
             credentials: 'include'
         });
 
         if (response.ok) {
             const data = await response.json();
-            if (data.AddingFriend === 'yes') {
-                alert(`${friendUserName} has been removed successfully.`);
+            if (data.detail === 'yes') {
+                listFriend();
             } else {
                 alert(`${friendUserName} not found.`);
             }
@@ -948,7 +947,7 @@ async function displayFriendsInfos(friends) {
         friendItem.classList.add('friend-item');
         friendItem.setAttribute('data-username', friend);
         // friendItem.textContent = `${friend.username} - ${friend.isConnected ? 'Online' : 'Offline'} - ${friend.isPlaying ? 'Playing' : 'Idle'}`;
-        friendItem.textContent = `${friend.username}`;
+        friendItem.textContent = friend;
 
         const removeButton = document.createElement('button');
         removeButton.classList.add('btn', 'btn-danger');
