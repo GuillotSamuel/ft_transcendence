@@ -61,7 +61,7 @@ urlpatterns = [
     path('api/removeFriend/', removeFriend),
     #avatar
     path('api/addAvatar/', addAvatar),
-    path('api/getAvatar/', addAvatar),
+    path('api/getAvatar/', getAvatar),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

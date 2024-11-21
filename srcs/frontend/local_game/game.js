@@ -83,7 +83,7 @@ export function stopGame()
     gameRunning = false;
 
     if (!ctx || !canvas) {
-        console.warn("Canvas or context not initialized. Skipping cleanup.");
+        // console.warn("Canvas or context not initialized. Skipping cleanup.");
         return;
     }
 

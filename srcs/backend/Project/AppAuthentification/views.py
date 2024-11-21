@@ -244,6 +244,6 @@ def addAvatar(request):
 def getAvatar(request):
     user = request.user
     if user.avatar:
-        return Response({'avatarUrl': request.build_absolute_uri(user.avatar.url)}, status=status.HTTP_200_OK)
+        return Response({'avatarUrl': user.avatar.url}, status=status.HTTP_200_OK)
     else:
         return Response({'error': 'No avatar set'}, status=status.HTTP_404_NOT_FOUND)
