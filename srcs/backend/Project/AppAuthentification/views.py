@@ -223,3 +223,27 @@ def removeFriend(request):
     friend = GameUser.objects.get(username=friendUsername)
     user.friends.remove(friend)
     return Response({'detail': 'yes'}, status=status.HTTP_200_OK)
+
+#avatar
+
+@api_view(['POST'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def addAvatar(request):
+    user = request.user
+    avatar = request.FILES.get('avatar')
+    if not avatar:
+        return Response({'error': 'No avatar provided.'}, status=status.HTTP_400_BAD_REQUEST)
+    user.avatar = avatar
+    user.save()
+    return Response({'message': 'Avatar updated successfully.'}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def getAvatar(request):
+    user = request.user
+    if user.avatar:
+        return Response({'avatarUrl': request.build_absolute_uri(user.avatar.url)}, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'No avatar set'}, status=status.HTTP_404_NOT_FOUND)
