@@ -290,6 +290,7 @@ window.connexionOTP = connexionOTP;
 window.deleteAccount = deleteAccount;
 window.startRemoteGame = startRemoteGame;
 window.addingFriend = addingFriend;
+window.changeAvatar = changeAvatar;
 
 
 /* Utils */
@@ -745,12 +746,12 @@ async function navigate() {
     if (hash === 'editPage') {
         appDiv.innerHTML = route.template;
         await toggle2FAStatus();
-        // await getAvatar();
+        await getAvatar();
     }
     if (hash === 'profile') {
         appDiv.innerHTML = route.template;
         await displayUserInfos();
-        // await getAvatar();
+        await getAvatar();
     }
     if (hash === 'game') {
         appDiv.innerHTML = route.template;
@@ -1004,56 +1005,56 @@ async function listFriend() {
 
 /* Avatar */
 
-// async function changeAvatar() {
-//     const fileInput = document.getElementById('new-avatar');
-//     if (!fileInput.files || fileInput.files.length === 0) {
-//         alert('Please select an avatar file!');
-//         return;
-//     }
+async function changeAvatar() {
+    const fileInput = document.getElementById('new-avatar');
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select an avatar file!');
+        return;
+    }
 
-//     const formData = new FormData();
-//     formData.append('avatar', fileInput.files[0]);
+    const avatar = new FormData();
+    avatar.append('avatar', fileInput.files[0]);
 
-//     try {
-//         const response = await fetch('/api/changeAvatar/', {
-//             method: 'POST',
-//             body: formData,
-//             credentials: 'include'
-//         });
+    try {
+        const response = await fetch('/api/addAvatar/', {
+            method: 'POST',
+            body: avatar,
+            credentials: 'include'
+        });
 
-//         const data = await response.json();
-//         if (response.ok) {
-//             alert('Avatar has been changed successfuly !');
-//              // navigate();
-//         } else {
-//             alert(`Error: ${data.message || 'Change avatar failed'}`);
-//         }
-//     } catch (error) {
-//         console.error('Error posting avatar:', error);
-//         alert('Network error: Unable to change the avatar');
-//     }
-// }
+        const data = await response.json();
+        if (response.ok) {
+            alert('Avatar has been changed successfuly !');
+             // navigate();
+        } else {
+            alert(`Error: ${data.message || 'Change avatar failed'}`);
+        }
+    } catch (error) {
+        console.error('Error posting avatar:', error);
+        alert('Network error: Unable to change the avatar');
+    }
+}
 
-// async function getAvatar() {
-//     try {
-//         const response = await fetch('/api/getAvatar/', {
-//             method: 'GET',
-//             credentials: 'include'
-//         });
+async function getAvatar() {
+    try {
+        const response = await fetch('/api/getAvatar/', {
+            method: 'GET',
+            credentials: 'include'
+        });
 
-//         if (response.ok) {
-//             const data = await response.json();
+        if (response.ok) {
+            const data = await response.json();
 
-//             if (data.avatarUrl) {
-//                 document.getElementById('current-avatar').src = data.avatarUrl;
-//             } else {
-//                 alert('Avatar URL not found in the response');
-//             }
-//         } else {
-//             alert('Error fetching user avatar');
-//         }
-//     } catch (error) {
-//         console.error('Error fetching avatar:', error);
-//         alert('Network error: Unable to get the avatar');
-//     }
-// }
+            if (data.avatarUrl) {
+                document.getElementById('current-avatar').src = data.avatarUrl;
+            } else {
+                alert('Avatar URL not found in the response');
+            }
+        } else {
+            alert('Error fetching user avatar');
+        }
+    } catch (error) {
+        console.error('Error fetching avatar:', error);
+        alert('Network error: Unable to get the avatar');
+    }
+}
