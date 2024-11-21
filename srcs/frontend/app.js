@@ -138,7 +138,7 @@ const routes = {
                         <div id="avatar-container" style="width: 100px; height: 100px; overflow: hidden; display: flex; justify-content: center; align-items: center;">
                             <img id="current-avatar" alt="User Avatar" width="100" height="100" style="object-fit: cover;"/>
                         </div>
-                        <input type="file" id="new-avatar" style="display:none" accept="image/*" onchange="previewAvatar(event)">
+                        <input type="file" id="new-avatar" accept="image/*" onchange="previewAvatar(event)">
                         <button id="submit-avatar" class="btn btn-primary w-100 mt-2" onclick="changeAvatar()" data-translate="changeAvatar-editPage-button">Upload Avatar</button>
 
                         <hr class="my-4">
