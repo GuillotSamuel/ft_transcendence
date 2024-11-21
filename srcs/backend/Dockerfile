@@ -15,7 +15,6 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY Project/manage.py /app/Project/manage.py
 COPY Project/ /app/Project/.
 COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY media/default_avatar.jpg /media/avatars/default_avatar.jpg
 
 RUN chmod +x /usr/local/bin/entrypoint.sh /app/Project/manage.py
 

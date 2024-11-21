@@ -231,12 +231,11 @@ def removeFriend(request):
 @permission_classes([IsAuthenticated])
 def addAvatar(request):
     user = request.user
-    avatar = request.FILES.get('avatar')
-    if not avatar:
-        return Response({'error': 'No avatar provided.'}, status=status.HTTP_400_BAD_REQUEST)
-    user.avatar = avatar
-    user.save()
-    return Response({'message': 'Avatar updated successfully.'}, status=status.HTTP_200_OK)
+    if 'avatar' in request.data:
+        user.avatar = request.data['avatar']
+        user.save()
+        return Response({'message': 'Avatar updated successfully.'}, status=status.HTTP_200_OK)
+    return Response({'error': 'No avatar provided.'}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 @authentication_classes([JWTCookieAuthentication])
