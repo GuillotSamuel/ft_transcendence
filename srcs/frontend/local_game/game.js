@@ -111,7 +111,8 @@ export function stopGame()
         ctx.fillText("Press 'Start' to play again", canvas.width / 2, canvas.height / 2 + 50);
     }
 
-    if (score) score.resetScore();
+    if (score) 
+        score.resetScore();
 
     document.removeEventListener("keydown", keyDownHandler);
     document.removeEventListener("keyup", keyUpHandler);

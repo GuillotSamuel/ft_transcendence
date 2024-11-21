@@ -4,6 +4,8 @@ import asyncio
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+from paddle import Paddle
+from ball import Ball
 
 class Game:
     def __init__(self, match_uuid, channel_layer):
@@ -11,14 +13,21 @@ class Game:
         self.channel_layer = channel_layer
         self.canvas_width = 600
         self.canvas_height = 400
+        #dededededededededeede
+        self.leftPaddle = Paddle(self.canvas_height, self.canvas_width, 10)
+        self.rightPaddle = Paddle(self.canvas_height, self.canvas_width, (self.canvas_width - 20))
+        
         self.paddle_height = 100
         self.paddle_width = 10
-        self.ball_radius = 10
         self.paddle1_y = (self.canvas_height - self.paddle_height) / 2
         self.paddle2_y = (self.canvas_height - self.paddle_height) / 2
         self.paddle_speed = 380
         self.player1_direction = 0  # -1: up, 0: IDLE, 1: down
         self.player2_direction = 0
+        #dededededededededede
+        self.ball = Ball(self.canvas_height, self.canvas_width)
+
+        self.ball_radius = 10
         self.ball_x = self.canvas_width / 2
         self.ball_y = self.canvas_height / 2
         self.default_ball_velocity = 475
@@ -26,8 +35,12 @@ class Game:
         self.ball_velocity_increase = 20
         self.ball_vx = 0
         self.ball_vy = 0
+
+
         self.player1_score = 0
         self.player2_score = 0
+
+
         self.max_angle_deviation = 45 * math.pi / 180
         self.initial_angle_deviation = 22.5 * math.pi / 180
         self.ball_active = True
@@ -43,10 +56,10 @@ class Game:
                     'uuid': str(self.match_uuid),
                     'p1_score': self.player1_score,
                     'p2_score': self.player2_score,
-                    'b_x': self.ball_x,
-                    'b_y': self.ball_y,
-                    "p1_pos": self.paddle1_y,
-                    "p2_pos": self.paddle2_y,
+                    'b_x': self.ball.x,
+                    'b_y': self.ball.y,
+                    "p1_pos": self.leftPaddle.y,
+                    "p2_pos": self.rightPaddle.y,
                 }
             }
         )
@@ -54,7 +67,6 @@ class Game:
 
     async def activate_ball(self):
         await asyncio.sleep(2)
-        self.ball_active = True
 
     async def game_loop(self):
         last_time = asyncio.get_event_loop().time()
@@ -80,10 +92,10 @@ class Game:
 
             state_update = {
                 'uuid': str(self.match_uuid),
-                "p1_pos": self.paddle1_y,
-                "p2_pos": self.paddle2_y,
-                "b_x": self.ball_x,
-                "b_y": self.ball_y,
+                "p1_pos": self.leftPaddle.y,
+                "p2_pos": self.rightPaddle.y,
+                "b_x": self.ball.x,
+                "b_y": self.ball.y,
                 'p1_score': self.player1_score,
                 'p2_score': self.player2_score
             }

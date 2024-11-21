@@ -84,8 +84,8 @@ export class Ball
         // Set initial position and temporarily stop the ball
         this.x = this.beginX;
         this.y = this.beginY;
-        this.speedX = 0;
-        this.speedY = 0;
+        this.speedX = 2;
+        this.speedY = 2;
 
         // Wait for 1 second
         await Ball.sleep(1000);
