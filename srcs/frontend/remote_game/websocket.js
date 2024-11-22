@@ -150,10 +150,12 @@ document.addEventListener('keydown', (event) => {
         case 'ArrowUp':
             sendPlayerDirection(-1); // Envoie la direction "haut"
             event.preventDefault(); // Empêche le comportement par défaut
+            console.log("Touche press :", 'ArrowUp');
             break;
         case 'ArrowDown':
             sendPlayerDirection(1); // Envoie la direction "bas"
             event.preventDefault(); // Empêche le comportement par défaut
+            console.log("Touche press :", 'ArrowDown');
             break;
     }
 });

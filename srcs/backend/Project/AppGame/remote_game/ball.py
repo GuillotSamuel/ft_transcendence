@@ -1,82 +1,71 @@
 import random
+import asyncio
 
 class Ball:
-    def __init__(self, canvas_h, canvas_w):
-        self.radius = 10
-        
-        self.y = canvas_h / 2
-        self.x = canvas_w / 2
-
-        self.beginY = self.y
+    def __init__(self, canvas_height, canvas_width, radius=10, speedX=250, speedY=150, speedIncrement=50):
+        self.canvas_height = canvas_height
+        self.canvas_width = canvas_width
+        self.radius = radius
+        self.x = canvas_width / 2
+        self.y = canvas_height / 2
         self.beginX = self.x
+        self.beginY = self.y
+        self.speedX = speedX  # Pixels par frame
+        self.speedY = speedY  # Pixels par frame
+        self.beginSpeedX = speedX
+        self.beginSpeedY = speedY
+        self.speedIncrement = speedIncrement  # Pixels par frame
 
-        self.speedY = 2
-        self.speedX = random.choice([-2, 2])
+    def update(self, leftPaddle, rightPaddle, delta_time):
+        self.x += self.speedX * delta_time
+        self.y += self.speedY * delta_time
 
-        self.beginSpeedX = self.speedX 
-        self.beginSpeedY = self.speedY
-
-        self.speedIncrement = 0.5
-
-    def update(self, leftPaddle, rightPaddle):
-        self.x += self.speedX
-        self.y += self.speedY
-
+        # Collision avec le paddle droit
         if (self.x + self.radius >= rightPaddle.x and
             self.y >= rightPaddle.y and
-            self.y <= rightPaddle.bottomPaddle):
+            self.y <= rightPaddle.y + rightPaddle.height):
 
-            # Calcul du décalage par rapport au centre du paddle
+            # Ajuster speedY en fonction de l'endroit où la balle frappe le paddle
             offset = self.y - (rightPaddle.y + rightPaddle.height / 2)
             angle = offset / (rightPaddle.height / 2)  # Normalisé entre -1 et 1
 
-            # Inverse la direction en X
-            self.speedX = -self.speedX
-            # Ajuste la direction en Y en fonction de l'endroit touché
-            self.speedY = angle * 4  # Change la direction verticale
-            # Empêche la balle de coller au paddle
-            self.x = rightPaddle.x - self.radius
+            self.speedX = -self.speedX  # Inverser la direction X
+            self.speedY = angle * 4  # Changer la direction Y en fonction de la position d'impact
+            self.x = rightPaddle.x - self.radius  # Empêcher la balle de coller au paddle
 
-            # Augmente légèrement la vitesse après chaque collision avec un paddle
+            # Augmenter légèrement la vitesse après chaque collision avec un paddle
             self.speedX += self.speedIncrement if self.speedX > 0 else -self.speedIncrement
             self.speedY += self.speedIncrement if self.speedY > 0 else -self.speedIncrement
-
-            self.lastPaddleTouch = "right"
 
         # Collision avec le paddle gauche
         elif (self.x - self.radius <= leftPaddle.x + leftPaddle.width and
-            self.y >= leftPaddle.y and
-            self.y <= leftPaddle.bottomPaddle):
+              self.y >= leftPaddle.y and
+              self.y <= leftPaddle.y + leftPaddle.height):
 
-            # Calcul du décalage par rapport au centre du paddle
             offset = self.y - (leftPaddle.y + leftPaddle.height / 2)
-            angle = offset / (leftPaddle.height / 2)  # Normalisé entre -1 et 1
+            angle = offset / (leftPaddle.height / 2)
 
-            # Inverse la direction en X
             self.speedX = -self.speedX
-            # Ajuste la direction en Y en fonction de l'endroit touché
-            self.speedY = angle * 4  # Change la direction verticale
-            # Empêche la balle de coller au paddle
+            self.speedY = angle * 4
             self.x = leftPaddle.x + leftPaddle.width + self.radius
 
-            # Augmente légèrement la vitesse après chaque collision avec un paddle
             self.speedX += self.speedIncrement if self.speedX > 0 else -self.speedIncrement
             self.speedY += self.speedIncrement if self.speedY > 0 else -self.speedIncrement
 
-            self.lastPaddleTouch = "left"
-
-        # Collision avec les murs supérieur et inférieur
-        if self.y - self.radius <= 0 or self.y + self.radius >= rightPaddle.canvas_height:
+        # Inverser la direction Y si la balle touche le haut ou le bas du canvas
+        if self.y + self.radius > self.canvas_height or self.y - self.radius < 0:
             self.speedY = -self.speedY
 
     def resetPosition(self, player):
+        # Réinitialiser la position initiale et la vitesse de la balle
         self.x = self.beginX
         self.y = self.beginY
-        self.speedX = self.beginSpeedX
-        self.speedY = self.beginSpeedY
+        self.speedX = 2
+        self.speedY = 2
 
-        # Si le joueur est 2, la vitesse X est positive, sinon elle est négative
+        # Définir la vitesse et la direction après la pause
         self.speedX = self.beginSpeedX if player == 2 else -self.beginSpeedX
-        # Randomisation de la vitesse Y : positive ou négative
         self.speedY = self.beginSpeedY if random.random() < 0.5 else -self.beginSpeedY
+
+
         

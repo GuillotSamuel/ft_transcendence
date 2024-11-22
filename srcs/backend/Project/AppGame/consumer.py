@@ -1,7 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from remote_game.game_state import Game
+from .remote_game.game_state import Game
 import math
 import random
 import asyncio
@@ -10,7 +10,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = await self.get_user_from_cookie()
         self.match = await self.get_user_match()
-        
+        self.player_number = 1
         self.group_name = f"Match{self.match.uuid}"
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         self.game = Game(self.match.uuid, self.channel_layer)
@@ -37,7 +37,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         direction = text_data_json.get('direction')
-        self.game.update_player_direction(direction)
+        self.game.update_player_direction(self.player_number, direction)
 
 
     @database_sync_to_async

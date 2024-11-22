@@ -2,25 +2,22 @@ class Paddle:
     def __init__(self, canvas_h, canvas_w, paddle_x):
         self.canvas_height = canvas_h
         self.canvas_width = canvas_w
-        
+
         self.height = 100
         self.width = 10
-        self.y = (self.canvas_height - self.height / 2)
+        self.y = (self.canvas_height - self.height) / 2
         self.x = paddle_x
-        self.speed = 5
+        self.speed = 380  # Vitesse ajustée pour correspondre à l'original
         self.bottomPaddle = self.y + self.height
 
-        self.p1_direction = 0
-        self.p2_direction = 0
-        
-    
-    async def move(self, up, down):
-        """Déplace le paddle vers le haut ou vers le bas."""
-        if up and self.y > 0:
-            self.y -= self.speed
-        if down and self.bottomPaddle < self.canvas_height:
-            self.y += self.speed
+    def move(self, direction, delta_time):
+        """Déplace le paddle selon la direction (-1: haut, 0: immobile, 1: bas) et delta_time."""
+        if direction != 0:
+            print("je bouge")
+            self.y += direction * self.speed * delta_time
+            # Empêcher le paddle de sortir des limites
+            self.y = max(0, min(self.y, self.canvas_height - self.height))
+            self.bottomPaddle = self.y + self.height
 
-        self.bottomPaddle = self.y + self.height
 
     

@@ -209,7 +209,7 @@ const routes = {
                         <p class="lead text-muted" data-translate="presentation-game-text"></p>
                         <!-- Canvas for the game -->
                         <div class="canvas-container p-4 rounded shadow">
-                            <canvas id="pong-canvas" class="bg-dark rounded border border-light" width="800" height="600"></canvas>
+                            <canvas id="pong-canvas" class="bg-dark rounded border border-light" width="600" height="400"></canvas>
                         </div>
                         <!-- Buttons for Local and Remote Game -->
                         <div class="d-flex justify-content-center gap-3 mt-4" id="gameButtonDisplay"></div>
