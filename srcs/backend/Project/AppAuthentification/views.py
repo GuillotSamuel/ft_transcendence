@@ -11,6 +11,7 @@ from .models import GameUser
 from django.http import HttpResponseRedirect
 import requests
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -27,8 +28,7 @@ def loginWith42(request):
     client_id = "u-s4t2ud-01f6d171a5fd07c8e9565148373482f55d6c89970205d3030a039466c3ff3fb9"
     redirect_uri = "http://localhost:8000/api/callBack42/" 
     authorization_url = f"https://api.intra.42.fr/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
-    return HttpResponseRedirect(authorization_url)
-    #https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-01f6d171a5fd07c8e9565148373482f55d6c89970205d3030a039466c3ff3fb9&redirect_uri=http://localhost:8000/api/callBack42/&response_type=code
+    return JsonResponse({"authorization_url": authorization_url})
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

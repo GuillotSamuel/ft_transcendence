@@ -33,7 +33,7 @@ const routes = {
                             <button type="button" onclick="loginUser()" class="btn btn-primary w-100" data-translate="login-connexion-button"></button>
                         </form>
 
-                        <button type="button" class="btn btn-primary w-100" onclick="login42">Login 42</button>
+                        <button type="button" class="btn btn-primary w-100" onclick="login42()">Login 42</button>
                         <p class="mt-3 text-center"><div data-translate="signUp-connexion-text"></div> <a href="#registration" data-translate="signUp-connexion-link"></a></p>
                     </div>
                 </div>
@@ -1062,18 +1062,21 @@ async function getAvatar() {
 }
 
 async function login42() {
-    fetch('/api/loginWith42/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => {
-        if (response.redirected) {
-            window.location.href = response.url;
+    try {
+        const response = await fetch('/api/loginWith42/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            window.location.href = data.authorization_url;
+        } else {
+            console.error('Failed to fetch authorization URL:', response.status);
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error:', error);
-    });
-};
+    }
+}
