@@ -8,6 +8,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .check import JWTCookieAuthentication
 from django_otp.plugins.otp_totp.models import TOTPDevice
 from .models import GameUser
+from django.http import HttpResponseRedirect
+import requests
+from django.contrib.auth import get_user_model
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -17,6 +20,65 @@ def register(request):
         serializer.save()
         return Response({"message": "User registered successfully!"}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def loginWith42(request):
+    client_id = "u-s4t2ud-01f6d171a5fd07c8e9565148373482f55d6c89970205d3030a039466c3ff3fb9"
+    redirect_uri = "http://localhost:8000/api/callBack42/" 
+    authorization_url = f"https://api.intra.42.fr/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+    return HttpResponseRedirect(authorization_url)
+    #https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-01f6d171a5fd07c8e9565148373482f55d6c89970205d3030a039466c3ff3fb9&redirect_uri=http://localhost:8000/api/callBack42/&response_type=code
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def callBack42(request):
+    code = request.GET.get('code')
+    if not code:
+        return Response({'error': "not valid code"}, status=status.HTTP_400_BAD_REQUEST)
+    data = {
+            'client_id': 'u-s4t2ud-01f6d171a5fd07c8e9565148373482f55d6c89970205d3030a039466c3ff3fb9',
+            'client_secret': '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',
+            'code': code,
+            'redirect_uri': 'http://localhost:8000/api/callBack42/',
+            'grant_type': 'authorization_code'
+        }
+    response = requests.post('https://api.intra.42.fr/oauth/token', data=data)
+    data = response.json()
+    access_token = data["access_token"]
+
+    url = "https://api.intra.42.fr/v2/me"
+    headers = {
+    'Authorization': f'Bearer {access_token}'
+    }
+    response = requests.get(url, headers=headers)
+    user_data = response.json()
+    username = user_data.get('login')
+    email = user_data.get('email')
+
+    user, created = get_user_model().objects.get_or_create(username=username, email=email)
+    if created:
+        user.set_unusable_password()
+        user.save()
+
+    refreshToken = RefreshToken.for_user(user)
+    accessToken = refreshToken.access_token
+    response = Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
+    response.set_cookie(
+        'access_token',
+        str(accessToken),
+        max_age=6000000,
+        httponly=True,
+        samesite='Lax',
+    )
+    response.set_cookie(
+        'refresh_token',
+        str(refreshToken),
+        max_age=700000,
+        httponly=True,
+        samesite='Lax',
+    )
+    return response
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -30,7 +92,6 @@ def login(request):
     refreshToken = RefreshToken.for_user(user)
     accessToken = refreshToken.access_token
     response = Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
-
     response.set_cookie(
         'access_token',
         str(accessToken),

@@ -7,3 +7,5 @@ channels>=4.0.0
 daphne
 django-cors-headers
 Pillow
+requests
+

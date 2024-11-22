@@ -32,7 +32,9 @@ from AppAuthentification.views import (
     listFriends,
     removeFriend,
     addAvatar,
-    getAvatar
+    getAvatar,
+    loginWith42,
+    callBack42
 )
 
 
@@ -59,4 +61,7 @@ urlpatterns = [
     #avatar
     path('api/addAvatar/', addAvatar),
     path('api/getAvatar/', getAvatar),
+    #api42
+    path('api/loginWith42/', loginWith42),
+    path('api/callBack42/', callBack42),
 ]
