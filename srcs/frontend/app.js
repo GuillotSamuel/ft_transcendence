@@ -32,6 +32,8 @@ const routes = {
                             </div>
                             <button type="button" onclick="loginUser()" class="btn btn-primary w-100" data-translate="login-connexion-button"></button>
                         </form>
+
+                        <button type="button" class="btn btn-primary w-100" onclick="login42()">Login 42</button>
                         <p class="mt-3 text-center"><div data-translate="signUp-connexion-text"></div> <a href="#registration" data-translate="signUp-connexion-link"></a></p>
                     </div>
                 </div>
@@ -291,7 +293,7 @@ window.deleteAccount = deleteAccount;
 window.startRemoteGame = startRemoteGame;
 window.addingFriend = addingFriend;
 window.changeAvatar = changeAvatar;
-
+window.login42 = login42;
 
 /* Utils */
 
@@ -1056,5 +1058,25 @@ async function getAvatar() {
     } catch (error) {
         console.error('Error fetching avatar:', error);
         alert('Network error: Unable to get the avatar');
+    }
+}
+
+async function login42() {
+    try {
+        const response = await fetch('/api/loginWith42/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            window.location.href = data.authorization_url;
+        } else {
+            console.error('Failed to fetch authorization URL:', response.status);
+        }
+    } catch (error) {
+        console.error('Error:', error);
     }
 }
