@@ -12,6 +12,7 @@ class Paddle:
 
     def move(self, direction, delta_time):
         """Déplace le paddle selon la direction (-1: haut, 0: immobile, 1: bas) et delta_time."""
+        #print("direction dans move: " + str(direction))
         if direction != 0:
             print("je bouge")
             self.y += direction * self.speed * delta_time

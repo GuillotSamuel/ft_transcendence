@@ -1,6 +1,7 @@
 import {draw_ball, draw_paddle, draw_score} from './draw.js';
 
 let websocket = null; // Variable globale pour gérer la connexion WebSocket
+let playerRole = null; // Stocke le rôle du joueur
 
 let canvas, ctx;
 //PRINTFORUSER
@@ -41,38 +42,37 @@ export async function startRemoteGame() {
     }
 
     websocket.onmessage = handleWebSocketMessage;
-    // websocket.onclose = handleWebSocketClose;
-    // websocket.onerror = handleWebSocketError;
+    websocket.onopen = handleWebSocketOpen;
+    websocket.onclose = handleWebSocketClose;
+    websocket.onerror = handleWebSocketError;
+
 }
 
 
-// function handleWebSocketOpen(roomName) {
-//     console.log("WebSocket connecté !");
-//     drawMessageOnCanvas("Connexion à la salle...");
 
-//     // Envoyer un message pour rejoindre une salle
-//     sendWebSocketMessage({
-//         room_name: roomName,
-//         message: "Connexion au jeu"
-//     });
-// }
 
 function handleWebSocketMessage(event) {
     try {
-        // Parse le message WebSocket
         const data = JSON.parse(event.data);
-        console.log("Message reçu via WebSocket :", data);
+        //console.log("Message reçu via WebSocket :", data);
 
-        // Vérifie si le message contient un `event_name`
         if (!data.event_name) {
             console.warn("Message mal formé reçu :", data);
             return;
         }
 
-        // Gestion des différents événements
         switch (data.event_name) {
+            case 'ASSIGN_ROLE':
+                console.log("ASSIGN ROLE: ")
+                handleAssignRole(data.data);
+                break;
+
             case 'PRINTFORUSER':
                 handlePrintForUser(data.data);
+                break;
+                
+            case 'MATCH_READY':
+                handleMatchReady(data.data);
                 break;
 
             case 'GAME_STATE_UPDATE':
@@ -90,6 +90,21 @@ function handleWebSocketMessage(event) {
         console.error("Erreur lors du traitement du message WebSocket :", error, event.data);
     }
 }
+
+function handleMatchReady(data) {
+    console.log("MATCH_READY: Le match est prêt à commencer !");
+    drawMessageOnCanvas("Un joueur a rejoint. Le match va commencer !");
+    // Vous pouvez lancer des actions supplémentaires ici si nécessaire
+}
+
+function handleAssignRole(data) {
+    playerRole = data.player_role; // Stocker le rôle (player1 ou player2)
+    console.log("Rôle assigné :", playerRole);
+
+    // Afficher un message sur le canvas
+    drawMessageOnCanvas(`Vous êtes ${playerRole === 1 ? 'Joueur 1' : 'Joueur 2'}`);
+}
+
 
 function handlePrintForUser(message) {
     console.log("PRINTFORUSER: Message reçu :", message);
@@ -121,7 +136,7 @@ function handleGameStateUpdate(state) {
 
     const { b_x, b_y, p1_pos, p2_pos, p1_score, p2_score } = state;
 
-    console.log("Game state update: ", state);
+    //console.log("Game state update: ", state);
 
     // Dessiner la balle
     draw_ball(ctx, b_x, b_y, 10);
@@ -169,16 +184,19 @@ document.addEventListener('keyup', (event) => {
 });
 
 function sendPlayerDirection(direction) {
-    if (websocket && websocket.readyState === WebSocket.OPEN) {
+    if (websocket && websocket.readyState === WebSocket.OPEN && playerRole !== null) {
         const message = {
-            direction: direction // Respecte la structure attendue par le backend
+            player_role: playerRole,
+            direction: direction
         };
-        websocket.send(JSON.stringify(message)); // Envoie les données au serveur
+        websocket.send(JSON.stringify(message));
         console.log("Direction envoyée :", message);
     } else {
-        console.warn("WebSocket non connectée. Impossible d'envoyer la direction.");
+        console.warn("WebSocket non connectée ou rôle non assigné. Impossible d'envoyer la direction.");
     }
 }
+
+
 
 export function drawMessageOnCanvas(message) {
     const canvas = document.getElementById('pong-canvas');
@@ -192,4 +210,18 @@ export function drawMessageOnCanvas(message) {
     } else {
         console.warn("Canvas introuvable !");
     }
+}
+
+function handleWebSocketOpen() {
+    console.log("WebSocket connecté !");
+}
+
+function handleWebSocketClose(event) {
+    console.log("WebSocket déconnecté :", event.code, event.reason);
+    drawMessageOnCanvas("Déconnecté du jeu.");
+}
+
+function handleWebSocketError(event) {
+    console.error("Erreur WebSocket :", event);
+    alert("Erreur WebSocket. Vérifiez la configuration du serveur.");
 }

@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from AppAuthentification.check import JWTCookieAuthentication
 from rest_framework.permissions import AllowAny
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 @api_view(['POST'])
 @authentication_classes([JWTCookieAuthentication])
@@ -22,14 +24,27 @@ def manageMatch(request):
         match.player2 = user
         match.status = 2
         match.save()
-        return Response({"message": "match join"}, status=status.HTTP_200_OK)
+
+        # Notifier le groupe que le match est prêt
+        channel_layer = get_channel_layer()
+        group_name = f"Match{match.uuid}"
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                'type': 'match_ready',
+                'event_name': 'MATCH_READY',
+                'data': {
+                    'match_uuid': str(match.uuid)
+                }
+            }
+        )
+        return Response({"message": "match joined"}, status=status.HTTP_200_OK)
 
     newMatch = Match.objects.create(
-        player1 = user,
-        status = 1
+        player1=user,
+        status=1
     )
-    newMatch.save()
-    return Response({"message": "match create"}, status=status.HTTP_200_OK)
+    return Response({"message": "match created"}, status=status.HTTP_200_OK)
 
     
 

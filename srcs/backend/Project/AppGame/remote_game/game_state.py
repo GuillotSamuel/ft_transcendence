@@ -1,14 +1,12 @@
-import math
+
 import random
 import asyncio
-import json
-from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.db import database_sync_to_async
 from .paddle import Paddle
 from .ball import Ball
 
 class Game:
     def __init__(self, match_uuid, channel_layer):
+        self.game_started = False
         self.match_uuid = match_uuid
         self.channel_layer = channel_layer
         self.canvas_width = 600
@@ -87,7 +85,13 @@ class Game:
             await asyncio.sleep(1 / 60)
 
     def update_game_state(self, delta_time):
+
+        # print("update_game_state called")
+        # print(f"Player 1 direction: {self.player1_direction}")
+        # print(f"Player 2 direction: {self.player2_direction}")
         # Mettre à jour les positions des paddles
+        # print("game state p1 = "  + str(self.player1_direction))
+        # print("game state p2 = "  + str(self.player2_direction))
         self.leftPaddle.move(self.player1_direction, delta_time)
         self.rightPaddle.move(self.player2_direction, delta_time)
 
@@ -113,4 +117,5 @@ class Game:
             print("p1 move")
         elif player == 2:
             self.player2_direction = direction
+            print("p2 move")
 
