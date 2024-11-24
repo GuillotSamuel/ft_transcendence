@@ -48,3 +48,23 @@ def manageMatch(request):
 
     
 
+@api_view(['POST'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def disconnectPlayer(request):
+    user = request.user
+    try:
+        # Trouver le match où le joueur est player1
+        match = Match.objects.filter(player1=user, status=1).first()
+
+        if not match:
+            return Response({"message": "No match found for the player or match is not in waiting status."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Si player1 se déconnecte, le match est supprimé
+        match.delete()
+
+        return Response({"message": "Match deleted because player 1 disconnected."}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({"message": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
