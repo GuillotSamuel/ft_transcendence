@@ -2,8 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .remote_game.game_manager import GameManager
 import json
-import asyncio
-import random
+
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = await self.get_user_from_cookie()
@@ -37,9 +36,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-    async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.group_name, self.channel_name)
-
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         direction = text_data_json.get('direction')
@@ -51,6 +47,26 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'event_name': 'GAME_NOT_STARTED',
                 'data': 'Le jeu n\'a pas encore commencé.'
             }))
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+
+        # Vérifier et mettre à jour le statut du match en base de données
+        await database_sync_to_async(self.handle_player_disconnect)()
+
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                'type': 'send_event',
+                'event_name': 'PLAYER_DISCONNECTED',
+                'data': {
+                    'player_number': self.player_number
+                }
+            }
+        )
+
+
+
 
     @database_sync_to_async
     def get_user_match(self):
@@ -100,3 +116,21 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game = GameManager.get_game(self.match.uuid, self.channel_layer)
             await self.game.start_game()
 
+
+    async def handle_player_disconnect(self):
+        if self.player_number == 1:
+            # Si le joueur 1 se déconnecte
+            self.match.player1 = None
+            if self.match.player2:
+                self.match.status = 1  # Le match revient en attente
+            else:
+                self.match.status = 0  # Plus de joueurs, le match est annulé
+        elif self.player_number == 2:
+            # Si le joueur 2 se déconnecte
+            self.match.player2 = None
+            if self.match.player1:
+                self.match.status = 1  # Le match revient en attente
+            else:
+                self.match.status = 0  # Plus de joueurs, le match est annulé
+        
+        self.match.save()

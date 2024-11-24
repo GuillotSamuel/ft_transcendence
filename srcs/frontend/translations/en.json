@@ -82,5 +82,6 @@
     "presentation-game-text": "Challenge a friend or a random opponent and start your game!",
 
     "game-local-button": "Local Game",
-    "game-remote-button": "Remote Game"
+    "game-remote-button": "Remote Game",
+    "game-disconnect-button": "Disconnect"
 }

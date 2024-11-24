@@ -1,4 +1,4 @@
-import { startRemoteGame } from './remote_game/websocket.js';
+import { startRemoteGame, disconnectGame } from './remote_game/websocket.js';
 import { startLocalGame } from './local_game/gameManager.js';
 
 const routes = {
@@ -238,6 +238,7 @@ window.changePassword = changePassword;
 window.connexionOTP = connexionOTP;
 window.deleteAccount = deleteAccount;
 window.startRemoteGame = startRemoteGame;
+window.disconnectGame = disconnectGame;
 
 
 /* Utils */
@@ -652,7 +653,8 @@ async function manageDisplayGame() {
         gameButtonDisplay.innerHTML = `
             <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
             <button class="btn btn-info btn-lg" onclick="startRemoteGame()" data-translate="game-remote-button"></button>
-        `;
+            <button id="disconnect-button" class="btn btn-danger btn-lg"" onclick="disconnectGame()" data-translate="game-disconnect-button" style="display: none;"></button>
+            `;
     } else {
         gameButtonDisplay.innerHTML = `
             <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
