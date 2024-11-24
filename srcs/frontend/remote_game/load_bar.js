@@ -1,4 +1,4 @@
-import {drawMessageOnCanvas} from "./websocket.js";
+import {drawMessageOnCanvas} from "./draw.js";
 
 let loadingAnimationId;
 export function startLoadingBar() {

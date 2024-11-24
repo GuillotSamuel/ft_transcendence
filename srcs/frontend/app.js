@@ -1,4 +1,5 @@
-import { startRemoteGame, disconnectGame} from './remote_game/websocket.js';
+import { startRemoteGame} from './remote_game/websocket.js';
+import { disconnectGame} from './remote_game/disconnect.js';
 import { startLocalGame } from './local_game/gameManager.js';
 import { drawFindGameScreen } from './remote_game/find_return_button.js';
 

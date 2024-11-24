@@ -20,13 +20,26 @@ const buttons = {
     }
 };
 
+
 export function drawFindGameScreen() {
     const canvas = document.getElementById('pong-canvas');
+    if (!canvas) {
+        console.error("Canvas avec l'ID 'pong-canvas' introuvable.");
+        return;
+    }
     const ctx = canvas.getContext('2d');
 
     const localButton = document.getElementById('local-button');
     const remoteButton = document.getElementById('remote-button');
 
+    // Vérifiez si les boutons existent
+    if (!localButton || !remoteButton) {
+        console.error('Boutons "local-button" ou "remote-button" introuvables dans le DOM.');
+        console.log('DOM actuel:', document.body.innerHTML); // Debugging DOM
+        return;
+    }
+
+    // Cachez les boutons
     localButton.style.display = 'none';
     remoteButton.style.display = 'none';
 
@@ -48,6 +61,12 @@ export function drawFindGameScreen() {
     const totalHeight = buttonHeight * 2 + gap;
     const startY = (canvas.height / 2) - (totalHeight / 2) + 20;
 
+    // Vérifiez si l'objet `buttons` existe
+    if (typeof buttons === 'undefined' || !buttons.findGame || !buttons.return) {
+        console.error("L'objet 'buttons' ou ses propriétés ('findGame' ou 'return') ne sont pas définis.");
+        return;
+    }
+
     // Bouton "Find a Game"
     buttons.findGame.x = (canvas.width - buttonWidth) / 2;
     buttons.findGame.y = startY;
@@ -61,12 +80,23 @@ export function drawFindGameScreen() {
     buttons.return.height = buttonHeight;
 
     // Dessiner les boutons
-    drawButton(ctx, buttons.findGame);
-    drawButton(ctx, buttons.return);
+    if (typeof drawButton === 'function') {
+        drawButton(ctx, buttons.findGame);
+        drawButton(ctx, buttons.return);
+    } else {
+        console.error("La fonction 'drawButton' n'est pas définie.");
+    }
 
     // Ajouter l'écouteur d'événements si ce n'est pas déjà fait
-    canvas.removeEventListener('click', handleCanvasClick); // Assurer qu'il n'y a pas de multiples écouteurs
-    canvas.addEventListener('click', handleCanvasClick);
+    if (typeof handleCanvasClick === 'function') {
+        canvas.removeEventListener('click', handleCanvasClick); // Assurer qu'il n'y a pas de multiples écouteurs
+        canvas.addEventListener('click', handleCanvasClick);
+    } else {
+        console.error("La fonction 'handleCanvasClick' n'est pas définie.");
+    }
+
+    // Log final pour le debugging
+    console.log("drawFindGameScreen exécuté avec succès.");
 }
 
 // Fonction pour dessiner un bouton

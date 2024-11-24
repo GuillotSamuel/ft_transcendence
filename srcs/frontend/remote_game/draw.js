@@ -37,3 +37,22 @@ export function draw_score(canvas, ctx, scorePlayer1, scorePlayer2) {
     ctx.fillStyle = "#0074D9"; // Bleu pour le joueur 2
     ctx.fillText(`${scorePlayer2}`, centerX + 80, 60);
 }
+
+
+export function drawMessageOnCanvas(message) {
+    const canvas = document.getElementById('pong-canvas');
+    if (canvas) {
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Utilisation de la police Press Start 2P
+        context.font = '20px "Press Start 2P", Arial';
+        context.fillStyle = 'white';
+        context.textAlign = 'center';
+        
+        // Position du message légèrement au-dessus du centre pour laisser de l'espace en dessous
+        context.fillText(message, canvas.width / 2, canvas.height / 2 - 20);
+    } else {
+        console.warn("Canvas introuvable !");
+    }
+}
