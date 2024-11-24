@@ -73,7 +73,6 @@ export function startGame()
     if (gameRunning) return;
 
     initializeGame();
-    ball.resetPosition();
     gameRunning = true;
     gameLoop();
 }
@@ -170,15 +169,15 @@ function gameLoop()
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
 
-    check_ball_and_bonus(ball, imageBoost);
+    //check_ball_and_bonus(ball, imageBoost);
 
-    if (ball.getLastPaddleTouch() === "right") {
-    console.log("The last paddle to touch the ball was the right paddle.");
-    // Appliquez une logique ici, comme un bonus pour le joueur de droite
-    } else if (ball.getLastPaddleTouch() === "left") {
-        console.log("The last paddle to touch the ball was the left paddle.");
-        // Appliquez une logique ici, comme un bonus pour le joueur de gauche
-    }
+    // if (ball.getLastPaddleTouch() === "right") {
+    // console.log("The last paddle to touch the ball was the right paddle.");
+    // // Appliquez une logique ici, comme un bonus pour le joueur de droite
+    // } else if (ball.getLastPaddleTouch() === "left") {
+    //     console.log("The last paddle to touch the ball was the left paddle.");
+    //     // Appliquez une logique ici, comme un bonus pour le joueur de gauche
+    // }
 
 
     leftPaddle.move(leftPaddleUp, leftPaddleDown);
@@ -189,14 +188,14 @@ function gameLoop()
     score.draw();
 
     // rand pos unique si diff time > 2
-    if (check_time()) {
-        if (!actionPerformed) {
-            currentRandomHeight = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
-            console.log("Random height generated:", currentRandomHeight);
-            actionPerformed = true;
-        }
-        imageBoost.draw(ctx, canvas.height, currentRandomHeight); 
-    }
+    // if (check_time()) {
+    //     if (!actionPerformed) {
+    //         currentRandomHeight = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
+    //         console.log("Random height generated:", currentRandomHeight);
+    //         actionPerformed = true;
+    //     }
+    //     imageBoost.draw(ctx, canvas.height, currentRandomHeight); 
+    // }
 
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer2();

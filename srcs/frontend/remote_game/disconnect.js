@@ -1,7 +1,12 @@
-import {websocket} from "./websocket.js";
-
+import {websocket, setIsRemoteGameActive, getIsRemoteGameActive, handleRemoteKeyDown, handleRemoteKeyUp} from "./websocket.js";
 // Fonction pour déconnecter le joueur
 export async function disconnectGame() {
+    if (!getIsRemoteGameActive()) return;
+    setIsRemoteGameActive(false);
+
+    document.removeEventListener('keydown', handleRemoteKeyDown);
+    document.removeEventListener('keyup', handleRemoteKeyUp);
+
     if (websocket && websocket.readyState === WebSocket.OPEN) {
         websocket.close(); // Ferme la connexion WebSocket
         alert("Vous avez quitté le match.");

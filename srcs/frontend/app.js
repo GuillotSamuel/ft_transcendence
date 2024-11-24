@@ -216,10 +216,6 @@ const routes = {
                         <!-- Buttons for Local and Remote Game -->
                         <div class="d-flex justify-content-center gap-3 mt-4" id="gameButtonDisplay"></div>
                         
-                        <!-- Messages from the WebSocket -->
-                        <div id="gameMessageDisplay" class="mt-4 p-3 bg-light rounded shadow-sm">
-                            <!-- Messages will be dynamically appended here -->
-                        </div>
                     </div>
                 </div>
             </section>
@@ -656,7 +652,6 @@ async function manageDisplayGame() {
     } else {
         gameButtonDisplay.innerHTML = `
             <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
-            <button class="btn btn-info btn-lg" onclick="drawFindGameScreen()" data-translate="game-remote-button"></button>
             `;
     }
 }

@@ -3,12 +3,13 @@ import {playerRole} from "./handle_websocket.js";
 
 export let websocket = null; // Variable globale pour la connexion WebSocket
 let canvas, ctx; // Variables pour le canvas et le contexte
+export let isRemoteGameActive = false;
 
 export async function startRemoteGame() {
     const disconnectButton = document.getElementById('disconnect-button');
     canvas = document.getElementById("pong-canvas");
     ctx = canvas.getContext("2d");
-    
+    setIsRemoteGameActive(true);
     try {
         // Requête API pour créer ou rejoindre un match
         const response = await fetch('api/manageMatch/', {
@@ -51,22 +52,34 @@ export async function startRemoteGame() {
         disconnectButton.style.display = 'none';
     };
     websocket.onerror = handleWebSocketError;
+
+    document.addEventListener('keydown', handleRemoteKeyDown);
+    document.addEventListener('keyup', handleRemoteKeyUp);
+
+}
+
+export function setIsRemoteGameActive(value) {
+    isRemoteGameActive = value;
+}
+
+export function getIsRemoteGameActive() {
+    return isRemoteGameActive;
 }
 
 // Envoi des directions du joueur via WebSocket
-document.addEventListener('keydown', (event) => {
+export function handleRemoteKeyDown(event) {
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         sendPlayerDirection(event.key === 'ArrowUp' ? -1 : 1);
         event.preventDefault();
     }
-});
+}
 
-document.addEventListener('keyup', (event) => {
+export function handleRemoteKeyUp(event) {
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         sendPlayerDirection(0);
         event.preventDefault();
     }
-});
+}
 
 function sendPlayerDirection(direction) {
     if (websocket && websocket.readyState === WebSocket.OPEN && playerRole !== null) {
