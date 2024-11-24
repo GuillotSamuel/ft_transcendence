@@ -102,11 +102,11 @@ export function stopGame()
     }
 
     if (ctx) {
-        ctx.font = "bold 60px 'Press Start 2P', cursive";
+        ctx.font = "20px 'Press Start 2P', Arial";
         ctx.textAlign = "center";
         ctx.fillText(winnerMessage, canvas.width / 2, canvas.height / 2);
 
-        ctx.font = "bold 30px 'Press Start 2P', cursive";
+        ctx.font = "20px 'Press Start 2P', Arial";
         ctx.fillStyle = "#FFFFFF";
         ctx.fillText("Press 'Start' to play again", canvas.width / 2, canvas.height / 2 + 50);
     }

@@ -46,7 +46,6 @@ def manageMatch(request):
     )
     return Response({"message": "match created"}, status=status.HTTP_200_OK)
 
-    
 
 @api_view(['POST'])
 @authentication_classes([JWTCookieAuthentication])

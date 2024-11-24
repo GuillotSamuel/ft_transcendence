@@ -1,8 +1,10 @@
 import {draw_ball, draw_paddle, draw_score} from './draw.js';
+import {startLoadingBar, stopLoadingBar} from './load_bar.js';
 
 let websocket = null; // Variable globale pour la connexion WebSocket
 let playerRole = null; // Stocke le rôle du joueur
 let canvas, ctx; // Variables pour le canvas et le contexte
+
 
 export async function startRemoteGame() {
     const disconnectButton = document.getElementById('disconnect-button');
@@ -23,10 +25,6 @@ export async function startRemoteGame() {
             alert("Erreur côté serveur lors de la création du match.");
             return;
         }
-
-        const data = await response.json();
-        console.log(data.message);
-        drawMessageOnCanvas(data.message);
 
         // Initialisation WebSocket
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -148,6 +146,7 @@ function handleWebSocketOpen() {
 
 function handleWebSocketClose() {
     console.log("WebSocket déconnecté !");
+    stopLoadingBar();
     drawMessageOnCanvas("Déconnecté du jeu.");
 }
 
@@ -165,12 +164,11 @@ function handleMatchReady(data) {
 function handleAssignRole(data) {
     playerRole = data.player_role; // Stocke le rôle (player1 ou player2)
     console.log("Rôle assigné :", playerRole);
-    drawMessageOnCanvas(`Vous êtes ${playerRole === 1 ? 'Joueur 1' : 'Joueur 2'}`);
 }
 
 function handlePrintForUser(message) {
     console.log("PRINTFORUSER: Message reçu :", message);
-    drawMessageOnCanvas(message);
+    startLoadingBar();
 }
 
 function handleGameStart(state) {
@@ -222,16 +220,24 @@ function sendPlayerDirection(direction) {
 
 
 // Affiche un message sur le canvas
+// Affiche un message sur le canvas
 export function drawMessageOnCanvas(message) {
     const canvas = document.getElementById('pong-canvas');
     if (canvas) {
         const context = canvas.getContext('2d');
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.font = '30px Arial';
+        
+        // Utilisation de la police Press Start 2P
+        context.font = '20px "Press Start 2P", Arial';
         context.fillStyle = 'white';
         context.textAlign = 'center';
-        context.fillText(message, canvas.width / 2, canvas.height / 2);
+        
+        // Position du message légèrement au-dessus du centre pour laisser de l'espace en dessous
+        context.fillText(message, canvas.width / 2, canvas.height / 2 - 20);
     } else {
         console.warn("Canvas introuvable !");
     }
 }
+
+
+

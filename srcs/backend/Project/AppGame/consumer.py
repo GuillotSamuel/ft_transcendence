@@ -23,10 +23,10 @@ class GameConsumer(AsyncWebsocketConsumer):
         }))
 
         if self.match.status == 2:
-            self.game = GameManager.get_game(self.match.uuid, self.channel_layer)
+            self.game = GameManager.get_game(self.user.username, self.channel_layer)
             await self.game.start_game()
         else:
-            message = f"Le match {self.match.uuid} est en attente d'un autre joueur"
+            message = f"Le joueur {self.user.username} is waiting..."
             await self.channel_layer.group_send(
                 self.group_name,
                 {
@@ -64,8 +64,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             }
         )
-
-
 
 
     @database_sync_to_async
