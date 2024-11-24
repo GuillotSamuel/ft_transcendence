@@ -5,7 +5,6 @@ let websocket = null; // Variable globale pour la connexion WebSocket
 let playerRole = null; // Stocke le rôle du joueur
 let canvas, ctx; // Variables pour le canvas et le contexte
 
-
 export async function startRemoteGame() {
     const disconnectButton = document.getElementById('disconnect-button');
     canvas = document.getElementById("pong-canvas");
@@ -67,7 +66,12 @@ export async function disconnectGame() {
     // Masquer le bouton Disconnect après la déconnexion
     const disconnectButton = document.getElementById('disconnect-button');
     disconnectButton.style.display = 'none';
+    const local = document.getElementById('local-button');
+    const remote = document.getElementById('remote-button');
 
+    local.style.display = 'block';
+    remote.style.display = 'block';
+    
     await disconnectPlayer();
 }
 
@@ -218,8 +222,6 @@ function sendPlayerDirection(direction) {
     }
 }
 
-
-// Affiche un message sur le canvas
 // Affiche un message sur le canvas
 export function drawMessageOnCanvas(message) {
     const canvas = document.getElementById('pong-canvas');

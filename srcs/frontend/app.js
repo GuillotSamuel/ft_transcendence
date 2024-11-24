@@ -1,5 +1,6 @@
-import { startRemoteGame, disconnectGame } from './remote_game/websocket.js';
+import { startRemoteGame, disconnectGame} from './remote_game/websocket.js';
 import { startLocalGame } from './local_game/gameManager.js';
+import { drawFindGameScreen } from './remote_game/find_return_button.js';
 
 const routes = {
     home: {
@@ -239,7 +240,7 @@ window.connexionOTP = connexionOTP;
 window.deleteAccount = deleteAccount;
 window.startRemoteGame = startRemoteGame;
 window.disconnectGame = disconnectGame;
-
+window.drawFindGameScreen = drawFindGameScreen;
 
 /* Utils */
 
@@ -429,25 +430,21 @@ async function enable2FA() {
                         colorLight: "#ffffff",
                         correctLevel: QRCode.CorrectLevel.H
                     });
+                } catch (error) {
+                    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+                    gameButtonDisplay.style.display = 'none';
+                    alert('2FA error: Unable to change 2FA status');
                 }
-                catch (error) {
-                    console.error('Error generating QR code with qrcode.js:', error);
-                    alert('Error generating QR code');
-                }
-            }
-                , 500);
+            });
+        } else {
+            alert('2FA error: Unable to enable 2FA');
         }
-        else {
-            console.error('Provisioning URI not found in the response');
-            alert('Error: Provisioning URI not found');
-        }
-    }
-    catch (error) {
-        console.error('2FA error:', error);
-        alert('2FA error: Unable to change 2FA status');
+    } catch (error) {
+        console.error('Error enabling 2FA:', error);
+        alert('2FA error: Something went wrong');
     }
 }
-
+    
 async function disable2FA() {
     try {
         const response = await fetch('/api/disable2FA/', {
@@ -651,17 +648,18 @@ async function manageDisplayGame() {
 
     if (isAuthenticated) {
         gameButtonDisplay.innerHTML = `
-            <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
-            <button class="btn btn-info btn-lg" onclick="startRemoteGame()" data-translate="game-remote-button"></button>
-            <button id="disconnect-button" class="btn btn-danger btn-lg"" onclick="disconnectGame()" data-translate="game-disconnect-button" style="display: none;"></button>
+            <button id="local-button" class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
+            <button id="remote-button" class="btn btn-info btn-lg" onclick="drawFindGameScreen()" data-translate="game-remote-button"></button>
+            <button id="disconnect-button" class="btn btn-danger btn-lg" onclick="disconnectGame()" data-translate="game-disconnect-button" style="display: none;"></button>
             `;
     } else {
         gameButtonDisplay.innerHTML = `
             <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
-            <button class="btn btn-info btn-lg" onclick="startRemoteGame()" data-translate="game-remote-button"></button>
+            <button class="btn btn-info btn-lg" onclick="drawFindGameScreen()" data-translate="game-remote-button"></button>
             `;
     }
 }
+
 
 async function navigate() {
     const hash = window.location.hash.substring(1);
@@ -816,3 +814,6 @@ window.addEventListener('hashchange', async () => {
     }
     changeLanguage(savedLanguage);
 });
+
+
+
