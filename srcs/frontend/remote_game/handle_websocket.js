@@ -3,6 +3,7 @@ import {draw_ball, draw_paddle, draw_score} from './draw.js';
 import {drawMessageOnCanvas} from "./draw.js";
 import {ctx, canvas} from "./websocket.js";
 
+
 export let playerRole = null; // Stocke le rôle du joueur
 export let isGameOver = false; // Variable globale
 
@@ -82,18 +83,19 @@ function handleWinner(data) {
     // Efface le canvas et affiche le message du gagnant
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Effacer l'écran
 
+    // Définir la couleur du message
+    let messageColor = (winner === "player1" && playerRole == 1) || (winner === "player2" && playerRole == 2) ? "green" : "red";
+
     // Affiche un message pour le gagnant
     if (winner === "player1" && playerRole == 1) {
-        drawMessageOnCanvas(`W = 1 You Win`, "00FF00");
-    }
-    else if (winner === "player1" && playerRole == 2) {
-        drawMessageOnCanvas(`W = 1 You Loose`, "red");
+        drawMessageOnCanvas(`W = 1 You Win`, messageColor);
+    } else if (winner === "player1" && playerRole == 2) {
+        drawMessageOnCanvas(`W = 1 You Loose`, messageColor);
     } else if (winner === "player2" && playerRole == 2) {
-        drawMessageOnCanvas(`W = 2 You Win`, "green");
+        drawMessageOnCanvas(`W = 2 You Win`, messageColor);
     } else {
-        drawMessageOnCanvas(`W = 2 You Loose`, "red");
+        drawMessageOnCanvas(`W = 2 You Loose`, messageColor);
     }
-
 
     // Affiche les scores finaux au centre de l'écran
     ctx.font = "20px 'Press Start 2P', Arial";
@@ -104,6 +106,44 @@ function handleWinner(data) {
         canvas.width / 2,
         canvas.height / 2 + 40
     );
+
+    // Ajouter le bouton "Return" en dessous
+    const buttonWidth = 200;
+    const buttonHeight = 50;
+    const buttonX = (canvas.width - buttonWidth) / 2;
+    const buttonY = canvas.height / 2 + 100;
+
+    // Dessiner le bouton
+    ctx.fillStyle = 'gray';
+    ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+    ctx.fillStyle = 'white';
+    ctx.font = '16px "Press Start 2P", Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Return', buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
+
+    // Ajouter l'écouteur d'événements pour le clic sur le bouton
+    canvas.addEventListener('click', function onClick(event) {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+
+        // Vérifier si le clic est sur le bouton "Return"
+        if (
+            clickX >= buttonX &&
+            clickX <= buttonX + buttonWidth &&
+            clickY >= buttonY &&
+            clickY <= buttonY + buttonHeight
+        ) {
+            canvas.removeEventListener('click', onClick); // Supprimer l'écouteur après utilisation
+            returnMain(); // Appeler la fonction pour retourner à l'écran principal
+        }
+    });
 }
 
 function handleAssignRole(data) {
@@ -142,4 +182,21 @@ function handleGameStateUpdate(state) {
     draw_paddle(ctx, 10, p1_pos);          // Dessiner le paddle gauche
     draw_paddle(ctx, canvas.width - 20, p2_pos); // Dessiner le paddle droit
     draw_score(canvas, ctx, p1_score, p2_score); // Dessiner les scores
+}
+
+function returnMain() {
+    console.log('Retour à l\'écran principal...');
+    const ctx = document.getElementById('pong-canvas').getContext('2d');
+    
+    // Effacer le canvas
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+    // Réafficher les boutons principaux ou réinitialiser le canvas selon votre logique
+    const localButton = document.getElementById('local-button');
+    const remoteButton = document.getElementById('remote-button');
+    const disconnectButton = document.getElementById('disconnect-button');
+
+    disconnectButton.style.display = 'none';
+    localButton.style.display = 'block';
+    remoteButton.style.display = 'block';
 }

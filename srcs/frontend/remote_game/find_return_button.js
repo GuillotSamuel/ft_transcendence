@@ -16,9 +16,26 @@ const buttons = {
         width: 0,
         height: 0,
         text: 'Return',
-        action: returnToMain
+        action: returnToMainMenu
     }
 };
+
+// Fonction pour revenir à l'écran principal
+function returnToMainMenu() {
+    console.log('Retour à l\'écran principal...');
+    const ctx = document.getElementById('pong-canvas').getContext('2d');
+    
+    // Effacer le canvas
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+    // Réafficher les boutons principaux ou réinitialiser le canvas selon votre logique
+    //manageDisplayGame(); // Supposons que cela réinitialise l'affichage principal
+    const localButton = document.getElementById('local-button');
+    const remoteButton = document.getElementById('remote-button');
+
+    localButton.style.display = 'block';
+    remoteButton.style.display = 'block';
+}
 
 
 export function drawFindGameScreen() {
@@ -170,19 +187,3 @@ function findGame() {
     startRemoteGame();
 }
 
-// Fonction pour revenir à l'écran principal
-function returnToMain() {
-    console.log('Retour à l\'écran principal...');
-    const ctx = document.getElementById('pong-canvas').getContext('2d');
-    
-    // Effacer le canvas
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    
-    // Réafficher les boutons principaux ou réinitialiser le canvas selon votre logique
-    //manageDisplayGame(); // Supposons que cela réinitialise l'affichage principal
-    const localButton = document.getElementById('local-button');
-    const remoteButton = document.getElementById('remote-button');
-
-    localButton.style.display = 'block';
-    remoteButton.style.display = 'block';
-}

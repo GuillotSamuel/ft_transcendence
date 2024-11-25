@@ -48,16 +48,16 @@ class GameConsumer(AsyncWebsocketConsumer):
         # Vérifier et mettre à jour le statut du match en base de données
         await database_sync_to_async(self.handle_player_disconnect)()
 
-        await self.channel_layer.group_send(
-            self.group_name,
-            {
-                'type': 'send_event',
-                'event_name': 'PLAYER_DISCONNECTED',
-                'data': {
-                    'player_number': self.player_number
-                }
-            }
-        )
+        # await self.channel_layer.group_send(
+        #     self.group_name,
+        #     {
+        #         'type': 'send_event',
+        #         'event_name': 'PLAYER_DISCONNECTED',
+        #         'data': {
+        #             'player_number': self.player_number
+        #         }
+        #     }
+        # )
 
 
     @database_sync_to_async
