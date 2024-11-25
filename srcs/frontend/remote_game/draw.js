@@ -20,7 +20,7 @@ export function draw_score(canvas, ctx, scorePlayer1, scorePlayer2) {
     // Effacez uniquement la zone où les scores sont affichés
 
     // Définir les styles de texte
-    ctx.font = "bold 48px 'Arial Black', sans-serif";
+    ctx.font = "bold '48px 'Press Start 2P', Arial'";
     ctx.textAlign = "center";
 
     const centerX = canvas.width / 2; // Position centrale du canvas

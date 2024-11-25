@@ -48,7 +48,7 @@ export function drawFindGameScreen() {
 
     // Dessiner le texte au-dessus des boutons
     ctx.fillStyle = 'white';
-    ctx.font = '24px Arial';
+    ctx.font = '20px "Press Start 2P", Arial';
     ctx.textAlign = 'center';
     ctx.fillText('Rechercher une Partie', canvas.width / 2, canvas.height / 2 - 60);
 
@@ -103,7 +103,6 @@ export function drawFindGameScreen() {
 function drawButton(ctx, button) {
     // Dessiner le rectangle du bouton
 
-
     ctx.fillStyle = 'gray';
     ctx.fillRect(button.x, button.y, button.width, button.height);
 
@@ -114,7 +113,7 @@ function drawButton(ctx, button) {
 
     // Dessiner le texte du bouton
     ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
+    ctx.font = '16px "Press Start 2P", Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(button.text, button.x + button.width / 2, button.y + button.height / 2);
@@ -163,7 +162,7 @@ function findGame() {
     // Afficher un message dans le canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.fillStyle = 'white';
-    ctx.font = '24px Arial';
+    ctx.font = '20px "Press Start 2P", Arial';
     ctx.textAlign = 'center';
     ctx.fillText('Recherche d\'une partie en cours...', ctx.canvas.width / 2, ctx.canvas.height / 2);
     
