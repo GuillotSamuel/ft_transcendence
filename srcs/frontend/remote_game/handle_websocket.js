@@ -1,6 +1,6 @@
 import {stopLoadingBar, startLoadingBar} from './load_bar.js';
 import {draw_ball, draw_paddle, draw_score} from './draw.js';
-import {drawMessageOnCanvas} from "./draw.js";
+import {drawMessageOnCanvas, createButton} from "./draw.js";
 import {ctx, canvas} from "./websocket.js";
 
 
@@ -107,43 +107,8 @@ function handleWinner(data) {
         canvas.height / 2 + 40
     );
 
-    // Ajouter le bouton "Return" en dessous
-    const buttonWidth = 200;
-    const buttonHeight = 50;
-    const buttonX = (canvas.width - buttonWidth) / 2;
-    const buttonY = canvas.height / 2 + 100;
-
-    // Dessiner le bouton
-    ctx.fillStyle = 'gray';
-    ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
-
-    ctx.fillStyle = 'white';
-    ctx.font = '16px "Press Start 2P", Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('Return', buttonX + buttonWidth / 2, buttonY + buttonHeight / 2);
-
-    // Ajouter l'écouteur d'événements pour le clic sur le bouton
-    canvas.addEventListener('click', function onClick(event) {
-        const rect = canvas.getBoundingClientRect();
-        const clickX = event.clientX - rect.left;
-        const clickY = event.clientY - rect.top;
-
-        // Vérifier si le clic est sur le bouton "Return"
-        if (
-            clickX >= buttonX &&
-            clickX <= buttonX + buttonWidth &&
-            clickY >= buttonY &&
-            clickY <= buttonY + buttonHeight
-        ) {
-            canvas.removeEventListener('click', onClick); // Supprimer l'écouteur après utilisation
-            returnMain(); // Appeler la fonction pour retourner à l'écran principal
-        }
-    });
+    // Crée le bouton "Return" avec gestion des clics
+    createButton(ctx, 'Return', canvas.width / 2 - 100, canvas.height / 2 + 100, 200, 50, returnMain, canvas);
 }
 
 function handleAssignRole(data) {

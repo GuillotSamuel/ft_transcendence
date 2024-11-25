@@ -55,3 +55,69 @@ export function drawMessageOnCanvas(message, color = 'white') {
     }
 }
 
+// Fonction pour dessiner un bouton interactif
+export function createButton(ctx, text, x, y, width, height, onClick, canvas) {
+    const button = { x, y, width, height, text };
+    let isClicked = false;
+
+    // Dessiner le bouton
+    function drawButton() {
+        ctx.fillStyle = isClicked ? '#555' : 'gray'; // Changement de couleur si cliqué
+        ctx.fillRect(button.x, button.y, button.width, button.height);
+
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(button.x, button.y, button.width, button.height);
+
+        ctx.fillStyle = 'white';
+        ctx.font = '16px "Press Start 2P", Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(button.text, button.x + button.width / 2, button.y + button.height / 2);
+    }
+
+    drawButton();
+
+    // Écouteurs d'événements définis à l'extérieur
+    function onMouseDown(event) {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+
+        if (
+            clickX >= button.x &&
+            clickX <= button.x + button.width &&
+            clickY >= button.y &&
+            clickY <= button.y + button.height
+        ) {
+            isClicked = true; // Bouton pressé
+            drawButton(); // Mettre à jour le bouton
+        }
+    }
+
+    function onMouseUp(event) {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+
+        if (
+            clickX >= button.x &&
+            clickX <= button.x + button.width &&
+            clickY >= button.y &&
+            clickY <= button.y + button.height
+        ) {
+            isClicked = false; // Réinitialiser l'état
+            drawButton(); // Mettre à jour le bouton
+            canvas.removeEventListener('mousedown', onMouseDown); // Supprimer les écouteurs après clic
+            canvas.removeEventListener('mouseup', onMouseUp);
+            onClick(); // Appeler la fonction associée
+        } else {
+            isClicked = false; // Réinitialiser si clic en dehors
+            drawButton();
+        }
+    }
+
+    // Ajouter les écouteurs d'événements
+    canvas.addEventListener('mousedown', onMouseDown);
+    canvas.addEventListener('mouseup', onMouseUp);
+}
