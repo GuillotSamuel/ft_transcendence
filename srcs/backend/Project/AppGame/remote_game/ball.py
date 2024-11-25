@@ -2,7 +2,7 @@ import random
 import asyncio
 
 class Ball:
-    def __init__(self, canvas_height, canvas_width, radius=10, speedX=250, speedY=150, speedIncrement=50):
+    def __init__(self, canvas_height, canvas_width, radius=10, speedX=125, speedY=75, speedIncrement=25):
         self.canvas_height = canvas_height
         self.canvas_width = canvas_width
         self.radius = radius

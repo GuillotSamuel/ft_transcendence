@@ -7,7 +7,7 @@ class Paddle:
         self.width = 10
         self.y = (self.canvas_height - self.height) / 2
         self.x = paddle_x
-        self.speed = 380  # Vitesse ajustée pour correspondre à l'original
+        self.speed = 280  # Vitesse ajustée pour correspondre à l'original
         self.bottomPaddle = self.y + self.height
 
     def move(self, direction, delta_time):
