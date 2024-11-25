@@ -4,7 +4,7 @@ import {startListening, stopListening} from "./disconnect.js";
 
 
 export let websocket = null; // Variable globale pour la connexion WebSocket
-let canvas, ctx; // Variables pour le canvas et le contexte
+export let ctx, canvas;
 export let isRemoteGameActive = false;
 
 export async function startRemoteGame() {
@@ -27,7 +27,7 @@ export async function startRemoteGame() {
             alert("Erreur côté serveur lors de la création du match.");
             return;
         }
-
+        
         // Initialisation WebSocket
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const websocketURL = `${protocol}//${window.location.host}/ws/game/`;

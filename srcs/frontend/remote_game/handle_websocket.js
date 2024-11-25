@@ -1,7 +1,7 @@
 import {stopLoadingBar, startLoadingBar} from './load_bar.js';
 import {draw_ball, draw_paddle, draw_score} from './draw.js';
 import {drawMessageOnCanvas} from "./draw.js"
-
+import {ctx, canvas} from "./websocket.js"
 
 export let playerRole = null; // Stocke le rôle du joueur
 
@@ -81,6 +81,7 @@ function handlePrintForUser(message) {
 
 
 function handleGameStart(state) {
+    stopLoadingBar();
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface le canvas
     const { b_x, b_y, p1_pos, p2_pos, p1_score, p2_score } = state;
 
