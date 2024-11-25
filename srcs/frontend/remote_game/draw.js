@@ -37,7 +37,7 @@ export function draw_score(canvas, ctx, scorePlayer1, scorePlayer2) {
 }
 
 
-export function drawMessageOnCanvas(message) {
+export function drawMessageOnCanvas(message, color = 'white') {
     const canvas = document.getElementById('pong-canvas');
     if (canvas) {
         const context = canvas.getContext('2d');
@@ -45,7 +45,7 @@ export function drawMessageOnCanvas(message) {
         
         // Utilisation de la police Press Start 2P
         context.font = '20px "Press Start 2P", Arial';
-        context.fillStyle = 'white';
+        context.fillStyle = color; // Définit la couleur du texte
         context.textAlign = 'center';
         
         // Position du message légèrement au-dessus du centre pour laisser de l'espace en dessous
@@ -54,3 +54,4 @@ export function drawMessageOnCanvas(message) {
         console.warn("Canvas introuvable !");
     }
 }
+

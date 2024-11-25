@@ -1,4 +1,3 @@
-
 import random
 import asyncio
 from .paddle import Paddle
@@ -24,6 +23,8 @@ class Game:
         self.player2_score = 0
 
         self.ball_active = False
+
+        self.winner = None
 
     async def start_game(self):
         self.ball.resetPosition(player=random.choice([1, 2]))
@@ -61,8 +62,27 @@ class Game:
                 self.ball_active = False
                 # Déterminer quel joueur a marqué pour réinitialiser la balle
                 scoring_player = 2 if self.ball.x < 0 else 1
+
                 self.ball.resetPosition(player=scoring_player)
+                if self.check_winner():
+                    send_winner = {
+                        'uuid': str(self.match_uuid),
+                        'p1_score': self.player1_score,
+                        'p2_score': self.player2_score,
+                        'winner': self.winner        
+                    }
+                    await self.channel_layer.group_send(
+                        f"Match{self.match_uuid}",
+                        {
+                            "type": "send_event",
+                            "event_name": "WINNER_UPDATE",
+                            "data": send_winner
+                        }
+                    )
+                    #await self.end_game()
+                    return
                 asyncio.create_task(self.activate_ball())
+
 
             state_update = {
                 'uuid': str(self.match_uuid),
@@ -85,8 +105,6 @@ class Game:
             await asyncio.sleep(1 / 60)
 
     def update_game_state(self, delta_time):
-
-       
         self.leftPaddle.move(self.player1_direction, delta_time)
         self.rightPaddle.move(self.player2_direction, delta_time)
 
@@ -105,6 +123,18 @@ class Game:
             self.player1_score += 1
             return True
         return False
+    
+    def check_winner(self):
+        if self.player1_score == 2:
+            self.winner = 'player1'
+            return 1
+        elif self.player2_score == 2:
+            self.winner = 'player2'
+            return 2
+        else:
+            return 0
+
+
 
     def update_player_direction(self, player, direction):
         if player == 1:
@@ -114,3 +144,33 @@ class Game:
             self.player2_direction = direction
             print("p2 move")
 
+    async def end_game(self):
+    # Mettre à jour la base de données pour attribuer le gagnant
+        from asgiref.sync import sync_to_async
+        await sync_to_async(self.update_match_winner)()
+
+        # Supprimer l'instance du jeu de GameManager
+        from .game_manager import GameManager
+        GameManager.remove_game(self.match_uuid)
+
+        # Notifier les joueurs que le jeu est terminé
+        await self.channel_layer.group_send(
+            f"Match{self.match_uuid}",
+            {
+                "type": "send_event",
+                "event_name": "GAME_OVER",
+                "data": {
+                    "message": f"Game over! Winner is player {self.winner}"
+                }
+            }
+        )
+
+    def update_match_winner(self):
+        from ..models import Match
+        match = Match.objects.get(uuid=self.match_uuid)
+        if self.winner == 1:
+            match.winner = match.player1
+        elif self.winner == 2:
+            match.winner = match.player2
+        match.status = 0  # Mettre le match en état terminé
+        match.save()

@@ -10,7 +10,7 @@ export async function disconnectGame() {
 
     if (websocket && websocket.readyState === WebSocket.OPEN) {
         websocket.close(); // Ferme la connexion WebSocket
-        alert("Vous avez quitté le match.");
+        // alert("Vous avez quitté le match.");
     } else {
         console.warn("WebSocket non connectée. Impossible de se déconnecter.");
     }
