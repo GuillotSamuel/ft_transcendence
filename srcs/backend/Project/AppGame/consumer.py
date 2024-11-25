@@ -23,7 +23,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         }))
 
         if self.match.status == 2:
-            self.game = GameManager.get_game(self.user.username, self.channel_layer)
+            self.game = GameManager.get_game(self.match.uuid, self.channel_layer)
             await self.game.start_game()
         else:
             message = f"Le joueur {self.user.username} is waiting..."
@@ -40,13 +40,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         direction = text_data_json.get('direction')
 
-        if hasattr(self, 'game'):
-            self.game.update_player_direction(self.player_number, direction)
-        else:
-            await self.send(json.dumps({
-                'event_name': 'GAME_NOT_STARTED',
-                'data': 'Le jeu n\'a pas encore commencé.'
-            }))
+        self.game.update_player_direction(self.player_number, direction)
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)

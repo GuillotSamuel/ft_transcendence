@@ -14,7 +14,6 @@ export function handleWebSocketMessage(event) {
             console.warn("Message mal formé reçu :", data);
             return;
         }
-
         switch (data.event_name) {
             case 'ASSIGN_ROLE':
                 handleAssignRole(data.data);
@@ -66,7 +65,6 @@ export function handleWebSocketError(event) {
 
 function handleMatchReady(data) {
     console.log("MATCH_READY: Le match est prêt à commencer !");
-    drawMessageOnCanvas("Un joueur a rejoint. Le match va commencer !");
 }
 
 function handleAssignRole(data) {
@@ -82,10 +80,8 @@ function handlePrintForUser(message) {
 
 function handleGameStart(state) {
     stopLoadingBar();
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface le canvas
-    const { b_x, b_y, p1_pos, p2_pos, p1_score, p2_score } = state;
 
-    console.log("GAME_START: Initialisation du jeu avec :", state);
+    const { b_x, b_y, p1_pos, p2_pos, p1_score, p2_score } = state;
 
     draw_ball(ctx, b_x, b_y, 10); // Dessiner la balle
     draw_paddle(ctx, 10, p1_pos); // Paddle gauche
@@ -94,6 +90,7 @@ function handleGameStart(state) {
 }
 
 function handleGameStateUpdate(state) {
+
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface le canvas
     const { b_x, b_y, p1_pos, p2_pos, p1_score, p2_score } = state;
 

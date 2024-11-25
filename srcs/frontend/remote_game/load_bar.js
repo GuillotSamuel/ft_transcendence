@@ -67,6 +67,5 @@ export function stopLoadingBar() {
     if (canvas) {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawMessageOnCanvas("Chargement terminé !"); // Vous pouvez personnaliser ce message
     }
 }
