@@ -6,6 +6,7 @@ export async function disconnectGame() {
 
     document.removeEventListener('keydown', handleRemoteKeyDown);
     document.removeEventListener('keyup', handleRemoteKeyUp);
+    stopListening();
 
     if (websocket && websocket.readyState === WebSocket.OPEN) {
         websocket.close(); // Ferme la connexion WebSocket
@@ -16,37 +17,77 @@ export async function disconnectGame() {
 
     // Masquer le bouton Disconnect après la déconnexion
     const disconnectButton = document.getElementById('disconnect-button');
-    disconnectButton.style.display = 'none';
+    if (disconnectButton) 
+        disconnectButton.style.display = 'none';
     const local = document.getElementById('local-button');
     const remote = document.getElementById('remote-button');
+    if (local)
+        local.style.display = 'block';
+    if (remote)
+        remote.style.display = 'block';
 
-    local.style.display = 'block';
-    remote.style.display = 'block';
-
-    await disconnectPlayer();
+    disconnectPlayerSync();
 }
 
-export async function disconnectPlayer() {
+export function disconnectPlayerSync() {
     try {
-        const response = await fetch('/api/disconnectPlayer/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-        });
+        const url = '/api/disconnectPlayer/';
+        const payload = JSON.stringify({ action: 'disconnect' });
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log("Déconnexion réussie :", data.message);
-            alert(data.message);
+        // Utiliser sendBeacon si disponible
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(url, payload);
+            console.log("Déconnexion envoyée via sendBeacon.");
         } else {
-            const errorData = await response.json();
-            console.error("Erreur lors de la déconnexion :", errorData.message);
-            alert(errorData.message);
+            // Fallback pour les navigateurs qui ne supportent pas sendBeacon
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', url, false); // `false` pour une requête synchrone
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(payload);
+            console.log("Déconnexion envoyée via XMLHttpRequest synchronisé.");
         }
     } catch (error) {
-        console.error("Erreur réseau :", error);
-        alert("Erreur réseau lors de la tentative de déconnexion.");
+        console.error("Erreur lors de l'envoi de la déconnexion :", error);
     }
+}
+
+
+// export async function disconnectPlayer() {
+//     try {
+//         const response = await fetch('/api/disconnectPlayer/', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             credentials: 'include',
+//         });
+
+//         if (response.ok) {
+//             const data = await response.json();
+//             console.log("Déconnexion réussie :", data.message);
+//             alert(data.message);
+//         } else {
+//             const errorData = await response.json();
+//             console.error("Erreur lors de la déconnexion :", errorData.message);
+//             alert(errorData.message);
+//         }
+//     } catch (error) {
+//         console.error("Erreur réseau :", error);
+//         alert("Erreur réseau lors de la tentative de déconnexion.");
+//     }
+// }
+
+
+// Ajout de l'écouteur
+export function startListening() {
+    window.addEventListener('beforeunload', disconnectGame);
+    window.addEventListener('hashchange', disconnectGame);
+    console.log("Started listening for page changes.");
+}
+
+// Suppression de l'écouteur
+export function stopListening() {
+    window.removeEventListener('beforeunload', disconnectGame);
+    window.removeEventListener('hashchange', disconnectGame);
+    console.log("Stopped listening for page changes.");
 }

@@ -2,49 +2,56 @@
 
 import { startGame, stopGame } from './game.js';
 
-let isGameRunning = false; // État global du jeu
+// État global du jeu
+let isGameRunning = false; 
 let localGame = false;
 
-// function to hide or show button for local game
-export function toggleLocalGameButton(show)
-{
+// Fonction pour afficher ou masquer le bouton de jeu local
+export function toggleLocalGameButton(show) {
     const localGameButton = document.querySelector('[data-translate="game-local-button"]');
     if (localGameButton) {
         localGameButton.style.display = show ? 'inline-block' : 'none';
-        console.log("button display:", show);
+        console.log("Button display:", show ? "Visible" : "Hidden");
     }
 }
 
-// to know if we are in remote or local
-export function resetLocal()
-{
-    if (localGame)
-    {
+// Réinitialise l'état local
+export function resetLocal() {
+    if (localGame) {
         localGame = false;
         toggleLocalGameButton(true);
     }
 }
 
-export function startLocalGame()
-{
+// Démarre un jeu local
+export function startLocalGame() {
     isGameRunning = true;
     localGame = true;
     console.log("Local Game started");
-
     toggleLocalGameButton(false);
-    // Démarrer le jeu
     startGame();
 }
 
-export function resetGameStateOnPageChange()
-{
+// Nettoie les ressources si l'utilisateur quitte la page
+function resetGameStateOnPageChange() {
     if (isGameRunning) {
-        console.log("Page changed while the game is running. Resetting game state.");
+        console.log("Page is being changed or closed. Resetting game state.");
         isGameRunning = false;
-        
     }
     stopGame();
     isGameRunning = false;
 }
 
-window.addEventListener('hashchange', resetGameStateOnPageChange);
+// Ajout de l'écouteur
+export function startListeningForPageChanges() {
+    window.addEventListener('beforeunload', resetGameStateOnPageChange);
+    window.addEventListener('hashchange', resetGameStateOnPageChange);
+    console.log("Started listening for page changes.");
+}
+
+// Suppression de l'écouteur
+export function stopListeningForPageChanges() {
+    window.removeEventListener('beforeunload', resetGameStateOnPageChange);
+    window.removeEventListener('hashchange', resetGameStateOnPageChange);
+    console.log("Stopped listening for page changes.");
+}

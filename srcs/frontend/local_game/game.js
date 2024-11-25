@@ -1,8 +1,9 @@
 import { Ball } from "./ball.js";
 import { Paddle } from "./paddle.js";
 import { Score } from "./score.js";
-import { resetLocal } from './gameManager.js';
+import { resetLocal, startListeningForPageChanges, stopListeningForPageChanges } from './gameManager.js';
 import { createBoostPNG } from "./spicy_game/managePNG.js";
+
 
 let canvas, ctx;
 let gameRunning = false;
@@ -18,6 +19,7 @@ let currentRandomHeight = null;
 
 function initializeGame()
 {
+    startListeningForPageChanges();
     begin_time = Date.now();
     // Sélection du canvas
     canvas = document.getElementById("pong-canvas");
@@ -80,7 +82,6 @@ export function startGame()
 export function stopGame()
 {
     gameRunning = false;
-
     if (!ctx || !canvas) {
         console.warn("Canvas or context not initialized. Skipping cleanup.");
         return;
@@ -115,7 +116,7 @@ export function stopGame()
 
     document.removeEventListener("keydown", keyDownHandler);
     document.removeEventListener("keyup", keyUpHandler);
-
+    stopListeningForPageChanges();
     resetLocal();
 }
 
