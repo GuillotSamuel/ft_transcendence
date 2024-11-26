@@ -47,14 +47,14 @@ class GameConsumer(AsyncWebsocketConsumer):
             print(f"Direction reçue pour le joueur {self.player_number}: {direction}")
             self.game.update_player_direction(self.player_number, direction)
 
-    # async def disconnect(self, close_code):
-    #     # Supprimer l'utilisateur du groupe WebSocket
-    #     await self.channel_layer.group_discard(self.group_name, self.channel_name)
+    async def disconnect(self, close_code):
+        # Supprimer l'utilisateur du groupe WebSocket
+        #await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
-    #     # Mettre à jour le statut du match ou gérer la déconnexion
-    #     await database_sync_to_async(self.handle_player_disconnect)()
+        # Mettre à jour le statut du match ou gérer la déconnexion
+        #await database_sync_to_async(self.handle_player_disconnect)()
 
-    #     print(f"Déconnexion du joueur {self.player_number} dans le match {self.match.uuid}.")
+        print(f"Déconnexion du joueur {self.player_number} dans le match {self.match.uuid}.")
     
     @database_sync_to_async
     def get_match(self):
