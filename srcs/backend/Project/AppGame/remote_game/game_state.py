@@ -152,14 +152,27 @@ class Game:
         # Supprimer l'instance du jeu de GameManager
         from .game_manager import GameManager
         GameManager.remove_game(self.match_uuid)
-        
+
 
     def update_match_winner(self):
         from ..models import Match
         match = Match.objects.get(uuid=self.match_uuid)
-        if self.winner == 1:
+
+        # Déterminer le vainqueur et sauvegarder les scores
+        if self.winner == 'player1':
             match.winner = match.player1
-        elif self.winner == 2:
+        elif self.winner == 'player2':
             match.winner = match.player2
-        match.status = 0  # Mettre le match en état terminé
+
+        match.p1_score = self.player1_score
+        match.p2_score = self.player2_score
+        match.status = 3  # Marquer le match comme terminé (status=3)
         match.save()
+        match.refresh_from_db()
+        print(f"Match saved successfully: UUID={match.uuid}, "
+            f"Winner={match.winner}, "
+            f"Player1={match.player1}, Player2={match.player2}, "
+            f"P1 Score={match.p1_score}, P2 Score={match.p2_score}, "
+            f"Status={match.status}")
+
+

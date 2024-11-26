@@ -14,8 +14,6 @@ from asgiref.sync import async_to_sync
 @permission_classes([IsAuthenticated])
 def manageMatch(request):
     user = request.user
-    if user.matches_player1.exists() or user.matches_player2.exists():
-        return Response({"message": "You already are in a match"}, status=status.HTTP_400_BAD_REQUEST)
 
     matchs = Match.objects.filter(status=1)
 

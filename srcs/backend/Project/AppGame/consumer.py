@@ -108,21 +108,16 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game = GameManager.get_game(self.match.uuid, self.channel_layer)
             await self.game.start_game()
 
-
-    async def handle_player_disconnect(self):
+    def handle_player_disconnect(self):
         if self.player_number == 1:
-            # Si le joueur 1 se déconnecte
             self.match.player1 = None
-            if self.match.player2:
-                self.match.status = 1  # Le match revient en attente
-            else:
-                self.match.status = 0  # Plus de joueurs, le match est annulé
         elif self.player_number == 2:
-            # Si le joueur 2 se déconnecte
             self.match.player2 = None
-            if self.match.player1:
-                self.match.status = 1  # Le match revient en attente
-            else:
-                self.match.status = 0  # Plus de joueurs, le match est annulé
-        
-        self.match.save()
+
+        if self.match.player1 is None and self.match.player2 is None:
+            # Si les deux joueurs sont déconnectés, supprimer le match
+            self.match.delete()
+        else:
+            # Sinon, mettre à jour le statut
+            self.match.status = 1 if self.match.player1 or self.match.player2 else 0
+            self.match.save()
