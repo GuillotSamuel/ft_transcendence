@@ -15,13 +15,14 @@ from asgiref.sync import async_to_sync
 def manageMatch(request):
     user = request.user
 
+    # Vérifier si un match en attente existe
     matchs = Match.objects.filter(status=1)
-
     if matchs.exists():
         match = matchs.first()
         match.player2 = user
         match.status = 2
         match.save()
+        print(f"Match rejoint : {match.uuid}, player2: {user.id}")
 
         # Notifier le groupe que le match est prêt
         channel_layer = get_channel_layer()
@@ -38,11 +39,14 @@ def manageMatch(request):
         )
         return Response({"message": "match joined"}, status=status.HTTP_200_OK)
 
+    # Créer un nouveau match
     newMatch = Match.objects.create(
         player1=user,
         status=1
     )
+    print(f"Match créé : {newMatch.uuid}, player1: {user.id}")
     return Response({"message": "match created"}, status=status.HTTP_200_OK)
+
 
 
 @api_view(['POST'])

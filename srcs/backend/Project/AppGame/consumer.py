@@ -6,11 +6,15 @@ import json
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = await self.get_user_from_cookie()
-        self.match = await self.get_user_match()
+        self.match = await self.get_match()
+
+        if not self.match:
+            print("Aucun match trouvé, fermeture de la connexion WebSocket.")
+            await self.close()
+            return
+
         self.group_name = f"Match{self.match.uuid}"
-        
         await self.accept()
-        
         await self.channel_layer.group_add(self.group_name, self.channel_name)
 
         self.player_number = await self.get_player_role()
@@ -36,36 +40,34 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-    async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        direction = text_data_json.get('direction')
-
-        self.game.update_player_direction(self.player_number, direction)
-
-    async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.group_name, self.channel_name)
-
-        # Vérifier et mettre à jour le statut du match en base de données
-        await database_sync_to_async(self.handle_player_disconnect)()
-
-        # await self.channel_layer.group_send(
-        #     self.group_name,
-        #     {
-        #         'type': 'send_event',
-        #         'event_name': 'PLAYER_DISCONNECTED',
-        #         'data': {
-        #             'player_number': self.player_number
-        #         }
-        #     }
-        # )
 
 
     @database_sync_to_async
-    def get_user_match(self):
-        if self.user.matches_player1.exists():
-            return self.user.matches_player1.first()
-        else:
-            return self.user.matches_player2.first()
+    def get_match(self):
+        print(f"Recherche de match pour l'utilisateur {self.user.id}")
+
+        # Chercher un match en attente (status=1)
+        match = self.user.matches_player1.filter(status=1).first() or self.user.matches_player2.filter(status=1).first()
+        if match:
+            print(f"Match trouvé avec status=1: {match.uuid}")
+            return match
+
+        # Chercher un match en cours (status=2)
+        match = self.user.matches_player1.filter(status=2).first() or self.user.matches_player2.filter(status=2).first()
+        if match:
+            print(f"Match trouvé avec status=2: {match.uuid}")
+            return match
+
+        # Chercher un match terminé (status=0)
+        match = self.user.matches_player1.filter(status=0).first() or self.user.matches_player2.filter(status=0).first()
+        if match:
+            print(f"Match trouvé avec status=0: {match.uuid}")
+            return match
+
+        print("Aucun match trouvé pour l'utilisateur.")
+        return None
+
+
         
     @database_sync_to_async
     def get_player_role(self):
@@ -102,11 +104,16 @@ class GameConsumer(AsyncWebsocketConsumer):
         }))
 
     async def match_ready(self, event):
-        # Mettre à jour le statut du match
-        self.match = await self.get_user_match()
+        self.match = await self.get_match()
+
+        if not self.match:
+            print("Aucun match trouvé dans match_ready.")
+            return
+
         if self.match.status == 2:
             self.game = GameManager.get_game(self.match.uuid, self.channel_layer)
             await self.game.start_game()
+
 
     def handle_player_disconnect(self):
         if self.player_number == 1:
