@@ -48,7 +48,6 @@ export async function startRemoteGame() {
         disconnectButton.style.display = 'block';
     };
     websocket.onclose = () => {
-        console.log("WebSocket déconnecté !");
         handleWebSocketClose();
 
         // Masque le bouton Disconnect

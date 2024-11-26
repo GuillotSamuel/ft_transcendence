@@ -79,7 +79,7 @@ class Game:
                             "data": send_winner
                         }
                     )
-                    #await self.end_game()
+                    await self.end_game()
                     return
                 asyncio.create_task(self.activate_ball())
 
@@ -152,18 +152,7 @@ class Game:
         # Supprimer l'instance du jeu de GameManager
         from .game_manager import GameManager
         GameManager.remove_game(self.match_uuid)
-
-        # Notifier les joueurs que le jeu est terminé
-        await self.channel_layer.group_send(
-            f"Match{self.match_uuid}",
-            {
-                "type": "send_event",
-                "event_name": "GAME_OVER",
-                "data": {
-                    "message": f"Game over! Winner is player {self.winner}"
-                }
-            }
-        )
+        
 
     def update_match_winner(self):
         from ..models import Match

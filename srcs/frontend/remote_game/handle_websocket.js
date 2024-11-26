@@ -1,7 +1,7 @@
 import {stopLoadingBar, startLoadingBar} from './load_bar.js';
 import {draw_ball, draw_paddle, draw_score} from './draw.js';
 import {drawMessageOnCanvas, createButton} from "./draw.js";
-import {ctx, canvas} from "./websocket.js";
+import {ctx, canvas, websocket, setIsRemoteGameActive, getIsRemoteGameActive,  handleRemoteKeyDown, handleRemoteKeyUp} from "./websocket.js";
 
 
 export let playerRole = null; // Stocke le rôle du joueur
@@ -61,7 +61,9 @@ export function handleWebSocketOpen() {
 export function handleWebSocketClose() {
     console.log("WebSocket déconnecté !");
     stopLoadingBar();
-    drawMessageOnCanvas("Déconnecté du jeu.");
+
+    playerRole = null;
+    isGameOver = false;
 }
 
 export function handleWebSocketError(event) {
@@ -80,6 +82,8 @@ function handleWinner(data) {
     console.log("LE GAGNANT EST:", winner);
     console.log(`Le score est de p1: ${data.p1_score} et p2: ${data.p2_score}`);
 
+    if (getIsRemoteGameActive())
+        setIsRemoteGameActive(false);
     // Efface le canvas et affiche le message du gagnant
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Effacer l'écran
 
@@ -106,6 +110,9 @@ function handleWinner(data) {
         canvas.width / 2,
         canvas.height / 2 + 40
     );
+    const disconnectButton = document.getElementById('disconnect-button');
+
+    disconnectButton.style.display = 'none';
 
     // Crée le bouton "Return" avec gestion des clics
     createButton(ctx, 'Return', canvas.width / 2 - 100, canvas.height / 2 + 100, 200, 50, returnMain, canvas);
@@ -120,7 +127,6 @@ function handlePrintForUser(message) {
     console.log("PRINTFORUSER: Message reçu :", message);
     startLoadingBar();
 }
-
 
 function handleGameStart(state) {
     stopLoadingBar();
@@ -153,6 +159,15 @@ function returnMain() {
     console.log('Retour à l\'écran principal...');
     const ctx = document.getElementById('pong-canvas').getContext('2d');
     
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+        websocket.close(); // Fermeture de la connexion
+        console.log("WebSocket fermée proprement.");
+    }
+
+    // Supprimer les événements clavier pour ce jeu
+    document.removeEventListener('keydown', handleRemoteKeyDown);
+    document.removeEventListener('keyup', handleRemoteKeyUp);
+
     // Effacer le canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     
