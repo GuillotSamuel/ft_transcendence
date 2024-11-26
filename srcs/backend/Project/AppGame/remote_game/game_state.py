@@ -83,7 +83,7 @@ class Game:
                     return
                 asyncio.create_task(self.activate_ball())
 
-
+            
             state_update = {
                 'uuid': str(self.match_uuid),
                 "p1_pos": self.leftPaddle.y,
@@ -93,7 +93,6 @@ class Game:
                 'p1_score': self.player1_score,
                 'p2_score': self.player2_score
             }
-
             await self.channel_layer.group_send(
                 f"Match{self.match_uuid}",
                 {
