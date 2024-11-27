@@ -39,21 +39,16 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'data': message
                 }
             )
+        
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         direction = text_data_json.get('direction', None)
 
         if direction is not None:
-            print(f"Direction reçue pour le joueur {self.player_number}: {direction}")
+            #print(f"Direction reçue pour le joueur {self.player_number}: {direction}")
             self.game.update_player_direction(self.player_number, direction)
 
     async def disconnect(self, close_code):
-        # Supprimer l'utilisateur du groupe WebSocket
-        #await self.channel_layer.group_discard(self.group_name, self.channel_name)
-
-        # Mettre à jour le statut du match ou gérer la déconnexion
-        #await database_sync_to_async(self.handle_player_disconnect)()
-
         print(f"Déconnexion du joueur {self.player_number} dans le match {self.match.uuid}.")
     
     @database_sync_to_async

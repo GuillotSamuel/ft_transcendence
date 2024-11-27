@@ -138,10 +138,10 @@ class Game:
     def update_player_direction(self, player, direction):
         if player == 1:
             self.player1_direction = direction
-            print("p1 move")
+            #print("p1 move")
         elif player == 2:
             self.player2_direction = direction
-            print("p2 move")
+            #print("p2 move")
 
     async def end_game(self):
     # Mettre à jour la base de données pour attribuer le gagnant
