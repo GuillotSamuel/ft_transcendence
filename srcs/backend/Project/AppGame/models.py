@@ -1,6 +1,7 @@
 from django.db import models
 from AppAuthentification.models import GameUser
 import uuid
+from django.utils.timezone import now  # Pour utiliser la date et l'heure actuelle
 
 class Match(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -10,3 +11,4 @@ class Match(models.Model):
     status = models.IntegerField(default=0)
     p1_score = models.IntegerField(null=True, blank=True) 
     p2_score = models.IntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(default=now)  # Sauvegarde la date et l'heure de création du match

@@ -172,6 +172,6 @@ class Game:
             f"Winner={match.winner}, "
             f"Player1={match.player1}, Player2={match.player2}, "
             f"P1 Score={match.p1_score}, P2 Score={match.p2_score}, "
-            f"Status={match.status}")
+            f"Status={match.status}", f"Date={match.created_at}")
 
 

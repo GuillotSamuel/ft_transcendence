@@ -8,6 +8,7 @@ from AppAuthentification.check import JWTCookieAuthentication
 from rest_framework.permissions import AllowAny
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.utils.timezone import now
 
 @api_view(['POST'])
 @authentication_classes([JWTCookieAuthentication])
@@ -21,6 +22,7 @@ def manageMatch(request):
         match = matchs.first()
         match.player2 = user
         match.status = 2
+        match.created_at = now()
         match.save()
         print(f"Match rejoint : {match.uuid}, player2: {user.id}")
 
