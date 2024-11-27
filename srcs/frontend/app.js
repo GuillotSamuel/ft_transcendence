@@ -1,5 +1,8 @@
-import { startRemoteGame } from './remote_game/websocket.js';
+import { startRemoteGame} from './remote_game/websocket.js';
+import { disconnectGame} from './remote_game/disconnect.js';
 import { startLocalGame } from './local_game/gameManager.js';
+import { drawFindGameScreen } from './remote_game/find_return_button.js';
+
 
 const routes = {
     home: {
@@ -223,15 +226,11 @@ const routes = {
                         <p class="lead text-muted" data-translate="presentation-game-text"></p>
                         <!-- Canvas for the game -->
                         <div class="canvas-container p-4 rounded shadow">
-                            <canvas id="pong-canvas" class="bg-dark rounded border border-light" width="800" height="600"></canvas>
+                            <canvas id="pong-canvas" class="bg-dark rounded border border-light" width="600" height="400"></canvas>
                         </div>
                         <!-- Buttons for Local and Remote Game -->
                         <div class="d-flex justify-content-center gap-3 mt-4" id="gameButtonDisplay"></div>
                         
-                        <!-- Messages from the WebSocket -->
-                        <div id="gameMessageDisplay" class="mt-4 p-3 bg-light rounded shadow-sm">
-                            <!-- Messages will be dynamically appended here -->
-                        </div>
                     </div>
                 </div>
             </section>
@@ -294,6 +293,8 @@ window.startRemoteGame = startRemoteGame;
 window.addingFriend = addingFriend;
 window.changeAvatar = changeAvatar;
 window.login42 = login42;
+window.disconnectGame = disconnectGame;
+window.drawFindGameScreen = drawFindGameScreen;
 
 /* Utils */
 
@@ -705,13 +706,13 @@ async function manageDisplayGame() {
 
     if (isAuthenticated) {
         gameButtonDisplay.innerHTML = `
-            <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
-            <button class="btn btn-info btn-lg" onclick="startRemoteGame()" data-translate="game-remote-button"></button>
-        `;
+            <button id="local-button" class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
+            <button id="remote-button" class="btn btn-info btn-lg" onclick="drawFindGameScreen()" data-translate="game-remote-button"></button>
+            <button id="disconnect-button" class="btn btn-danger btn-lg" onclick="disconnectGame()" data-translate="game-disconnect-button" style="display: none;"></button>
+            `;
     } else {
         gameButtonDisplay.innerHTML = `
             <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
-            <button class="btn btn-info btn-lg" onclick="startRemoteGame()" data-translate="game-remote-button"></button>
             `;
     }
 }

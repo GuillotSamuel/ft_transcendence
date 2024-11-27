@@ -87,6 +87,7 @@
 
     "game-local-button": "Local Game",
     "game-remote-button": "Remote Game",
+    "game-disconnect-button": "Disconnect",
 
     "title-friend-title": "Friends",
     "adding-friend-title": "Adding friends",

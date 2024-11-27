@@ -1,8 +1,9 @@
 import { Ball } from "./ball.js";
 import { Paddle } from "./paddle.js";
 import { Score } from "./score.js";
-import { resetLocal } from './gameManager.js';
+import { resetLocal, startListeningForPageChanges, stopListeningForPageChanges } from './gameManager.js';
 import { createBoostPNG } from "./spicy_game/managePNG.js";
+
 
 let canvas, ctx;
 let gameRunning = false;
@@ -18,13 +19,14 @@ let currentRandomHeight = null;
 
 function initializeGame()
 {
+    startListeningForPageChanges();
     begin_time = Date.now();
     // Sélection du canvas
     canvas = document.getElementById("pong-canvas");
     ctx = canvas.getContext("2d");
     canvas.width = 600;
     canvas.height = 400;
-
+    
     // Initialisation des objets de jeu
     ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 2, 2);
     leftPaddle = new Paddle(10, canvas.height / 2 - 50, 10, 100, canvas);
@@ -73,7 +75,6 @@ export function startGame()
     if (gameRunning) return;
 
     initializeGame();
-    ball.resetPosition();
     gameRunning = true;
     gameLoop();
 }
@@ -81,9 +82,8 @@ export function startGame()
 export function stopGame()
 {
     gameRunning = false;
-
     if (!ctx || !canvas) {
-        // console.warn("Canvas or context not initialized. Skipping cleanup.");
+        console.warn("Canvas or context not initialized. Skipping cleanup.");
         return;
     }
 
@@ -102,20 +102,21 @@ export function stopGame()
     }
 
     if (ctx) {
-        ctx.font = "bold 60px 'Press Start 2P', cursive";
+        ctx.font = "20px 'Press Start 2P', Arial";
         ctx.textAlign = "center";
         ctx.fillText(winnerMessage, canvas.width / 2, canvas.height / 2);
 
-        ctx.font = "bold 30px 'Press Start 2P', cursive";
+        ctx.font = "20px 'Press Start 2P', Arial";
         ctx.fillStyle = "#FFFFFF";
         ctx.fillText("Press 'Start' to play again", canvas.width / 2, canvas.height / 2 + 50);
     }
 
-    if (score) score.resetScore();
+    if (score) 
+        score.resetScore();
 
     document.removeEventListener("keydown", keyDownHandler);
     document.removeEventListener("keyup", keyUpHandler);
-
+    stopListeningForPageChanges();
     resetLocal();
 }
 
@@ -169,15 +170,15 @@ function gameLoop()
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
 
-    check_ball_and_bonus(ball, imageBoost);
+    //check_ball_and_bonus(ball, imageBoost);
 
-    if (ball.getLastPaddleTouch() === "right") {
-    console.log("The last paddle to touch the ball was the right paddle.");
-    // Appliquez une logique ici, comme un bonus pour le joueur de droite
-    } else if (ball.getLastPaddleTouch() === "left") {
-        console.log("The last paddle to touch the ball was the left paddle.");
-        // Appliquez une logique ici, comme un bonus pour le joueur de gauche
-    }
+    // if (ball.getLastPaddleTouch() === "right") {
+    // console.log("The last paddle to touch the ball was the right paddle.");
+    // // Appliquez une logique ici, comme un bonus pour le joueur de droite
+    // } else if (ball.getLastPaddleTouch() === "left") {
+    //     console.log("The last paddle to touch the ball was the left paddle.");
+    //     // Appliquez une logique ici, comme un bonus pour le joueur de gauche
+    // }
 
 
     leftPaddle.move(leftPaddleUp, leftPaddleDown);
@@ -188,14 +189,14 @@ function gameLoop()
     score.draw();
 
     // rand pos unique si diff time > 2
-    if (check_time()) {
-        if (!actionPerformed) {
-            currentRandomHeight = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
-            console.log("Random height generated:", currentRandomHeight);
-            actionPerformed = true;
-        }
-        imageBoost.draw(ctx, canvas.height, currentRandomHeight); 
-    }
+    // if (check_time()) {
+    //     if (!actionPerformed) {
+    //         currentRandomHeight = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
+    //         console.log("Random height generated:", currentRandomHeight);
+    //         actionPerformed = true;
+    //     }
+    //     imageBoost.draw(ctx, canvas.height, currentRandomHeight); 
+    // }
 
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer2();

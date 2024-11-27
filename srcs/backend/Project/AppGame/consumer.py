@@ -1,109 +1,139 @@
-import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-import logging
-
-logger = logging.getLogger(__name__)
-
-# Stockage en mémoire pour suivre le nombre d'utilisateurs par groupe
-group_sizes = {}
+from channels.db import database_sync_to_async
+from .remote_game.game_manager import GameManager
+import json
 
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        self.user = await self.get_user_from_cookie()
+        self.match = await self.get_match()
+
+        if not self.match:
+            print("Aucun match trouvé, fermeture de la connexion WebSocket.")
+            await self.close()
+            return
+
+        self.group_name = f"Match{self.match.uuid}"
         await self.accept()
-        logger.info("WebSocket connecté.")
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+
+        self.player_number = await self.get_player_role()
+
+        await self.send(json.dumps({
+            'event_name': 'ASSIGN_ROLE',
+            'data': {
+                'player_role': self.player_number,
+            }
+        }))
+
+        if self.match.status == 2:
+            self.game = GameManager.get_game(self.match.uuid, self.channel_layer)
+            await self.game.start_game()
+        else:
+            message = f"Le joueur {self.user.username} is waiting..."
+            await self.channel_layer.group_send(
+                self.group_name,
+                {
+                    'type': 'send_event',
+                    'event_name': 'PRINTFORUSER',
+                    'data': message
+                }
+            )
+        
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        direction = text_data_json.get('direction', None)
+
+        if direction is not None:
+            #print(f"Direction reçue pour le joueur {self.player_number}: {direction}")
+            self.game.update_player_direction(self.player_number, direction)
 
     async def disconnect(self, close_code):
-        if hasattr(self, 'room_group_name'):
-            await self.decrement_group_size(self.room_group_name)
-            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        print(f"Déconnexion du joueur {self.player_number} dans le match {self.match.uuid}.")
+    
+    @database_sync_to_async
+    def get_match(self):
+        print(f"Recherche de match pour l'utilisateur {self.user.id}")
 
-    async def receive(self, text_data):
-        # Décoder les données reçues
-        data = json.loads(text_data)
-        room_name = data.get('room_name')
-        message = data.get('message', '')
+        # Chercher un match en attente (status=1)
+        match = self.user.matches_player1.filter(status=1).first() or self.user.matches_player2.filter(status=1).first()
+        if match:
+            print(f"Match trouvé avec status=1: {match.uuid}")
+            return match
 
-        if room_name:
-            await self.join_room(room_name)
-        elif message:
-            await self.broadcast_message(message)
+        # Chercher un match en cours (status=2)
+        match = self.user.matches_player1.filter(status=2).first() or self.user.matches_player2.filter(status=2).first()
+        if match:
+            print(f"Match trouvé avec status=2: {match.uuid}")
+            return match
 
-    async def join_room(self, room_name):
-        # Quitter la salle précédente si existante
-        if hasattr(self, 'room_group_name'):
-            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-            await self.decrement_group_size(self.room_group_name)
+        # Chercher un match terminé (status=0)
+        match = self.user.matches_player1.filter(status=0).first() or self.user.matches_player2.filter(status=0).first()
+        if match:
+            print(f"Match trouvé avec status=0: {match.uuid}")
+            return match
 
-        # Rejoindre la nouvelle salle
-        self.room_name = room_name
-        self.room_group_name = f"game_{room_name}"
+        print("Aucun match trouvé pour l'utilisateur.")
+        return None
 
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.increment_group_size(self.room_group_name)
 
-        # Obtenir la taille actuelle du groupe
-        current_players = await self.get_group_size(self.room_group_name)
+        
+    @database_sync_to_async
+    def get_player_role(self):
+        if self.match.player1 == self.user:
+            return 1
+        elif self.match.player2 == self.user:
+            return 2
+        return None
 
-        # Informer les joueurs de la salle
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'player_joined',
-                'message': "Waiting for opponent..."
-            }
-        )
+    async def get_user_from_cookie(self):
+        from rest_framework_simplejwt.authentication import JWTAuthentication
+        from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+        from django.contrib.auth import get_user_model
 
-        # Démarrer la partie si deux joueurs sont connectés
-        if current_players == 2:
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'game_started',
-                    'message': "Partie lancée avec deux joueurs !"
-                }
-            )
+        User = get_user_model()
+        access_token = self.scope.get("cookies", {}).get('access_token')
+        if not access_token:
+            return None
 
-    async def broadcast_message(self, message):
-        # Diffuser un message à la salle actuelle
-        if hasattr(self, 'room_group_name'):
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'game_message',
-                    'message': message
-                }
-            )
+        jwt_auth = JWTAuthentication()
+        try:
+            validated_token = await database_sync_to_async(jwt_auth.get_validated_token)(access_token)
+            user = await database_sync_to_async(jwt_auth.get_user)(validated_token)
+            return user
+        except (InvalidToken, TokenError):
+            return None
 
-    # Gestion des événements pour les messages
-    async def game_message(self, event):
+    async def send_event(self, event):
+        event_name = event.get("event_name")
+        data = event.get("data")
         await self.send(text_data=json.dumps({
-            'type': 'message',
-            'message': event['message']
+            'event_name': event_name,
+            'data': data
         }))
 
-    async def game_started(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'game_started',
-            'message': event['message']
-        }))
+    async def match_ready(self, event):
+        self.match = await self.get_match()
 
-    async def player_joined(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'joined',
-            'message': event['message']
-        }))
+        if not self.match:
+            print("Aucun match trouvé dans match_ready.")
+            return
 
-    # Gestion du compteur d'utilisateurs par groupe
-    async def increment_group_size(self, group_name):
-        global group_sizes
-        group_sizes[group_name] = group_sizes.get(group_name, 0) + 1
+        if self.match.status == 2:
+            self.game = GameManager.get_game(self.match.uuid, self.channel_layer)
+            await self.game.start_game()
 
-    async def decrement_group_size(self, group_name):
-        global group_sizes
-        if group_name in group_sizes:
-            group_sizes[group_name] -= 1
-            if group_sizes[group_name] <= 0:
-                del group_sizes[group_name]
 
-    async def get_group_size(self, group_name):
-        return group_sizes.get(group_name, 0)
+    def handle_player_disconnect(self):
+        if self.player_number == 1:
+            self.match.player1 = None
+        elif self.player_number == 2:
+            self.match.player2 = None
+
+        if self.match.player1 is None and self.match.player2 is None:
+            # Si les deux joueurs sont déconnectés, supprimer le match
+            self.match.delete()
+        else:
+            # Sinon, mettre à jour le statut
+            self.match.status = 1 if self.match.player1 or self.match.player2 else 0
+            self.match.save()
