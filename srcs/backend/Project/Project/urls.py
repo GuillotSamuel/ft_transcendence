@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from AppGame.views import manageMatch, disconnectPlayer
+from AppGame.views import manageMatch, disconnectPlayer, matchsDetails
 from AppAuthentification.views import (
     register,
     changePassword,
@@ -68,4 +68,5 @@ urlpatterns = [
     #Match
     path('api/manageMatch/', manageMatch),
     path('api/disconnectPlayer/', disconnectPlayer),
+    path('api/matchsDetails/', matchsDetails),
 ]

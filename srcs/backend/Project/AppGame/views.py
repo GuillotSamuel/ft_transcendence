@@ -71,3 +71,30 @@ def disconnectPlayer(request):
 
     except Exception as e:
         return Response({"message": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['Get'])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
+def matchsDetails(request):
+    user =  request.user
+    win = 0
+    lose = 0
+    matchsDetails = []
+
+    matchs = Match.objects.all()
+    for match in matchs:
+        if user == match.player1 or user == match.player2:
+            if(user == match.winner):
+                win+=1
+            else:
+                lose+=1
+            matchsDetails.append({
+            "player1": match.player1.username,
+            "player2": match.player2.username,
+            "p1_score": match.p1_score,
+            "p2_score": match.p2_score,
+            "winner": match.winner.username,
+            "date": match.created_at,
+        })
+    return Response({"win": win, "lose": lose, "matchs" : matchsDetails}, status=status.HTTP_200_OK)
