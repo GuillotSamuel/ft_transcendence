@@ -2,7 +2,7 @@ import {stopLoadingBar, startLoadingBar} from './load_bar.js';
 import {draw_ball, draw_paddle, draw_score} from './draw.js';
 import {drawMessageOnCanvas, createButton} from "./draw.js";
 import {ctx, canvas, websocket, setIsRemoteGameActive, getIsRemoteGameActive,  handleRemoteKeyDown, handleRemoteKeyUp} from "./websocket.js";
-
+import {stopListening} from "./disconnect.js";
 
 export let playerRole = null; // Stocke le rôle du joueur
 export let isGameOver = false; // Variable globale
@@ -41,6 +41,10 @@ export function handleWebSocketMessage(event) {
                 handleGameStart(data.data);
                 break;
 
+            case 'GAME_STOPPED':
+                handleGameStopped(data.data)
+                break;
+
             case 'PLAYER_DISCONNECTED':
                 console.log(`Le joueur ${data.data.player_number} s'est déconnecté.`);
                 drawMessageOnCanvas(`Le joueur ${data.data.player_number} s'est déconnecté.`);
@@ -52,6 +56,41 @@ export function handleWebSocketMessage(event) {
     } catch (error) {
         console.error("Erreur lors du traitement du message WebSocket :", error, event.data);
     }
+}
+
+
+export function handleGameStopped(){
+    console.log("Opponent has disconnect, you Won 3-0 !")
+
+    isGameOver = true; // Indique que le jeu est terminé
+
+    if (getIsRemoteGameActive())
+        setIsRemoteGameActive(false);
+    // Efface le canvas et affiche le message du gagnant
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Effacer l'écran
+
+    // Définir la couleur du message
+    let messageColor = "green";
+
+    // Affiche un message pour le gagnant
+    
+    drawMessageOnCanvas(`Your Opponent has been disconnected`, messageColor);
+
+    // Affiche les scores finaux au centre de l'écran
+    ctx.font = "20px 'Press Start 2P', Arial";
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText(
+        `You Won 3 - 0`,
+        canvas.width / 2,
+        canvas.height / 2 + 40
+    );
+    const disconnectButton = document.getElementById('disconnect-button');
+
+    disconnectButton.style.display = 'none';
+
+    // Crée le bouton "Return" avec gestion des clics
+    createButton(ctx, 'Return', canvas.width / 2 - 100, canvas.height / 2 + 100, 200, 50, returnMain, canvas);
 }
 
 export function handleWebSocketOpen() {
@@ -73,6 +112,7 @@ export function handleWebSocketError(event) {
 
 function handleMatchReady(data) {
     console.log("MATCH_READY: Le match est prêt à commencer !");
+    stopListening();
 }
 
 function handleWinner(data) {

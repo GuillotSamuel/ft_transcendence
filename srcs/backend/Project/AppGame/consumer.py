@@ -1,10 +1,11 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from .remote_game.game_manager import GameManager
 import json
 
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        from .remote_game.game_manager import GameManager
+        self.game = None
         self.user = await self.get_user_from_cookie()
         self.match = await self.get_match()
 
@@ -49,6 +50,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game.update_player_direction(self.player_number, direction)
 
     async def disconnect(self, close_code):
+        if self.game and self.game.game_active == True:
+            print("Vous avez quitte la game en plein match!")
+            await self.game.set_winner_from_disconnect(self.player_number)
         print(f"Déconnexion du joueur {self.player_number} dans le match {self.match.uuid}.")
     
     @database_sync_to_async
@@ -113,6 +117,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         }))
 
     async def match_ready(self, event):
+        from .remote_game.game_manager import GameManager
         self.match = await self.get_match()
 
         if not self.match:

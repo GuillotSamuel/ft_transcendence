@@ -2,6 +2,8 @@ import random
 import asyncio
 from .paddle import Paddle
 from .ball import Ball
+from asgiref.sync import sync_to_async
+
 
 class Game:
     def __init__(self, match_uuid, channel_layer):
@@ -23,10 +25,11 @@ class Game:
         self.player2_score = 0
 
         self.ball_active = False
-
+        self.game_active = False
         self.winner = None
 
     async def start_game(self):
+        self.game_active = True
         self.ball.resetPosition(player=random.choice([1, 2]))
         await self.channel_layer.group_send(
             f"Match{self.match_uuid}",
@@ -53,7 +56,7 @@ class Game:
 
     async def game_loop(self):
         last_time = asyncio.get_event_loop().time()
-        while True:
+        while self.game_active:
             current_time = asyncio.get_event_loop().time()
             delta_time = current_time - last_time
             last_time = current_time
@@ -144,17 +147,23 @@ class Game:
             #print("p2 move")
 
     async def end_game(self):
-    # Mettre à jour la base de données pour attribuer le gagnant
-        from asgiref.sync import sync_to_async
+        from .game_manager import GameManager
+
+        # Mettre à jour la base de données pour attribuer le gagnant
         await sync_to_async(self.update_match_winner)()
 
+        # Arrêter le jeu
+        self.game_active = False
+
         # Supprimer l'instance du jeu de GameManager
-        from .game_manager import GameManager
         GameManager.remove_game(self.match_uuid)
+
 
 
     def update_match_winner(self):
         from ..models import Match
+
+        # Récupérer le match
         match = Match.objects.get(uuid=self.match_uuid)
 
         # Déterminer le vainqueur et sauvegarder les scores
@@ -165,13 +174,72 @@ class Game:
 
         match.p1_score = self.player1_score
         match.p2_score = self.player2_score
-        match.status = 3  # Marquer le match comme terminé (status=3)
+        match.status = 3  # Marquer le match comme terminé
         match.save()
         match.refresh_from_db()
+
+        # Log
         print(f"Match saved successfully: UUID={match.uuid}, "
             f"Winner={match.winner}, "
             f"Player1={match.player1}, Player2={match.player2}, "
             f"P1 Score={match.p1_score}, P2 Score={match.p2_score}, "
-            f"Status={match.status}", f"Date={match.created_at}")
+            f"Status={match.status}, "
+            f"Date={match.created_at}")
+
+        
+    async def set_winner_from_disconnect(self, player):
+        from .game_manager import GameManager
+
+        # Mettre à jour la base de données
+        await sync_to_async(self.update_match_winner_on_disconnect)(player)
+        print(f"JE RENTRE DANS SET WINNER AVEC PLAYER = {player}")
+        # Envoyer un événement de fin de jeu
+        stop_event = {
+            "type": "send_event",
+            "event_name": "GAME_STOPPED",
+            "data": {
+                'uuid': str(self.match_uuid),
+                'winner': 'player2' if player == 1 else 'player1',
+                'reason': f"Player {player} disconnected",
+            }
+        }
+        
+        await self.channel_layer.group_send(f"Match{self.match_uuid}", stop_event)
+
+        # Arrêter le jeu
+        self.game_active = False
+        self.ball_active = False
+
+        # Supprimer l'instance du jeu de GameManager
+        GameManager.remove_game(self.match_uuid)
+
+    def update_match_winner_on_disconnect(self, player):
+        from ..models import Match
+
+        # Récupérer le match
+        match = Match.objects.get(uuid=self.match_uuid)
+
+        # Déterminer le vainqueur basé sur la déconnexion
+        if player == 1:
+            match.winner = match.player2
+            match.p1_score = 0
+            match.p2_score = 3
+        elif player == 2:
+            match.winner = match.player1
+            match.p1_score = 3
+            match.p2_score = 0
+
+        match.status = 3  # Match terminé
+        match.save()
+        match.refresh_from_db()
+
+        # Log
+        print(f"Match saved successfully from DISCONNECT: UUID={match.uuid}, "
+            f"Winner={match.winner}, "
+            f"Player1={match.player1}, Player2={match.player2}, "
+            f"P1 Score={match.p1_score}, P2 Score={match.p2_score}, "
+            f"Status={match.status}, "
+            f"Date={match.created_at}")
+
 
 
