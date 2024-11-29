@@ -3,7 +3,6 @@ import { Paddle } from "./paddle.js";
 import { Score } from "./score.js";
 import { resetLocal, startListeningForPageChanges, stopListeningForPageChanges } from './gameManager.js';
 import { createBoostPNG } from "./spicy_game/managePNG.js";
-import {displaySecondaryButtons} from "../app.js";
 
 let canvas, ctx;
 let gameRunning = false;
@@ -70,13 +69,19 @@ function keyUpHandler(event)
     }
 }
 
-export function startGame()
+export function startGame(type)
 {
     if (gameRunning) return;
 
     initializeGame();
     gameRunning = true;
-    gameLoop();
+    if (type == "local")
+        gameLoop();
+    else if (type == "custom")
+    {
+        console.log("ON EST DANS CUSTOM");
+        gameLoopCustom();
+    }
 }
 
 export function stopGame() {
@@ -114,7 +119,7 @@ export function stopGame() {
 
         // Afficher l'invitation à rejouer
         ctx.font = "16px 'Press Start 2P', Arial";
-        ctx.fillText("Press 'Start' to play again", canvas.width / 2, canvas.height / 2 + 60);
+        ctx.fillText("Press 'Return' to play again", canvas.width / 2, canvas.height / 2 + 60);
     }
 
     if (score) 
@@ -125,10 +130,13 @@ export function stopGame() {
     stopListeningForPageChanges();
     resetLocal();
 
-    displaySecondaryButtons();
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+
+    // Remplace tout le contenu par uniquement le bouton de retour
+    gameButtonDisplay.innerHTML = `
+        <button class="btn btn-secondary btn-lg" onclick="displaySecondaryButtons()">Return</button>
+    `;
 }
-
-
 
 function gameLoop()
 {
@@ -144,9 +152,42 @@ function gameLoop()
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
     
+    leftPaddle.move(leftPaddleUp, leftPaddleDown);
+    rightPaddle.move(rightPaddleUp, rightPaddleDown);
+
+    leftPaddle.draw(ctx);
+    rightPaddle.draw(ctx);
+
+    score.draw();
+
+    if (ball.x - ball.radius <= 0) {
+        score.incrementPlayer(2);
+        ball.resetPosition(1);
+    }
+    else if (ball.x + ball.radius >= canvas.width) {
+        score.incrementPlayer(1);
+        ball.resetPosition(2);
+    }
+    requestAnimationFrame(gameLoop);
+}
+
+function gameLoopCustom()
+{
+    if (!gameRunning) return;
+    if (score.check_winner() == true)
+    {
+        stopGame();
+        return;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ball.update(canvas, leftPaddle, rightPaddle);
+    ball.draw(ctx);
+    
     check_ball_and_bonus(ball, imageBoost);
 
-    
+
     leftPaddle.move(leftPaddleUp, leftPaddleDown);
     rightPaddle.move(rightPaddleUp, rightPaddleDown);
 
@@ -155,7 +196,6 @@ function gameLoop()
     rightPaddle.draw(ctx);
 
     score.draw();
-
     //rand pos unique si diff time > 2
     if (check_time()) {
         if (!actionPerformed) {
@@ -172,8 +212,6 @@ function gameLoop()
 
             imageBoost = createBoostPNG(currentBoostType, canvas); // Crée un boost basé sur le type choisi
             currentRandomY = imageBoost.getRandomPosition(); // Trouve une position unique sur la hauteur du canvas
-            console.log("Random height generated:", currentRandomY);
-            console.log("Boost Type:", currentBoostType);
             actionPerformed = true;
         }
         imageBoost.draw(ctx, canvas.height, currentRandomY);
@@ -188,15 +226,13 @@ function gameLoop()
         score.incrementPlayer(1);
         ball.resetPosition(2);
         reset_all();
-        
     }
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(gameLoopCustom);
 }
 
-function check_time() 
-{
+function check_time() {
     const time_now = Date.now();
-    let diff_time = (time_now - begin_time) / 1000; // convert in sec
+    let diff_time = (time_now - begin_time) / 1000; // Convertir en secondes
 
     if (diff_time >= 8) {
         begin_time = time_now;
@@ -206,11 +242,12 @@ function check_time()
         return false;
     }
 
-    if (diff_time >= 3) {
-        return true; // time where you can draw 
+    if (diff_time >= 1) {
+        return true; // Condition satisfaite
     }
     return false;
 }
+
 
 
 function check_ball_and_bonus(ball, imageBoost)

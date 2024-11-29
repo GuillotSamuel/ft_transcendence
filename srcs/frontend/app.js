@@ -1,6 +1,6 @@
 import { startRemoteGame} from './remote_game/websocket.js';
 import { disconnectGame} from './remote_game/disconnect.js';
-import { startLocalGame } from './local_game/gameManager.js';
+import { startLocalGame, startCustomGame } from './local_game/gameManager.js';
 import { drawFindGameScreen } from './remote_game/find_return_button.js';
 
 
@@ -297,7 +297,7 @@ window.disconnectGame = disconnectGame;
 window.drawFindGameScreen = drawFindGameScreen;
 window.displaySecondaryButtons = displaySecondaryButtons;
 window.manageDisplayGame = manageDisplayGame;
-
+window.startCustomGame = startCustomGame;
 /* Utils */
 
 function isPasswordSecure(password) {
@@ -725,7 +725,7 @@ export function displaySecondaryButtons() {
     // Générer les nouveaux boutons
     gameButtonDisplay.innerHTML = `
         <button class="btn btn-success btn-lg" onclick="startLocalGame()">Quick Start</button>
-        <button class="btn btn-warning btn-lg" onclick="customGame()">Custom Game</button>
+        <button class="btn btn-warning btn-lg" onclick="startCustomGame()">Custom Game</button>
         <button class="btn btn-info btn-lg" onclick="tournamentGame()">Tournament</button>
         <button class="btn btn-secondary btn-lg" onclick="manageDisplayGame()">Return</button>
     `;

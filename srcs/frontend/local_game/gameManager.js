@@ -1,17 +1,12 @@
 // gameManager.js
-
 import { startGame, stopGame } from './game.js';
 
 // État global du jeu
 let isGameRunning = false; 
 let localGame = false;
 
-// Réinitialise l'état local
-export function resetLocal() {
-    if (localGame) {
-        localGame = false;
-    }
-}
+
+window.stopGame = stopGame;
 
 // Démarre un jeu local
 export function startLocalGame() {
@@ -19,20 +14,38 @@ export function startLocalGame() {
     localGame = true;
     console.log("Local Game started");
     const gameButtonDisplay = document.getElementById('gameButtonDisplay');
-    gameButtonDisplay.innerHTML = '';
-    // const remoteButton = document.getElementById('remote-button');
-    // remoteButton.style.display = 'none';
-    startGame();
+    gameButtonDisplay.innerHTML = `
+        <button class="btn btn-danger btn-lg" onclick="stopGame()">Leave</button>
+    `;
+    startGame("local");
+}
+
+export function startCustomGame() {
+    isGameRunning = true;
+    localGame = true;
+    console.log("Local Game started");
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+    gameButtonDisplay.innerHTML = `
+        <button class="btn btn-danger btn-lg" onclick="stopGame()">Leave</button>
+    `;
+    startGame("custom");
 }
 
 // Nettoie les ressources si l'utilisateur quitte la page
 function resetGameStateOnPageChange() {
-    if (isGameRunning) {s
+    if (isGameRunning) {
         console.log("Page is being changed or closed. Resetting game state.");
         isGameRunning = false;
     }
     stopGame();
     isGameRunning = false;
+}
+
+// Réinitialise l'état local
+export function resetLocal() {
+    if (localGame) {
+        localGame = false;
+    }
 }
 
 // Ajout de l'écouteur
