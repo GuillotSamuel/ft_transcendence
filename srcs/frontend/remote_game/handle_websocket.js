@@ -187,7 +187,7 @@ function handleGameStateUpdate(state) {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface le canvas
     const { b_x, b_y, p1_pos, p2_pos, p1_score, p2_score } = state;
-    console.log(state);
+
     // Dessine les éléments du jeu
     draw_ball(ctx, b_x, b_y, 10);          // Dessiner la balle
     draw_paddle(ctx, 10, p1_pos);          // Dessiner le paddle gauche
