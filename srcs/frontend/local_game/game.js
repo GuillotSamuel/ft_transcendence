@@ -145,11 +145,18 @@ function gameLoop()
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
     
-
     check_ball_and_bonus(ball, imageBoost);
 
-    leftPaddle.move(leftPaddleUp, leftPaddleDown);
-    rightPaddle.move(rightPaddleUp, rightPaddleDown);
+    if (leftPaddle.reverse_move)
+        leftPaddle.move(leftPaddleDown, leftPaddleUp);
+    else
+        leftPaddle.move(leftPaddleUp, leftPaddleDown);
+    if (rightPaddle.reverse_move)
+        rightPaddle.move(rightPaddleDown, rightPaddleUp);
+    else
+        rightPaddle.move(rightPaddleUp, rightPaddleDown);
+
+
     leftPaddle.draw(ctx);
     rightPaddle.draw(ctx);
 
@@ -158,10 +165,21 @@ function gameLoop()
     //rand pos unique si diff time > 2
     if (check_time()) {
         if (!actionPerformed) {
-            currentBoostType = Math.random() < 0.5 ? "Fat" : "Skinny";
+            const randomValue = Math.random();
+            
+            // Déterminer le type de boost en fonction de randomValue
+            if (randomValue < 0.33) {
+                currentBoostType = "Fat";
+            } else if (randomValue < 0.66) {
+                currentBoostType = "Skinny";
+            } else {
+                currentBoostType = "Arrow"; // Nouvelle possibilité
+            }
+
             imageBoost = createBoostPNG(currentBoostType, canvas); // Crée un boost basé sur le type choisi
-            currentRandomY = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
+            currentRandomY = imageBoost.getRandomPosition(); // Trouve une position unique sur la hauteur du canvas
             console.log("Random height generated:", currentRandomY);
+            console.log("Boost Type:", currentBoostType);
             actionPerformed = true;
         }
         imageBoost.draw(ctx, canvas.height, currentRandomY); 
@@ -225,14 +243,22 @@ function handle_bonus() {
     if (ball.getLastPaddleTouch() === "right") {
         if (currentBoostType === "Skinny") {
             leftPaddle.applyBonus(60, "red", duration);
-        } else {
+        } 
+        else if (currentBoostType === "Fat"){
             rightPaddle.applyBonus(110, "#00FF00", duration);
+        }
+        else{
+            leftPaddle.reverse("yellow", duration);
         }
     } else if (ball.getLastPaddleTouch() === "left") {
         if (currentBoostType === "Skinny") {
             rightPaddle.applyBonus(60, "red", duration);
-        } else {
+        } 
+        else if (currentBoostType === "Fat"){
             leftPaddle.applyBonus(110, "#00FF00", duration);
+        }
+        else{
+            rightPaddle.reverse("yellow", duration);
         }
     }
 }
@@ -249,3 +275,4 @@ function reset_all()
     actionPerformed = false;
     begin_time = Date.now();
 }
+

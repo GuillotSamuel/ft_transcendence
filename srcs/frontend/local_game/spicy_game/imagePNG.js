@@ -25,6 +25,7 @@ export class imagePNG
     {
         return this.name;
     }
+    
     getRandomPosition() 
     {
         const pos = [50, 60, 75, 275, 290, 300];

@@ -9,6 +9,7 @@ export class Paddle {
         this.speed = 5;
         this.canvas = canvas;
         this.color = "#0095DD";
+        this.reverse_move = false;
 
         // Propriétés pour gérer les bonus/malus
         this.defaultHeight = height; // Hauteur par défaut
@@ -51,7 +52,8 @@ export class Paddle {
         this.color = this.defaultColor;
     }
 
-    applyBonus(size, color, duration) {
+    applyBonus(size, color, duration) 
+    {
         // Annuler tout bonus/malus en cours
         this.resetBonus();
 
@@ -64,7 +66,8 @@ export class Paddle {
         this.bonusTimeout = setTimeout(() => this.resetBonus(), duration);
     }
 
-    resetBonus() {
+    resetBonus()
+    {
         if (this.bonusTimeout) {
             clearTimeout(this.bonusTimeout); // Annuler le timer précédent si actif
             this.bonusTimeout = null;
@@ -72,5 +75,14 @@ export class Paddle {
         this.reset_size();
         this.reset_color();
         this.bonusActive = false;
+        this.reverse_move = false;
+    }
+    
+    reverse(color, duration)
+    {
+        this.reverse_move = true;
+        this.set_color(color);
+
+        this.bonusTimeout = setTimeout(() => this.resetBonus(), duration);
     }
 }
