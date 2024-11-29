@@ -9,11 +9,13 @@ export class Paddle
         this.downPaddle = this.topPaddle + this.height;
         this.speed = 5;
         this.canvas = canvas;
+        this.color = "#0095DD";
+        this.color_default = "#0095DD";
     }
 
     draw(ctx)
     {
-        ctx.fillStyle = "#0095DD";
+        ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 
@@ -30,5 +32,19 @@ export class Paddle
             this.downPaddle = this.topPaddle + this.height;
         }
     }
+
+    add_size()
+    {
+        this.height = 110;
+    }
+
+    reset_size()
+    {
+        this.height = 80;
+    }
     
+    reset_color()
+    {
+        this.color = this.color_default;
+    }
 }

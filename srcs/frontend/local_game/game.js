@@ -29,8 +29,8 @@ function initializeGame()
     
     // Initialisation des objets de jeu
     ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 2, 2);
-    leftPaddle = new Paddle(10, canvas.height / 2 - 50, 10, 100, canvas);
-    rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 50, 10, 100, canvas);
+    leftPaddle = new Paddle(10, canvas.height / 2 - 50, 10, 80, canvas);
+    rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 50, 10, 80, canvas);
     score = new Score(canvas, ctx);
 
     // Initialisation du champignon au centre
@@ -156,7 +156,9 @@ function check_ball_and_bonus(ball, imageBoost)
     let xball = ball.x + ball.radius; 
     let yball = ball.y + ball.radius;
     if ( (xball >= x && xball <= largeur) && (yball >= y && yball <= hauteur)) {
-        console.log("CA TOUUCHE");
+        console.log("%cCA TOUUCHE", "color: red; font-weight: bold; font-size: 16px");
+        rightPaddle.add_size();
+        rightPaddle.color = "#00FF00";
     }
 
 }
@@ -170,7 +172,7 @@ function gameLoop()
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
 
-    //check_ball_and_bonus(ball, imageBoost);
+    check_ball_and_bonus(ball, imageBoost);
 
     // if (ball.getLastPaddleTouch() === "right") {
     // console.log("The last paddle to touch the ball was the right paddle.");
@@ -188,24 +190,28 @@ function gameLoop()
 
     score.draw();
 
-    // rand pos unique si diff time > 2
-    // if (check_time()) {
-    //     if (!actionPerformed) {
-    //         currentRandomHeight = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
-    //         console.log("Random height generated:", currentRandomHeight);
-    //         actionPerformed = true;
-    //     }
-    //     imageBoost.draw(ctx, canvas.height, currentRandomHeight); 
-    // }
+    //rand pos unique si diff time > 2
+    if (check_time()) {
+        if (!actionPerformed) {
+            currentRandomHeight = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
+            console.log("Random height generated:", currentRandomHeight);
+            actionPerformed = true;
+        }
+        imageBoost.draw(ctx, canvas.height, currentRandomHeight); 
+    }
 
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer2();
         ball.resetPosition(1);
+        rightPaddle.reset_size();
+        rightPaddle.reset_color();
         begin_time = Date.now();
     }
     if (ball.x + ball.radius >= canvas.width) {
         score.incrementPlayer1();
         ball.resetPosition(2);
+        rightPaddle.reset_size();
+        rightPaddle.reset_color();
         begin_time = Date.now();
     }
 

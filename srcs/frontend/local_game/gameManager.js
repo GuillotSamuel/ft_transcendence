@@ -29,12 +29,14 @@ export function startLocalGame() {
     localGame = true;
     console.log("Local Game started");
     toggleLocalGameButton(false);
+    // const remoteButton = document.getElementById('remote-button');
+    // remoteButton.style.display = 'none';
     startGame();
 }
 
 // Nettoie les ressources si l'utilisateur quitte la page
 function resetGameStateOnPageChange() {
-    if (isGameRunning) {
+    if (isGameRunning) {s
         console.log("Page is being changed or closed. Resetting game state.");
         isGameRunning = false;
     }
@@ -44,14 +46,14 @@ function resetGameStateOnPageChange() {
 
 // Ajout de l'écouteur
 export function startListeningForPageChanges() {
-    window.addEventListener('beforeunload', resetGameStateOnPageChange);
+    //window.addEventListener('beforeunload', resetGameStateOnPageChange);
     window.addEventListener('hashchange', resetGameStateOnPageChange);
     console.log("Started listening for page changes.");
 }
 
 // Suppression de l'écouteur
 export function stopListeningForPageChanges() {
-    window.removeEventListener('beforeunload', resetGameStateOnPageChange);
+    //window.removeEventListener('beforeunload', resetGameStateOnPageChange);
     window.removeEventListener('hashchange', resetGameStateOnPageChange);
     console.log("Stopped listening for page changes.");
 }
