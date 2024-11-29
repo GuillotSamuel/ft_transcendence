@@ -33,10 +33,10 @@ const routes = {
                                 <label for="login-password" class="form-label" data-translate="password-connexion-label"></label>
                                 <input type="password" class="form-control" id="login-password" required>
                             </div>
-                            <button type="button" onclick="loginUser()" class="btn btn-primary w-100" data-translate="login-connexion-button"></button>
+                            <button type="button" onclick="loginUser()" class="btn btn-primary w-100 mb-3" data-translate="login-connexion-button"></button>
                         </form>
 
-                        <button type="button" class="btn btn-primary w-100" onclick="login42()">Login 42</button>
+                        <button type="button" class="btn btn-primary w-100 mb-3" onclick="login42()">Login 42</button>
                         <p class="mt-3 text-center"><div data-translate="signUp-connexion-text"></div> <a href="#registration" data-translate="signUp-connexion-link"></a></p>
                     </div>
                 </div>
