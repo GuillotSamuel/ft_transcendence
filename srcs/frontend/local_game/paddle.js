@@ -24,15 +24,29 @@ export class Paddle {
     }
 
     move(up, down) {
-        if (up && this.y > 0) {
-            this.y -= this.speed;
-            this.topPaddle -= this.speed;
-            this.downPaddle = this.topPaddle + this.height;
-        }
-        if (down && this.y < this.canvas.height - this.height) {
-            this.y += this.speed;
-            this.topPaddle += this.speed;
-            this.downPaddle = this.topPaddle + this.height;
+        if (this.reverse_move) {
+            // reverse
+            if (up && this.y < this.canvas.height - this.height) {
+                this.y += this.speed;
+                this.topPaddle += this.speed;
+                this.downPaddle = this.topPaddle + this.height;
+            }
+            if (down && this.y > 0) {
+                this.y -= this.speed;
+                this.topPaddle -= this.speed;
+                this.downPaddle = this.topPaddle + this.height;
+            }
+        } else {
+            if (up && this.y > 0) {
+                this.y -= this.speed;
+                this.topPaddle -= this.speed;
+                this.downPaddle = this.topPaddle + this.height;
+            }
+            if (down && this.y < this.canvas.height - this.height) {
+                this.y += this.speed;
+                this.topPaddle += this.speed;
+                this.downPaddle = this.topPaddle + this.height;
+            }
         }
     }
 
@@ -52,12 +66,11 @@ export class Paddle {
         this.color = this.defaultColor;
     }
 
-    applyBonus(size, color, duration) 
-    {
+    applyBonus(size, color, duration) {
         // Annuler tout bonus/malus en cours
         this.resetBonus();
 
-        // Appliquer les changements
+        // Appliquer le nouveau bonus
         this.set_size(size);
         this.set_color(color);
         this.bonusActive = true;
@@ -66,8 +79,20 @@ export class Paddle {
         this.bonusTimeout = setTimeout(() => this.resetBonus(), duration);
     }
 
-    resetBonus()
-    {
+    reverse(color, duration) {
+        // Annuler tout bonus/malus en cours
+        this.resetBonus();
+
+        // Appliquer le malus d'inversion
+        this.reverse_move = true;
+        this.set_color(color);
+        this.bonusActive = true;
+
+        // Planifier la réinitialisation après `duration` ms
+        this.bonusTimeout = setTimeout(() => this.resetBonus(), duration);
+    }
+
+    resetBonus() {
         if (this.bonusTimeout) {
             clearTimeout(this.bonusTimeout); // Annuler le timer précédent si actif
             this.bonusTimeout = null;
@@ -76,13 +101,5 @@ export class Paddle {
         this.reset_color();
         this.bonusActive = false;
         this.reverse_move = false;
-    }
-    
-    reverse(color, duration)
-    {
-        this.reverse_move = true;
-        this.set_color(color);
-
-        this.bonusTimeout = setTimeout(() => this.resetBonus(), duration);
     }
 }

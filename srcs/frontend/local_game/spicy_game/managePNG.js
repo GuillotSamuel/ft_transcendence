@@ -31,8 +31,8 @@ export function createBoostPNG(Name, canvas)
             "Arrow",
             canvas.width / 2,
             canvas.height / 2,
-            size - 5, // Largeur du champignon
-            size - 5, // Hauteur du champignon
+            size - 10, // Largeur du champignon
+            size - 10, // Hauteur du champignon
             "./local_game/spicy_game/png/arrows.png"
         ) // Chemin vers l'image
     }
