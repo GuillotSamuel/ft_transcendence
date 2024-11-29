@@ -719,12 +719,12 @@ async function manageDisplayGame() {
     }
 }
 
-function displaySecondaryButtons() {
+export function displaySecondaryButtons() {
     const gameButtonDisplay = document.getElementById('gameButtonDisplay');
 
     // Générer les nouveaux boutons
     gameButtonDisplay.innerHTML = `
-        <button class="btn btn-success btn-lg" onclick="startLocalGame()">Start Game</button>
+        <button class="btn btn-success btn-lg" onclick="startLocalGame()">Quick Start</button>
         <button class="btn btn-warning btn-lg" onclick="customGame()">Custom Game</button>
         <button class="btn btn-info btn-lg" onclick="tournamentGame()">Tournament</button>
         <button class="btn btn-secondary btn-lg" onclick="manageDisplayGame()">Return</button>

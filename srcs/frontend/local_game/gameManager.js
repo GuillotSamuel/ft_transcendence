@@ -6,20 +6,10 @@ import { startGame, stopGame } from './game.js';
 let isGameRunning = false; 
 let localGame = false;
 
-// Fonction pour afficher ou masquer le bouton de jeu local
-export function toggleLocalGameButton(show) {
-    const localGameButton = document.querySelector('[data-translate="game-local-button"]');
-    if (localGameButton) {
-        localGameButton.style.display = show ? 'inline-block' : 'none';
-        console.log("Button display:", show ? "Visible" : "Hidden");
-    }
-}
-
 // Réinitialise l'état local
 export function resetLocal() {
     if (localGame) {
         localGame = false;
-        toggleLocalGameButton(true);
     }
 }
 
@@ -28,7 +18,8 @@ export function startLocalGame() {
     isGameRunning = true;
     localGame = true;
     console.log("Local Game started");
-    toggleLocalGameButton(false);
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+    gameButtonDisplay.innerHTML = '';
     // const remoteButton = document.getElementById('remote-button');
     // remoteButton.style.display = 'none';
     startGame();

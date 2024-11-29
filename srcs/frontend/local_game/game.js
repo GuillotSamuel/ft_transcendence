@@ -3,7 +3,7 @@ import { Paddle } from "./paddle.js";
 import { Score } from "./score.js";
 import { resetLocal, startListeningForPageChanges, stopListeningForPageChanges } from './gameManager.js';
 import { createBoostPNG } from "./spicy_game/managePNG.js";
-
+import {displaySecondaryButtons} from "../app.js";
 
 let canvas, ctx;
 let gameRunning = false;
@@ -124,6 +124,8 @@ export function stopGame() {
     document.removeEventListener("keyup", keyUpHandler);
     stopListeningForPageChanges();
     resetLocal();
+
+    displaySecondaryButtons();
 }
 
 
