@@ -10,7 +10,6 @@ export class Paddle
         this.speed = 5;
         this.canvas = canvas;
         this.color = "#0095DD";
-        this.color_default = "#0095DD";
     }
 
     draw(ctx)
@@ -45,6 +44,6 @@ export class Paddle
     
     reset_color()
     {
-        this.color = this.color_default;
+        this.color = "#0095DD"
     }
 }

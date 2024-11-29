@@ -7,7 +7,7 @@ import { createBoostPNG } from "./spicy_game/managePNG.js";
 
 let canvas, ctx;
 let gameRunning = false;
-
+let currentBoostType = "Skinny";
 let ball, leftPaddle, rightPaddle, score, imageBoost, begin_time;
 
 let leftPaddleUp = false;
@@ -15,7 +15,7 @@ let leftPaddleDown = false;
 let rightPaddleUp = false;
 let rightPaddleDown = false;
 let actionPerformed = false;
-let currentRandomHeight = null;
+let currentRandomY = null;
 
 function initializeGame()
 {
@@ -35,7 +35,7 @@ function initializeGame()
 
     // Initialisation du champignon au centre
     imageBoost = createBoostPNG("Skinny", canvas);
-
+    currentRandomY
     // Écouteurs d'événements
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
@@ -122,13 +122,13 @@ export function stopGame()
 
 function check_time() 
 {
-    let time_now = Date.now();
+    const time_now = Date.now();
     let diff_time = (time_now - begin_time) / 1000;
 
     if (diff_time >= 8) {
         begin_time = time_now;
         actionPerformed = false;
-        currentRandomHeight = null;
+        currentRandomY = null;
         return false;
     }
 
@@ -143,22 +143,32 @@ function check_ball_and_bonus(ball, imageBoost)
 {
     console.log("pos x= ", ball.x);
     console.log("pos y= ", ball.y);
+    if (imageBoost){
+        console.log("draw y = ", imageBoost.drawY);
+        console.log("draw x = ", imageBoost.drawX);
+        let y = imageBoost.drawY;
+        let x = imageBoost.drawX;
+        let hauteur = imageBoost.drawY + imageBoost.height;
+        let largeur = imageBoost.drawX + imageBoost.width;
 
-    console.log("draw y = ", imageBoost.drawY);
-    console.log("draw x = ", imageBoost.drawX);
-    let y = imageBoost.drawY;
-    let x = imageBoost.drawX;
-    let hauteur = imageBoost.drawY + imageBoost.height;
-    let largeur = imageBoost.drawX + imageBoost.width;
-
-    console.log("hauteur y = ", hauteur);
-    console.log("largeur x = ", largeur);
-    let xball = ball.x + ball.radius; 
-    let yball = ball.y + ball.radius;
-    if ( (xball >= x && xball <= largeur) && (yball >= y && yball <= hauteur)) {
-        console.log("%cCA TOUUCHE", "color: red; font-weight: bold; font-size: 16px");
-        rightPaddle.add_size();
-        rightPaddle.color = "#00FF00";
+        console.log("hauteur y = ", hauteur);
+        console.log("largeur x = ", largeur);
+        let xball = ball.x + ball.radius; 
+        let yball = ball.y + ball.radius;
+        if ((xball >= x && xball <= largeur) && (yball >= y && yball <= hauteur)) {
+            console.log("%cCA TOUUCHE", "color: red; font-weight: bold; font-size: 16px");
+            if (ball.getLastPaddleTouch() == "right")
+            {
+                rightPaddle.add_size();
+                rightPaddle.color = "#00FF00";
+            }
+            else if (ball.getLastPaddleTouch() == "left")
+            {
+                leftPaddle.add_size();
+                leftPaddle.color = "#00FF00";
+            }
+            
+        }
     }
 
 }
@@ -171,16 +181,17 @@ function gameLoop()
 
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
+    
 
     check_ball_and_bonus(ball, imageBoost);
 
-    // if (ball.getLastPaddleTouch() === "right") {
-    // console.log("The last paddle to touch the ball was the right paddle.");
-    // // Appliquez une logique ici, comme un bonus pour le joueur de droite
-    // } else if (ball.getLastPaddleTouch() === "left") {
-    //     console.log("The last paddle to touch the ball was the left paddle.");
-    //     // Appliquez une logique ici, comme un bonus pour le joueur de gauche
-    // }
+    if (ball.getLastPaddleTouch() === "right") {
+    console.log("The last paddle to touch the ball was the right paddle.");
+    // Appliquez une logique ici, comme un bonus pour le joueur de droite
+    } else if (ball.getLastPaddleTouch() === "left") {
+        console.log("The last paddle to touch the ball was the left paddle.");
+        // Appliquez une logique ici, comme un bonus pour le joueur de gauche
+    }
 
 
     leftPaddle.move(leftPaddleUp, leftPaddleDown);
@@ -193,27 +204,37 @@ function gameLoop()
     //rand pos unique si diff time > 2
     if (check_time()) {
         if (!actionPerformed) {
-            currentRandomHeight = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
-            console.log("Random height generated:", currentRandomHeight);
+            currentBoostType = Math.random() < 0.5 ? "Fat" : "Skinny";
+            imageBoost = createBoostPNG(currentBoostType, canvas); // Crée un boost basé sur le type choisi
+            currentRandomY = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
+            console.log("Random height generated:", currentRandomY);
             actionPerformed = true;
         }
-        imageBoost.draw(ctx, canvas.height, currentRandomHeight); 
+        imageBoost.draw(ctx, canvas.height, currentRandomY); 
     }
 
     if (ball.x - ball.radius <= 0) {
-        score.incrementPlayer2();
+        score.incrementPlayer(2);
         ball.resetPosition(1);
-        rightPaddle.reset_size();
-        rightPaddle.reset_color();
-        begin_time = Date.now();
+        reset_all();
     }
-    if (ball.x + ball.radius >= canvas.width) {
-        score.incrementPlayer1();
+    else if (ball.x + ball.radius >= canvas.width) {
+        score.incrementPlayer(1);
         ball.resetPosition(2);
-        rightPaddle.reset_size();
-        rightPaddle.reset_color();
-        begin_time = Date.now();
+        reset_all();
+        
     }
-
     requestAnimationFrame(gameLoop);
+}
+
+function reset_all()
+{
+    rightPaddle.reset_size();
+    rightPaddle.reset_color();
+
+    leftPaddle.reset_size();
+    leftPaddle.reset_color();
+    imageBoost = null; // Supprimez le boost actuel
+    actionPerformed = false; // Réinitialise l'état du boost
+    begin_time = Date.now();
 }

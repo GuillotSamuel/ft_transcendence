@@ -30,14 +30,12 @@ export class Score
     }
 
     // Méthodes pour mettre à jour les scores
-    incrementPlayer1()
+    incrementPlayer(player)
     {
-        this.scorePlayer1++;
-    }
-
-    incrementPlayer2()
-    {
-        this.scorePlayer2++;
+        if (player == 1)
+            this.scorePlayer1++;
+        else if (player == 2)
+            this.scorePlayer2++;
     }
 
     resetScore()
