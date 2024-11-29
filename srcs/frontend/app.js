@@ -295,6 +295,8 @@ window.changeAvatar = changeAvatar;
 window.login42 = login42;
 window.disconnectGame = disconnectGame;
 window.drawFindGameScreen = drawFindGameScreen;
+window.displaySecondaryButtons = displaySecondaryButtons;
+window.manageDisplayGame = manageDisplayGame;
 
 /* Utils */
 
@@ -706,15 +708,27 @@ async function manageDisplayGame() {
 
     if (isAuthenticated) {
         gameButtonDisplay.innerHTML = `
-            <button id="local-button" class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
-            <button id="remote-button" class="btn btn-info btn-lg" onclick="drawFindGameScreen()" data-translate="game-remote-button"></button>
-            <button id="disconnect-button" class="btn btn-danger btn-lg" onclick="disconnectGame()" data-translate="game-disconnect-button" style="display: none;"></button>
-            `;
+            <button id="local-button" class="btn btn-primary btn-lg" onclick="displaySecondaryButtons()" data-translate="game-local-button">Local Game</button>
+            <button id="remote-button" class="btn btn-info btn-lg" onclick="drawFindGameScreen()" data-translate="game-remote-button">Remote Game</button>
+            <button id="disconnect-button" class="btn btn-danger btn-lg" onclick="disconnectGame()" data-translate="game-disconnect-button" style="display: none;">Disconnect</button>
+        `;
     } else {
         gameButtonDisplay.innerHTML = `
-            <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
-            `;
+            <button class="btn btn-primary btn-lg" onclick="displaySecondaryButtons()" data-translate="game-local-button">Local Game</button>
+        `;
     }
+}
+
+function displaySecondaryButtons() {
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+
+    // Générer les nouveaux boutons
+    gameButtonDisplay.innerHTML = `
+        <button class="btn btn-success btn-lg" onclick="startLocalGame()">Start Game</button>
+        <button class="btn btn-warning btn-lg" onclick="customGame()">Custom Game</button>
+        <button class="btn btn-info btn-lg" onclick="tournamentGame()">Tournament</button>
+        <button class="btn btn-secondary btn-lg" onclick="manageDisplayGame()">Return</button>
+    `;
 }
 
 async function navigate() {
