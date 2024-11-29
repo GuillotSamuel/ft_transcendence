@@ -1,5 +1,4 @@
-export class Paddle
-{
+export class Paddle {
     constructor(x, y, width, height, canvas) {
         this.x = x;
         this.y = y;
@@ -10,16 +9,20 @@ export class Paddle
         this.speed = 5;
         this.canvas = canvas;
         this.color = "#0095DD";
+
+        // Propriétés pour gérer les bonus/malus
+        this.defaultHeight = height; // Hauteur par défaut
+        this.defaultColor = "#0095DD"; // Couleur par défaut
+        this.bonusActive = false; // Indique si un bonus/malus est actif
+        this.bonusTimeout = null; // Stocke le timer pour le bonus/malus
     }
 
-    draw(ctx)
-    {
+    draw(ctx) {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 
-    move(up, down)
-    {
+    move(up, down) {
         if (up && this.y > 0) {
             this.y -= this.speed;
             this.topPaddle -= this.speed;
@@ -32,18 +35,42 @@ export class Paddle
         }
     }
 
-    add_size()
-    {
-        this.height = 110;
+    set_size(size) {
+        this.height = size;
     }
 
-    reset_size()
-    {
-        this.height = 80;
+    reset_size() {
+        this.height = this.defaultHeight;
     }
-    
-    reset_color()
-    {
-        this.color = "#0095DD"
+
+    set_color(color) {
+        this.color = color;
+    }
+
+    reset_color() {
+        this.color = this.defaultColor;
+    }
+
+    applyBonus(size, color, duration) {
+        // Annuler tout bonus/malus en cours
+        this.resetBonus();
+
+        // Appliquer les changements
+        this.set_size(size);
+        this.set_color(color);
+        this.bonusActive = true;
+
+        // Planifier la réinitialisation après `duration` ms
+        this.bonusTimeout = setTimeout(() => this.resetBonus(), duration);
+    }
+
+    resetBonus() {
+        if (this.bonusTimeout) {
+            clearTimeout(this.bonusTimeout); // Annuler le timer précédent si actif
+            this.bonusTimeout = null;
+        }
+        this.reset_size();
+        this.reset_color();
+        this.bonusActive = false;
     }
 }
