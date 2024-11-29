@@ -82,8 +82,7 @@ export function startGame()
     gameLoop();
 }
 
-export function stopGame()
-{
+export function stopGame() {
     gameRunning = false;
     if (!ctx || !canvas) {
         console.warn("Canvas or context not initialized. Skipping cleanup.");
@@ -105,13 +104,20 @@ export function stopGame()
     }
 
     if (ctx) {
+        // Afficher le message de victoire
         ctx.font = "20px 'Press Start 2P', Arial";
         ctx.textAlign = "center";
         ctx.fillText(winnerMessage, canvas.width / 2, canvas.height / 2);
 
-        ctx.font = "20px 'Press Start 2P', Arial";
+        // Afficher le score final
+        ctx.font = "16px 'Press Start 2P', Arial";
         ctx.fillStyle = "#FFFFFF";
-        ctx.fillText("Press 'Start' to play again", canvas.width / 2, canvas.height / 2 + 50);
+        const finalScore = `Final Score: ${score.scorePlayer1} - ${score.scorePlayer2}`;
+        ctx.fillText(finalScore, canvas.width / 2, canvas.height / 2 + 30);
+
+        // Afficher l'invitation à rejouer
+        ctx.font = "16px 'Press Start 2P', Arial";
+        ctx.fillText("Press 'Start' to play again", canvas.width / 2, canvas.height / 2 + 60);
     }
 
     if (score) 
@@ -128,6 +134,11 @@ export function stopGame()
 function gameLoop()
 {
     if (!gameRunning) return;
+    if (score.check_winner() == true)
+    {
+        stopGame();
+        return;
+    }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -175,17 +186,18 @@ function check_time()
     const time_now = Date.now();
     let diff_time = (time_now - begin_time) / 1000;
 
-    if (diff_time >= 8) {
+    if (diff_time >= 6) {
         begin_time = time_now;
         actionPerformed = false;
         currentRandomY = null;
+        imageBoost = null;
         return false;
     }
 
     if (diff_time >= 1) {
         return true; // time where you can draw 
     }
-
+    imageBoost = null;
     return false;
 }
 

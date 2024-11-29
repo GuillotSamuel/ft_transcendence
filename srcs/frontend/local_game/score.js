@@ -5,12 +5,13 @@ export class Score
         this.ctx = ctx;
         this.scorePlayer1 = 0;
         this.scorePlayer2 = 0;
+        this.max_score = 3;
     }
 
     // Méthode pour dessiner le score dans le canvas
     draw()
     {
-        this.ctx.font = "bold 48px 'Arial Black', sans-serif";
+        this.ctx.font = "bold 24px 'Arial Black', sans-serif";
         this.ctx.fillStyle = "#333";
         this.ctx.textAlign = "center";
 
@@ -42,5 +43,13 @@ export class Score
     {
         this.scorePlayer1 = 0;
         this.scorePlayer2 = 0;
+    }
+
+    check_winner()
+    {
+        if (this.scorePlayer1 == 5 || this.scorePlayer2 == 5)
+            return true;
+        else
+            return false;
     }
 }
