@@ -778,6 +778,10 @@ async function navigate() {
         appDiv.innerHTML = route.template;
         await listFriend();
     }
+    if (hash === 'statsHistory') {
+        appDiv.innerHTML = route.template;
+        await statsHistoryDisplay();
+    }
 }
 
 async function manageDisplayAuth() {
@@ -1093,5 +1097,45 @@ async function login42() {
         }
     } catch (error) {
         console.error('Error:', error);
+    }
+}
+
+/* Game */
+
+async function statsHistoryDisplay() {
+    try {
+        const response = await fetch('/api/matchsDetails/', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        if (response.ok) {
+            const data = await response.json();
+            
+            const userStatsDiv = document.getElementById('user-stats');
+            userStatsDiv.innerHTML = `
+            <p><strong>Wins:</strong> ${data.win}</p>
+            <p><strong>Losses:</strong> ${data.lose}</p>`;
+
+            const userHistoryDiv = document.getElementById('user-history');
+            if (data.matchs.length > 0) {
+                const historyHTML = data.matchs.map(match => `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <p><strong>Player 1:</strong> ${match.player1}</p>
+                            <p><strong>Player 2:</strong> ${match.player2}</p>
+                            <p><strong>Score:</strong> ${match.p1_score} - ${match.p2_score}</p>
+                            <p><strong>Winner:</strong> ${match.winner}</p>
+                            <p><strong>Date:</strong> ${new Date(match.date).toLocaleString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+                userHistoryDiv.innerHTML = historyHTML;
+            } else {
+                userHistoryDiv.innerHTML = '<p>No matches played yet.</p>';
+            }
+        }
+    } catch (error) {
+        console.error('Error: ', error);
     }
 }

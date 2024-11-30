@@ -35,7 +35,7 @@ from AppAuthentification.views import (
     addAvatar,
     getAvatar,
     loginWith42,
-    callBack42
+    callBack42,
 )
 
 
