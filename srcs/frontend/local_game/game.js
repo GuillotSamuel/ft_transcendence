@@ -8,7 +8,6 @@ let canvas, ctx;
 let gameRunning = false;
 let currentBoostType = "Skinny";
 let ball, leftPaddle, rightPaddle, score, imageBoost, begin_time;
-let firstTime = true;
 let leftPaddleUp = false;
 let leftPaddleDown = false;
 let rightPaddleUp = false;
@@ -121,7 +120,7 @@ export function stopGame() {
     `;
 }
 
-function clearCanvas() {
+export function clearCanvas() {
     if (ctx && canvas) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
@@ -148,10 +147,6 @@ function gameLoop()
     rightPaddle.draw(ctx);
 
     score.draw();
-    if (firstTime){
-        
-        firstTime = false;
-    }
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer(2);
         ball.resetPosition(1);

@@ -1,5 +1,6 @@
 import { startRemoteGame} from './remote_game/websocket.js';
 import { disconnectGame} from './remote_game/disconnect.js';
+import { tournamentGame } from './local_game/tournament/init.js';
 import { startLocalGame, startCustomGame } from './local_game/gameManager.js';
 import { drawFindGameScreen } from './remote_game/find_return_button.js';
 
@@ -298,6 +299,8 @@ window.drawFindGameScreen = drawFindGameScreen;
 window.displaySecondaryButtons = displaySecondaryButtons;
 window.manageDisplayGame = manageDisplayGame;
 window.startCustomGame = startCustomGame;
+window.tournamentGame = tournamentGame;
+
 /* Utils */
 
 function isPasswordSecure(password) {
