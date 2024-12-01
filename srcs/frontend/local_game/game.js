@@ -8,13 +8,16 @@ let canvas, ctx;
 let gameRunning = false;
 let currentBoostType = "Skinny";
 let ball, leftPaddle, rightPaddle, score, imageBoost, begin_time;
-
+let firstTime = true;
 let leftPaddleUp = false;
 let leftPaddleDown = false;
 let rightPaddleUp = false;
 let rightPaddleDown = false;
 let actionPerformed = false;
 let currentRandomY = null;
+let countdownInterval = null;
+
+window.clearCanvas = clearCanvas;
 
 function initializeGame()
 {
@@ -40,52 +43,32 @@ function initializeGame()
     document.addEventListener("keyup", keyUpHandler);
 }
 
-function keyDownHandler(event)
-{
-    if (event.key === "w") leftPaddleUp = true;
-    if (event.key === "s") leftPaddleDown = true;
-    if (event.key === "ArrowUp") {
-        rightPaddleUp = true;
-        event.preventDefault();
-    }
-    if (event.key === "ArrowDown") {
-        rightPaddleDown = true;
-        event.preventDefault();
-    }
-    if (event.key === "Escape") stopGame();
-}
-
-function keyUpHandler(event)
-{
-    if (event.key === "w") leftPaddleUp = false;
-    if (event.key === "s") leftPaddleDown = false;
-    if (event.key === "ArrowUp") {
-        rightPaddleUp = false;
-        event.preventDefault();
-    }
-    if (event.key === "ArrowDown") {
-        rightPaddleDown = false;
-        event.preventDefault();
-    }
-}
-
-export function startGame(type)
-{
+export function startGame(type) {
     if (gameRunning) return;
 
     initializeGame();
     gameRunning = true;
-    if (type == "local")
-        gameLoop();
-    else if (type == "custom")
-    {
-        console.log("ON EST DANS CUSTOM");
-        gameLoopCustom();
-    }
+
+    // Ajouter le compte à rebours
+    countdown(() => {
+        if (type == "local") {
+            gameLoop();
+        } else if (type == "custom") {
+            console.log("ON EST DANS CUSTOM");
+            gameLoopCustom();
+        }
+    });
 }
 
 export function stopGame() {
     gameRunning = false;
+
+    // Arrêter le compte à rebours s'il est actif
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+
     if (!ctx || !canvas) {
         console.warn("Canvas or context not initialized. Skipping cleanup.");
         return;
@@ -134,8 +117,14 @@ export function stopGame() {
 
     // Remplace tout le contenu par uniquement le bouton de retour
     gameButtonDisplay.innerHTML = `
-        <button class="btn btn-secondary btn-lg" onclick="displaySecondaryButtons()">Return</button>
+        <button class="btn btn-secondary btn-lg" onclick="clearCanvas(); displaySecondaryButtons()">Return</button>
     `;
+}
+
+function clearCanvas() {
+    if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
 }
 
 function gameLoop()
@@ -159,7 +148,10 @@ function gameLoop()
     rightPaddle.draw(ctx);
 
     score.draw();
-
+    if (firstTime){
+        
+        firstTime = false;
+    }
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer(2);
         ball.resetPosition(1);
@@ -242,12 +234,11 @@ function check_time() {
         return false;
     }
 
-    if (diff_time >= 1) {
+    if (diff_time >= 3) {
         return true; // Condition satisfaite
     }
     return false;
 }
-
 
 
 function check_ball_and_bonus(ball, imageBoost)
@@ -304,3 +295,63 @@ function reset_all()
     begin_time = Date.now();
 }
 
+function countdown(callback) {
+    let countdownTime = 3; // Début du compte à rebours
+    countdownInterval = setInterval(() => { // Stocke l'identifiant
+        // Effacer le canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        leftPaddle.draw(ctx);
+        rightPaddle.draw(ctx);
+        ball.draw(ctx);
+        score.draw();
+        
+        // Afficher le message principal
+        ctx.font = "30px 'Press Start 2P', Arial";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText("The game is starting...", canvas.width / 2, canvas.height / 2 - 50);
+
+        // Afficher le compte à rebours
+        ctx.font = "30px 'Press Start 2P', Arial";
+        ctx.fillText(countdownTime, canvas.width / 2, canvas.height / 2 + 50);
+
+        countdownTime--;
+
+        if (countdownTime < 0) {
+            clearInterval(countdownInterval); // Arrêter l'intervalle
+            countdownInterval = null; // Réinitialiser la variable
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Effacer le canvas
+            callback(); // Démarrer le jeu une fois le compte à rebours terminé
+        }
+    }, 1000); // 1 seconde entre chaque étape
+}
+
+function keyDownHandler(event)
+{
+    if (event.key === "w") leftPaddleUp = true;
+    if (event.key === "s") leftPaddleDown = true;
+    if (event.key === "ArrowUp") {
+        rightPaddleUp = true;
+        event.preventDefault();
+    }
+    if (event.key === "ArrowDown") {
+        rightPaddleDown = true;
+        event.preventDefault();
+    }
+    if (event.key === "Escape") stopGame();
+}
+
+function keyUpHandler(event)
+{
+    if (event.key === "w") leftPaddleUp = false;
+    if (event.key === "s") leftPaddleDown = false;
+    if (event.key === "ArrowUp") {
+        rightPaddleUp = false;
+        event.preventDefault();
+    }
+    if (event.key === "ArrowDown") {
+        rightPaddleDown = false;
+        event.preventDefault();
+    }
+}
