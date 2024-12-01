@@ -754,32 +754,34 @@ async function navigate() {
         }
 
     const appDiv = document.getElementById('app');
-    if (route) {
-        appDiv.innerHTML = route.template;
-    } else {
+
+    if (!hash) {
+        location.hash = '#home';
+        return;
+    }
+    else if (!route) {
         appDiv.innerHTML = "<h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p>";
+        return;
+    }
+    else {
+        appDiv.innerHTML = route.template;
     }
 
     if (hash === 'editPage') {
-        appDiv.innerHTML = route.template;
         await toggle2FAStatus();
         await getAvatar();
     }
     if (hash === 'profile') {
-        appDiv.innerHTML = route.template;
         await displayUserInfos();
         await getAvatar();
     }
     if (hash === 'game') {
-        appDiv.innerHTML = route.template;
         await manageDisplayGame();
     }
     if (hash === 'friend') {
-        appDiv.innerHTML = route.template;
         await listFriend();
     }
     if (hash === 'statsHistory') {
-        appDiv.innerHTML = route.template;
         await statsHistoryDisplay();
     }
 }
