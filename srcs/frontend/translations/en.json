@@ -34,6 +34,7 @@
     "login-connexion-title": "Login to your account",
     "username-connexion-label": "Username",
     "password-connexion-label": "Password",
+    "2fa-connexion-label": "2fa password (optionnal)",
     "login-connexion-button": "Log In",
     "signUp-connexion-text": "Don't have an account?",
     "signUp-connexion-link": "Sign up",

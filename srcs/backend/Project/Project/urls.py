@@ -25,8 +25,6 @@ from AppAuthentification.views import (
     logout,
     enable2FA,
     confirm2FA,
-    login2FA,
-    is2FAactivate,
     isUserAuthentified,
     disable2FA,
     addFriend,
@@ -49,8 +47,6 @@ urlpatterns = [
     #2FA
     path('api/enable2FA/', enable2FA),
     path('api/confirm2FA/', confirm2FA),
-    path('api/login2FA/', login2FA),
-    path('api/is2FAactivate/', is2FAactivate),
     path('api/disable2FA/', disable2FA),
     #settings
     path('api/infosUser/', infosUser),

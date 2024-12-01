@@ -90,6 +90,11 @@ def login(request):
         user = serializer.validated_data['user']
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if TOTPDevice.objects.filter(user=user, confirmed=True).exists():
+        device = TOTPDevice.objects.filter(user=user, confirmed=True).first()
+        if not device or not device.verify_token(request.data.get("otp")):
+            return Response({'error': 'error'}, status=status.HTTP_400_BAD_REQUEST)
     
     refreshToken = RefreshToken.for_user(user)
     accessToken = refreshToken.access_token
@@ -188,33 +193,6 @@ def confirm2FA(request):
         return Response({"message": "2FA activée avec succès."}, status=status.HTTP_200_OK)
     else:
         return Response({"detail": "Code OTP invalide."}, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-@authentication_classes([JWTCookieAuthentication])
-@permission_classes([IsAuthenticated])
-def is2FAactivate(request):
-    user = request.user
-    if TOTPDevice.objects.filter(user=user, confirmed=True).exists():
-        return Response({"2FA_activated": "yes"}, status=status.HTTP_200_OK)
-    else:
-        return Response({"2FA_activated": "no"}, status=status.HTTP_200_OK)
-
-@api_view(['POST'])
-@authentication_classes([JWTCookieAuthentication])
-@permission_classes([IsAuthenticated])
-def login2FA(request):
-    user = request.user
-    if TOTPDevice.objects.filter(user=user, confirmed=True).exists():
-        device = TOTPDevice.objects.filter(user=user, confirmed=True).first()
-        if device and device.verify_token(request.data.get("otp")):
-            return Response({'message': '2FA authentication successful!'}, status=status.HTTP_200_OK)
-        else:
-            response = Response({'error': 'Invalid 2FA token'}, status=status.HTTP_400_BAD_REQUEST)
-            response.delete_cookie('access_token')
-            response.delete_cookie('refresh_token')
-            return response
-    return Response({'error': 'No valid 2FA device found for this user'}, status=status.HTTP_400_BAD_REQUEST)
-
 #settings 
 
 @api_view(['GET'])
