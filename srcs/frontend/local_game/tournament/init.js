@@ -5,9 +5,12 @@ window.generateAliasFields = generateAliasFields;
 window.submitAliases = submitAliases;
 window.tournamentGame = tournamentGame;
 
+let canvas;
+let ctx;
+
 export function tournamentGame() {
-    let canvas = document.getElementById("pong-canvas");
-    let ctx = canvas.getContext("2d");
+    canvas = document.getElementById("pong-canvas");
+    ctx = canvas.getContext("2d");
     canvas.width = 600;
     canvas.height = 400;
 
@@ -116,7 +119,6 @@ export function generateAliasFields() {
         aliasInputsContainer.appendChild(aliasDiv);
     }
 }
-
 export function submitAliases() {
     console.log("submitAliases called");
 
@@ -142,11 +144,39 @@ export function submitAliases() {
     const tournamentTree = generateTournamentTree(aliases);
     console.log("Generated Tournament Tree:", tournamentTree);
 
+    // Récupérer les deux premiers joueurs
+    const firstMatch = tournamentTree[0]; // Supposons que le premier match est le premier élément
+    const player1 = firstMatch[0]; // Premier joueur
+    const player2 = firstMatch[1]; // Deuxième joueur
+
     // Générer les rounds pour l'affichage
     const rounds = generateRounds(tournamentTree);
 
     // Afficher l'arbre de tournoi
     displayTournamentTree(rounds);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+
+    // Afficher "It's time!" en blanc
+    ctx.fillStyle = "white";
+    ctx.fillText("It's time!", canvas.width / 2, canvas.height / 2 - 20);
+
+    // Afficher player1 en rouge
+    ctx.fillStyle = "red";
+    ctx.fillText(player1, canvas.width / 2 - 50, canvas.height / 2 + 20); // Décaler légèrement pour séparer les noms
+
+    // Ajouter "vs" en blanc
+    ctx.fillStyle = "white";
+    ctx.fillText("vs", canvas.width / 2, canvas.height / 2 + 20);
+
+    // Afficher player2 en bleu
+    ctx.fillStyle = "blue";
+    ctx.fillText(player2, canvas.width / 2 + 50, canvas.height / 2 + 20);
+
+    // Dessiner un bouton "Play"
+    drawPlayButton(ctx, canvas, canvas.width / 2 - 50, canvas.height / 2 + 50, 100, 40, "Play");
 }
 
 // Fonction pour créer l'arbre de tournoi
@@ -186,6 +216,7 @@ function generateRounds(tournamentTree) {
 
     return rounds;
 }
+
 function displayTournamentTree(rounds) {
     // Effacez le contenu existant
     const gameButtonDisplay = document.getElementById('gameButtonDisplay');
@@ -293,4 +324,36 @@ function shuffleArray(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+}
+
+
+export function drawPlayButton(ctx, canvas, x, y, width, height, text) {
+    // Dessiner le rectangle
+    ctx.fillStyle = "green";
+    ctx.fillRect(x, y, width, height);
+
+    // Ajouter le texte au centre du bouton
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText(text, x + width / 2, y + height / 2 + 7);
+
+    // Ajouter un événement pour détecter les clics sur le bouton
+    canvas.addEventListener("click", function handleCanvasClick(event) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
+
+        // Vérifier si le clic est dans les limites du bouton
+        if (
+            mouseX >= x &&
+            mouseX <= x + width &&
+            mouseY >= y &&
+            mouseY <= y + height
+        ) {
+            console.log("Play button clicked!");
+            // Ajouter la logique du bouton ici
+            canvas.removeEventListener("click", handleCanvasClick);
+        }
+    });
 }
