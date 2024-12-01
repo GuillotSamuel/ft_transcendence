@@ -1,7 +1,7 @@
 import {handleWebSocketMessage, handleWebSocketOpen, handleWebSocketClose, handleWebSocketError} from "./handle_websocket.js";
 import {playerRole} from "./handle_websocket.js";
 import {startListening, stopListening} from "./disconnect.js";
-
+import {handleCanvasClick} from "./find_return_button.js";
 
 export let websocket = null; // Variable globale pour la connexion WebSocket
 export let ctx, canvas;
@@ -12,6 +12,7 @@ export async function startRemoteGame() {
     canvas = document.getElementById("pong-canvas");
     ctx = canvas.getContext("2d");
     setIsRemoteGameActive(true);
+    canvas.removeEventListener('click', handleCanvasClick);
     startListening();
     try {
         // Requête API pour créer ou rejoindre un match

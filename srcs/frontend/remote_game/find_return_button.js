@@ -45,7 +45,7 @@ const buttonStates = {
 };
 
 // Fonction pour gérer les clics sur le canvas
-function handleCanvasClick(event) {
+export function handleCanvasClick(event) {
     const canvas = document.getElementById('pong-canvas');
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -122,7 +122,6 @@ export function drawFindGameScreen() {
     drawButton(ctx, buttons.findGame, buttonStates.findGame);
     drawButton(ctx, buttons.return, buttonStates.return);
 
-    canvas.removeEventListener('click', handleCanvasClick);
     canvas.addEventListener('click', handleCanvasClick);
 }
 
@@ -130,7 +129,6 @@ export function drawFindGameScreen() {
 function findGame() {
     console.log('Recherche d\'une partie...');
     const ctx = document.getElementById('pong-canvas').getContext('2d');
-    
     // Afficher un message dans le canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.fillStyle = 'white';
