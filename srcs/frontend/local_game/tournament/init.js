@@ -1,4 +1,5 @@
 import { clearCanvas } from "../game.js";
+import {playTournament} from "./play.js";
 
 window.clearCanvas = clearCanvas;
 window.generateAliasFields = generateAliasFields;
@@ -7,6 +8,7 @@ window.tournamentGame = tournamentGame;
 
 let canvas;
 let ctx;
+let tournamentTree = null;
 
 export function tournamentGame() {
     canvas = document.getElementById("pong-canvas");
@@ -141,7 +143,7 @@ export function submitAliases() {
     }
 
     // Générer l'arbre de tournoi
-    const tournamentTree = generateTournamentTree(aliases);
+    tournamentTree = generateTournamentTree(aliases);
     console.log("Generated Tournament Tree:", tournamentTree);
 
     // Récupérer les deux premiers joueurs
@@ -352,6 +354,7 @@ export function drawPlayButton(ctx, canvas, x, y, width, height, text) {
             mouseY <= y + height
         ) {
             console.log("Play button clicked!");
+            playTournament(tournamentTree);
             // Ajouter la logique du bouton ici
             canvas.removeEventListener("click", handleCanvasClick);
         }
