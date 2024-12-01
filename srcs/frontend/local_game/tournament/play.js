@@ -6,20 +6,23 @@ export async function playTournament(tournamentTree) {
     console.log("Starting Tournament!");
 
     // Boucle jusqu'à ce qu'il ne reste qu'un seul gagnant
-    while (currentRound.length > 1) {
+    while (currentRound.length > 0) {
         console.log("Current Round Matches:", currentRound);
 
-        // Préparez le prochain round
         const nextRound = [];
 
         // Jouez chaque match dans le round actuel
-        for (let match of currentRound) {
+        for (const match of currentRound) {
             const [player1, player2] = match;
 
-            // Si l'un des joueurs est "None", l'autre gagne automatiquement
-            if (player1 === "None") {
+            if (player1 === "None" && player2 === "None") {
+                // Les deux joueurs sont "None", pas de gagnant
+                continue;
+            } else if (player1 === "None") {
+                // Le joueur 2 gagne automatiquement
                 nextRound.push(player2);
             } else if (player2 === "None") {
+                // Le joueur 1 gagne automatiquement
                 nextRound.push(player1);
             } else {
                 // Simulez un match et choisissez un gagnant
@@ -32,27 +35,23 @@ export async function playTournament(tournamentTree) {
         currentRound = [];
         for (let i = 0; i < nextRound.length; i += 2) {
             const player1 = nextRound[i] || "None";
-            const player2 = nextRound[i + 1] || "None"; 
+            const player2 = nextRound[i + 1] || "None";
             currentRound.push([player1, player2]);
         }
 
         console.log("Next Round Matches:", currentRound);
 
-        // Vérifiez si c'est la finale (juste avant de sortir de la boucle)
-        if (currentRound.length === 1) {
+        // Si c'est la finale
+        if (currentRound.length === 1 && currentRound[0].length === 2) {
             const [player1, player2] = currentRound[0];
             console.log(`Final Match: ${player1} vs ${player2}`);
             alert(`Final Match: ${player1} vs ${player2}`);
-            
-            if (player2 == "None")
-                finalWinner = player1
-            else{
-                finalWinner = await playMatch(player1, player2); 
-            }
+
+            finalWinner = player2 === "None" ? player1 : await playMatch(player1, player2);
+            break; // La boucle peut s'arrêter, nous avons un gagnant
         }
     }
 
-    console.log(`Tournament Winner: ${finalWinner}`);
     displayWinner(finalWinner);
 }
 

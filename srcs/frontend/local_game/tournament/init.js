@@ -151,11 +151,8 @@ export function submitAliases() {
     const player1 = firstMatch[0]; // Premier joueur
     const player2 = firstMatch[1]; // Deuxième joueur
 
-    // Générer les rounds pour l'affichage
-    const rounds = generateRounds(tournamentTree);
 
     // Afficher l'arbre de tournoi
-    displayTournamentTree(rounds);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.font = "30px Arial";
@@ -199,123 +196,6 @@ function generateTournamentTree(players) {
     }
 
     return tournamentTree;
-}
-
-// Fonction pour générer les rounds à partir de l'arbre de tournoi
-function generateRounds(tournamentTree) {
-    const rounds = [];
-    rounds.push(tournamentTree);
-
-    let currentRound = tournamentTree;
-    while (currentRound.length > 1) {
-        const nextRound = [];
-        for (let i = 0; i < currentRound.length / 2; i++) {
-            nextRound.push(['', '']); // Placeholder pour les prochains matchs
-        }
-        rounds.push(nextRound);
-        currentRound = nextRound;
-    }
-
-    return rounds;
-}
-
-function displayTournamentTree(rounds) {
-    // Effacez le contenu existant
-    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
-    gameButtonDisplay.innerHTML = '';
-
-    // Créez le conteneur principal pour le bracket
-    const bracketContainer = document.createElement('div');
-    bracketContainer.id = 'bracketContainer';
-    bracketContainer.style.display = 'flex';
-    bracketContainer.style.justifyContent = 'center';
-    bracketContainer.style.alignItems = 'flex-start';
-    bracketContainer.style.gap = '20px';
-    bracketContainer.style.marginTop = '20px';
-
-    // Pour chaque round, créez une colonne
-    rounds.forEach((round, roundIndex) => {
-        const roundColumn = document.createElement('div');
-        roundColumn.classList.add('round');
-        roundColumn.style.display = 'flex';
-        roundColumn.style.flexDirection = 'column';
-        roundColumn.style.alignItems = 'center';
-
-        // Calculer l'espacement supérieur pour décaler les rounds
-        if (roundIndex == 1) {
-            const offset = Math.pow(2, roundIndex - 1) * 50; // 60 est la hauteur de la case
-            roundColumn.style.marginTop = `${offset}px`;
-        }
-
-        else if (roundIndex == 2) {
-            const offset = Math.pow(2, roundIndex - 1) * 60; // 60 est la hauteur de la case
-            roundColumn.style.marginTop = `${offset}px`;
-        }
-
-        // Titre du round
-        const roundTitle = document.createElement('div');
-        if (roundIndex === rounds.length - 1) {
-            roundTitle.textContent = 'Winner';
-        } else {
-            roundTitle.textContent = `Round ${roundIndex + 1}`;
-        }
-        roundTitle.style.color = 'white';
-        roundTitle.style.fontSize = '18px';
-        roundTitle.style.marginBottom = '20px';
-        roundColumn.appendChild(roundTitle);
-
-        // Pour chaque match dans le round
-        round.forEach((match, matchIndex) => {
-            const matchContainer = document.createElement('div');
-            matchContainer.classList.add('matchContainer');
-            matchContainer.style.display = 'flex';
-            matchContainer.style.flexDirection = 'column';
-            matchContainer.style.alignItems = 'center';
-            
-
-            // Calculer l'espacement entre les matchs
-            const spacing = Math.pow(2, roundIndex) * 60; // Ajustement de l'espacement entre les matchs
-            if (matchIndex > 0) {
-                matchContainer.style.marginTop = `${spacing - 30}px`;
-            }
-
-            const matchDiv = document.createElement('div');
-            matchDiv.classList.add('match');
-            matchDiv.style.display = 'flex';
-            matchDiv.style.flexDirection = 'column';
-            matchDiv.style.alignItems = 'center';
-            matchDiv.style.justifyContent = 'center';
-            matchDiv.style.width = '150px';
-            matchDiv.style.height = '60px';
-            matchDiv.style.border = '1px solid #ccc';
-            matchDiv.style.borderRadius = '5px';
-            matchDiv.style.padding = '5px';
-            matchDiv.style.backgroundColor = '#333';
-
-            // Joueur 1
-            const player1 = document.createElement('div');
-            player1.textContent = match[0] || '';
-            player1.style.color = 'white';
-            player1.style.fontSize = '14px';
-
-            // Joueur 2
-            const player2 = document.createElement('div');
-            player2.textContent = match[1] || '';
-            player2.style.color = 'white';
-            player2.style.fontSize = '14px';
-
-            matchDiv.appendChild(player1);
-            matchDiv.appendChild(player2);
-
-            matchContainer.appendChild(matchDiv);
-            roundColumn.appendChild(matchContainer);
-        });
-
-        bracketContainer.appendChild(roundColumn);
-    });
-
-    // Ajoutez le bracket au DOM
-    gameButtonDisplay.appendChild(bracketContainer);
 }
 
 
