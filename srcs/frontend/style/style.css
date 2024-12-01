@@ -33,3 +33,29 @@ footer a {
 footer a:hover {
     color: #0d6efd;
 }
+
+
+
+
+#bracketContainer .match {
+    position: relative;
+}
+
+#bracketContainer .match::before,
+#bracketContainer .match::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background: #fff;
+}
+
+#bracketContainer .match::before {
+    left: -20px;
+    top: 25%;
+}
+
+#bracketContainer .match::after {
+    left: -20px;
+    top: 75%;
+}
