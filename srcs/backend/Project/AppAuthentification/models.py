@@ -7,4 +7,5 @@ class GameUser(AbstractUser):
     password = models.CharField(max_length=128, blank=False)
     friends = models.ManyToManyField('GameUser', blank=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    online = models.BooleanField(default=False)
 

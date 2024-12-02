@@ -60,7 +60,8 @@ def callBack42(request):
     user, created = get_user_model().objects.get_or_create(username=username, email=email)
     if created:
         user.set_unusable_password()
-        user.save()
+    user.online = True
+    user.save()
 
     refreshToken = RefreshToken.for_user(user)
     accessToken = refreshToken.access_token
@@ -113,6 +114,8 @@ def login(request):
         httponly=True,
         samesite='Lax',
     )
+    user.online = True
+    user.save()
     return response
 
 @api_view(['POST'])
@@ -123,6 +126,9 @@ def logout(request):
         response = Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')
         response.delete_cookie('refresh_token')
+        user = request.user
+        user.online = False
+        user.save()
         return response
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -253,6 +259,10 @@ def listFriends(request):
     friendlist = []
     for friend in friends:
         friendlist.append(friend.username)
+        friendlist.append({
+            "username": friend.username,
+            "online": friend.online,
+        })
     return Response({'friends': friendlist}, status=status.HTTP_200_OK)
 
 @api_view(['DELETE'])
