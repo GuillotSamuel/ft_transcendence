@@ -6,10 +6,11 @@ import {
     displayFinalMatchText 
 } from "./drawWinner.js";
 
-import {clearRoundDisplay} from "./displayRound.js";
+import {clearRoundDisplay, displayCurrentRound} from "./displayRound.js";
 
 let canvas;
 let ctx;
+
 window.clearRoundDisplay = clearRoundDisplay;
 
 export async function playTournament(tournamentTree) {
@@ -34,7 +35,8 @@ async function processRounds(tournamentTree, ctx) {
 
         // Préparer le prochain round
         currentRound = prepareNextRound(nextRoundPlayers);
-
+        clearRoundDisplay();
+        displayCurrentRound(currentRound);
         console.log("Next Round Matches:", currentRound);
 
         // Vérifier si c'est la finale
@@ -49,7 +51,7 @@ async function processRounds(tournamentTree, ctx) {
                 <button 
                     class="btn btn-secondary btn-lg" 
                     style="padding: 10px 20px; border-radius: 5px;" 
-                    onclick="tournamentGame()">
+                    onclick="clearRoundDisplay(); tournamentGame()">
                     Return To Menu
                 </button>
             </div>`;
