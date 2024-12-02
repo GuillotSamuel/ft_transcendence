@@ -34,10 +34,12 @@ export function tournamentGame() {
         "Welcome to the Tournament!",
         "1. Please enter the number of participants",
         "Max players: 8",
-        "2. The alias for each player.",
+        "2. Enter an alias for each player.",
+        "(max length: 8 characters)",
         "This is a single-elimination tournament.",
         "GL, HF"
     ];
+    
 
     // Positionnement dynamique pour le texte
     let y = 100;
@@ -131,6 +133,9 @@ export function submitAliases() {
     // Récupérer les alias depuis les champs de saisie
     aliasInputs.forEach(input => {
         const alias = input.value.trim();
+        if (alias.length > 8) {
+            return;
+        }
         if (alias) {
             aliases.push(alias);
         }
@@ -180,7 +185,6 @@ export function submitAliases() {
 
     drawPlayButton(ctx, canvas, canvas.width / 2 - 85, canvas.height / 2 + 30, 180, 50, "Start Tournament");
 }
-
 
 
 // Fonction pour créer l'arbre de tournoi
