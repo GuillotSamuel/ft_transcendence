@@ -6,8 +6,11 @@ import {
     displayFinalMatchText 
 } from "./drawWinner.js";
 
+import {clearRoundDisplay} from "./displayRound.js";
+
 let canvas;
 let ctx;
+window.clearRoundDisplay = clearRoundDisplay;
 
 export async function playTournament(tournamentTree) {
     canvas = document.getElementById("pong-canvas");
@@ -15,7 +18,7 @@ export async function playTournament(tournamentTree) {
 
     await ctx.clearRect(0, 0, canvas.width, canvas.height);
     console.log("Starting Tournament!");
-
+    
     await processRounds(tournamentTree, ctx);
 }
 
@@ -25,7 +28,7 @@ async function processRounds(tournamentTree, ctx) {
     while (currentRound.length > 0) {
         console.log("Current Round Matches:", currentRound);
 
-        
+        //clearRoundDisplay();
         // Jouer tous les matchs du round actuel et obtenir les gagnants
         const nextRoundPlayers = await playCurrentRound(currentRound);
 
@@ -127,7 +130,7 @@ function displayPlayButtonAndWait() {
                 <button 
                     class="btn btn-secondary btn-lg" 
                     style="padding: 10px 20px; border-radius: 5px;" 
-                    onclick="tournamentGame()">
+                    onclick="clearRoundDisplay(); tournamentGame()">
                     Return To Menu
                 </button>
             </div>
@@ -158,7 +161,7 @@ function displayNextButtonAndWait() {
                 <button 
                     class="btn btn-secondary btn-lg" 
                     style="padding: 10px 20px; border-radius: 5px;" 
-                    onclick="tournamentGame()">
+                    onclick="clearRoundDisplay(); tournamentGame()">
                     Return To Menu
                 </button>
             </div>
