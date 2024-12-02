@@ -19,18 +19,32 @@ export class Score
         const centerX = this.canvas.width / 2;
 
         // Dessiner le score de chaque joueur avec espace autour du séparateur
-        this.ctx.fillStyle = "#FF4136"; // Red for Player 1
-        this.ctx.fillText(`${this.scorePlayer1}`, centerX - 80, 60);  // Score joueur 1
+        this.ctx.fillStyle = "#FF4136"; 
+        this.ctx.fillText(`${this.scorePlayer1}`, centerX - 80, 60); 
 
         this.ctx.fillStyle = "#FFFFFF"; // White for separator
-        this.ctx.fillText("|", centerX, 60);                           // Séparateur
+        this.ctx.fillText("|", centerX, 60); 
 
         this.ctx.fillStyle = "#0074D9"; // Blue for Player 2
-        this.ctx.fillText(`${this.scorePlayer2}`, centerX + 80, 60);  // Score joueur 2
+        this.ctx.fillText(`${this.scorePlayer2}`, centerX + 80, 60);
 
     }
 
-    // Méthodes pour mettre à jour les scores
+    drawWithNames(player1, player2) {
+        this.ctx.font = "bold 20px 'Arial Black', sans-serif";
+        this.ctx.textAlign = "center";
+
+        const centerX = this.canvas.width / 2;
+
+        this.ctx.fillStyle = "#FF4136";
+        this.ctx.fillText(player1, centerX - 80, 30);
+
+        this.ctx.fillStyle = "#0074D9";
+        this.ctx.fillText(player2, centerX + 80, 30);
+
+        this.draw();
+    }
+
     incrementPlayer(player)
     {
         if (player == 1)
@@ -47,7 +61,7 @@ export class Score
 
     check_winner()
     {
-        if (this.scorePlayer1 == 5 || this.scorePlayer2 == 5)
+        if (this.scorePlayer1 == this.max_score || this.scorePlayer2 == this.max_score)
             return true;
         else
             return false;

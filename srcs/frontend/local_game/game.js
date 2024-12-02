@@ -8,18 +8,25 @@ let canvas, ctx;
 let gameRunning = false;
 let currentBoostType = "Skinny";
 let ball, leftPaddle, rightPaddle, score, imageBoost, begin_time;
-
 let leftPaddleUp = false;
 let leftPaddleDown = false;
 let rightPaddleUp = false;
 let rightPaddleDown = false;
 let actionPerformed = false;
 let currentRandomY = null;
+let countdownInterval = null;
+let tournament = false;
+let player1 = "Player1";
+let player2 = "Player2";
+let winner;
+
+window.clearCanvas = clearCanvas;
 
 function initializeGame()
 {
     startListeningForPageChanges();
     begin_time = Date.now();
+    winner = "None";
     // Sélection du canvas
     canvas = document.getElementById("pong-canvas");
     ctx = canvas.getContext("2d");
@@ -40,52 +47,41 @@ function initializeGame()
     document.addEventListener("keyup", keyUpHandler);
 }
 
-function keyDownHandler(event)
-{
-    if (event.key === "w") leftPaddleUp = true;
-    if (event.key === "s") leftPaddleDown = true;
-    if (event.key === "ArrowUp") {
-        rightPaddleUp = true;
-        event.preventDefault();
-    }
-    if (event.key === "ArrowDown") {
-        rightPaddleDown = true;
-        event.preventDefault();
-    }
-    if (event.key === "Escape") stopGame();
+export function startGame(type, p1, p2) {
+    return new Promise((resolve) => {
+        if (gameRunning) return;
+        if (type == "tour") tournament = true;
+        player1 = p1;
+        player2 = p2;
+        initializeGame();
+        gameRunning = true;
+
+        countdown(() => {
+            if (type == "local") {
+                gameLoop(); // Passez resolve pour capturer le gagnant
+            } else if (type == "custom") {
+                gameLoopCustom();
+            } else {
+                gameLoop(resolve);
+            }
+        });
+    });
 }
 
-function keyUpHandler(event)
-{
-    if (event.key === "w") leftPaddleUp = false;
-    if (event.key === "s") leftPaddleDown = false;
-    if (event.key === "ArrowUp") {
-        rightPaddleUp = false;
-        event.preventDefault();
-    }
-    if (event.key === "ArrowDown") {
-        rightPaddleDown = false;
-        event.preventDefault();
-    }
-}
-
-export function startGame(type)
-{
-    if (gameRunning) return;
-
-    initializeGame();
-    gameRunning = true;
-    if (type == "local")
-        gameLoop();
-    else if (type == "custom")
-    {
-        console.log("ON EST DANS CUSTOM");
-        gameLoopCustom();
-    }
-}
-
-export function stopGame() {
+export function stopGame(resolve) {
     gameRunning = false;
+
+    document.removeEventListener("keydown", keyDownHandler);
+    document.removeEventListener("keyup", keyUpHandler);
+    stopListeningForPageChanges();
+    resetLocal();
+    
+    // Arrêter le compte à rebours s'il est actif
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+
     if (!ctx || !canvas) {
         console.warn("Canvas or context not initialized. Skipping cleanup.");
         return;
@@ -93,7 +89,15 @@ export function stopGame() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    let winnerMessage = '';
+    if (tournament) {
+        tournament = false;
+        winner = displayWinnerTour(ctx, canvas, player1, player2, score);
+        console.log(`winner quand stop game = ${winner} `);
+        resolve(winner);
+        return;
+    }
+
+    let winnerMessage = '';player1
     if (score.scorePlayer1 > score.scorePlayer2) {
         winnerMessage = 'Player 1 Wins!';
         ctx.fillStyle = "#FF4136";
@@ -124,26 +128,25 @@ export function stopGame() {
 
     if (score) 
         score.resetScore();
-
-    document.removeEventListener("keydown", keyDownHandler);
-    document.removeEventListener("keyup", keyUpHandler);
-    stopListeningForPageChanges();
-    resetLocal();
-
+    
     const gameButtonDisplay = document.getElementById('gameButtonDisplay');
 
     // Remplace tout le contenu par uniquement le bouton de retour
     gameButtonDisplay.innerHTML = `
-        <button class="btn btn-secondary btn-lg" onclick="displaySecondaryButtons()">Return</button>
+        <button class="btn btn-secondary btn-lg" onclick="clearCanvas(); displaySecondaryButtons()">Return</button>
     `;
 }
 
-function gameLoop()
-{
+export function clearCanvas() {
+    if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+}
+
+function gameLoop(resolve) {
     if (!gameRunning) return;
-    if (score.check_winner() == true)
-    {
-        stopGame();
+    if (score.check_winner() == true) {
+        stopGame(resolve); // Appelle stopGame avec resolve
         return;
     }
 
@@ -151,25 +154,31 @@ function gameLoop()
 
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
-    
+
     leftPaddle.move(leftPaddleUp, leftPaddleDown);
     rightPaddle.move(rightPaddleUp, rightPaddleDown);
 
     leftPaddle.draw(ctx);
     rightPaddle.draw(ctx);
 
-    score.draw();
+    score.drawWithNames(player1, player2);
 
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer(2);
         ball.resetPosition(1);
-    }
-    else if (ball.x + ball.radius >= canvas.width) {
+    } else if (ball.x + ball.radius >= canvas.width) {
         score.incrementPlayer(1);
         ball.resetPosition(2);
     }
-    requestAnimationFrame(gameLoop);
+
+    // Utilisation d'une fonction fléchée pour passer `resolve` à la prochaine itération
+    if (tournament)
+        requestAnimationFrame(() => gameLoop(resolve));
+    else{
+        requestAnimationFrame(gameLoop);
+    }
 }
+
 
 function gameLoopCustom()
 {
@@ -242,12 +251,11 @@ function check_time() {
         return false;
     }
 
-    if (diff_time >= 1) {
+    if (diff_time >= 3) {
         return true; // Condition satisfaite
     }
     return false;
 }
-
 
 
 function check_ball_and_bonus(ball, imageBoost)
@@ -304,3 +312,93 @@ function reset_all()
     begin_time = Date.now();
 }
 
+function countdown(callback) {
+    let countdownTime = 3; // Début du compte à rebours
+    countdownInterval = setInterval(() => { // Stocke l'identifiant
+        // Effacer le canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        leftPaddle.draw(ctx);
+        rightPaddle.draw(ctx);
+        ball.draw(ctx);
+        score.drawWithNames(player1, player2);
+        
+        // Afficher le message principal
+        ctx.font = "30px 'Press Start 2P', Arial";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText("The game is starting...", canvas.width / 2, canvas.height / 2 - 50);
+
+        // Afficher le compte à rebours
+        ctx.font = "30px 'Press Start 2P', Arial";
+        ctx.fillText(countdownTime, canvas.width / 2, canvas.height / 2 + 50);
+
+        countdownTime--;
+
+        if (countdownTime < 0) {
+            clearInterval(countdownInterval); // Arrêter l'intervalle
+            countdownInterval = null; // Réinitialiser la variable
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Effacer le canvas
+            callback(); // Démarrer le jeu une fois le compte à rebours terminé
+        }
+    }, 1000); // 1 seconde entre chaque étape
+}
+
+function keyDownHandler(event)
+{
+    if (event.key === "w") leftPaddleUp = true;
+    if (event.key === "s") leftPaddleDown = true;
+    if (event.key === "ArrowUp") {
+        rightPaddleUp = true;
+        event.preventDefault();
+    }
+    if (event.key === "ArrowDown") {
+        rightPaddleDown = true;
+        event.preventDefault();
+    }
+    if (!tournament)
+        if (event.key === "Escape") stopGame();
+}
+
+function keyUpHandler(event)
+{
+    if (event.key === "w") leftPaddleUp = false;
+    if (event.key === "s") leftPaddleDown = false;
+    if (event.key === "ArrowUp") {
+        rightPaddleUp = false;
+        event.preventDefault();
+    }
+    if (event.key === "ArrowDown") {
+        rightPaddleDown = false;
+        event.preventDefault();
+    }
+}
+
+
+function displayWinnerTour(ctx, canvas, player1, player2, score) {
+    let winner;
+    let message = '';
+
+    if (score.scorePlayer1 > score.scorePlayer2) {
+        winner = player1;
+        message = `${player1} Wins!`;
+    } else {
+        winner = player2;
+        message = `${player2} Wins!`;
+    }
+
+    if (ctx) {
+        // Afficher le message de victoire
+        ctx.font = "20px 'Press Start 2P', Arial";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#FFFFFF"; // Couleur blanche pour le texte
+        ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+
+        // Afficher le score final
+        ctx.font = "16px 'Press Start 2P', Arial";
+        const finalScore = `Final Score: ${player1} ${score.scorePlayer1} - ${score.scorePlayer2} ${player2}`;
+        ctx.fillText(finalScore, canvas.width / 2, canvas.height / 2 + 30);
+    }
+
+    return winner;
+}

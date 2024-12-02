@@ -51,33 +51,6 @@ export function disconnectPlayerSync() {
     }
 }
 
-
-// export async function disconnectPlayer() {
-//     try {
-//         const response = await fetch('/api/disconnectPlayer/', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             credentials: 'include',
-//         });
-
-//         if (response.ok) {
-//             const data = await response.json();
-//             console.log("Déconnexion réussie :", data.message);
-//             alert(data.message);
-//         } else {
-//             const errorData = await response.json();
-//             console.error("Erreur lors de la déconnexion :", errorData.message);
-//             alert(errorData.message);
-//         }
-//     } catch (error) {
-//         console.error("Erreur réseau :", error);
-//         alert("Erreur réseau lors de la tentative de déconnexion.");
-//     }
-// }
-
-
 // Ajout de l'écouteur
 export function startListening() {
     window.addEventListener('beforeunload', disconnectGame);
