@@ -121,6 +121,7 @@ export function generateAliasFields() {
         aliasInputsContainer.appendChild(aliasDiv);
     }
 }
+
 export function submitAliases() {
     console.log("submitAliases called");
 
@@ -142,15 +143,29 @@ export function submitAliases() {
         return;
     }
 
+    const uniqueAliases = new Set(aliases);
+    if (uniqueAliases.size < aliases.length) {
+        alert("Duplicate aliases detected. Please ensure all players have unique aliases.");
+        return;
+    }
+
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+    
+    // Remplacer l'interface pour inclure le bouton Return
+    gameButtonDisplay.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
+            <button 
+                class="btn btn-secondary btn-lg" 
+                style="padding: 10px 20px; border-radius: 5px;" 
+                onclick="tournamentGame()">
+                Return
+            </button>
+        </div>
+    `;
+
     // Générer l'arbre de tournoi
     tournamentTree = generateTournamentTree(aliases);
     console.log("Generated Tournament Tree:", tournamentTree);
-
-    // Récupérer les deux premiers joueurs
-    const firstMatch = tournamentTree[0]; // Supposons que le premier match est le premier élément
-    const player1 = firstMatch[0]; // Premier joueur
-    const player2 = firstMatch[1]; // Deuxième joueur
-
 
     // Afficher l'arbre de tournoi
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -158,25 +173,16 @@ export function submitAliases() {
     ctx.font = "30px Arial";
     ctx.textAlign = "center";
 
-    // Afficher "It's time!" en blanc
+    // Afficher un message indiquant que le tournoi est prêt
     ctx.fillStyle = "white";
-    ctx.fillText("It's time!", canvas.width / 2, canvas.height / 2 - 20);
+    ctx.fillText("The tournament is ready!", canvas.width / 2, canvas.height / 2 - 40);
+    ctx.fillText("Click 'Start Matches' to begin!", canvas.width / 2, canvas.height / 2);
 
-    // Afficher player1 en rouge
-    ctx.fillStyle = "red";
-    ctx.fillText(player1, canvas.width / 2 - 50, canvas.height / 2 + 20); // Décaler légèrement pour séparer les noms
-
-    // Ajouter "vs" en blanc
-    ctx.fillStyle = "white";
-    ctx.fillText("vs", canvas.width / 2, canvas.height / 2 + 20);
-
-    // Afficher player2 en bleu
-    ctx.fillStyle = "blue";
-    ctx.fillText(player2, canvas.width / 2 + 50, canvas.height / 2 + 20);
-
-    // Dessiner un bouton "Play"
-    drawPlayButton(ctx, canvas, canvas.width / 2 - 50, canvas.height / 2 + 50, 100, 40, "Play");
+    // Dessiner un bouton "Start Matches"
+    drawPlayButton(ctx, canvas, canvas.width / 2 - 70, canvas.height / 2 + 30, 140, 50, "Start Matches");
 }
+
+
 
 // Fonction pour créer l'arbre de tournoi
 function generateTournamentTree(players) {
@@ -198,7 +204,6 @@ function generateTournamentTree(players) {
     return tournamentTree;
 }
 
-
 // Fonction pour mélanger les joueurs aléatoirement
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -211,7 +216,7 @@ function shuffleArray(array) {
 
 export function drawPlayButton(ctx, canvas, x, y, width, height, text) {
     // Dessiner le rectangle
-    ctx.fillStyle = "green";
+    ctx.fillStyle = "grey";
     ctx.fillRect(x, y, width, height);
 
     // Ajouter le texte au centre du bouton
@@ -240,3 +245,4 @@ export function drawPlayButton(ctx, canvas, x, y, width, height, text) {
         }
     });
 }
+
