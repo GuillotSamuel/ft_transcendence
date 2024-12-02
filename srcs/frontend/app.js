@@ -711,9 +711,20 @@ async function navigate() {
         resizeGame();
         await manageDisplayGame();
     }
-    if (hash === 'friend') {
-        await listFriend();
-    }
+    let intervalId;
+
+if (hash === 'friend') {
+    await listFriend();
+
+    intervalId = setInterval(async () => {
+        if (window.location.hash === '#friend') {
+            await listFriend();
+        } else {
+            clearInterval(intervalId);
+        }
+    }, 1000);
+}
+
     if (hash === 'statsHistory') {
         await statsHistoryDisplay();
     }
@@ -923,14 +934,20 @@ async function displayFriendsInfos(friends) {
         cardBody.classList.add('card-body', 'd-flex', 'justify-content-between', 'align-items-center');
 
         const friendName = document.createElement('span');
-        friendName.textContent = friend;
+        friendName.textContent = friend.username;
         friendName.classList.add('friend-card');
         cardBody.appendChild(friendName);
+
+        const friendStatus = document.createElement('div');
+        friendStatus.classList.add('status-btn');
+        friendStatus.classList.add(friend.online ? 'friendIsConnected' : 'friendIsOffline');
+        friendStatus.textContent = friend.online ? 'Connected' : 'Offline';
+        cardBody.appendChild(friendStatus);
 
         const removeButton = document.createElement('button');
         removeButton.classList.add('btn', 'btn-danger');
         removeButton.textContent = 'Remove Friend';
-        removeButton.onclick = () => removeFriend(friend);
+        removeButton.onclick = () => removeFriend(friend.username);
         cardBody.appendChild(removeButton);
 
         friendItem.appendChild(cardBody);
@@ -954,7 +971,12 @@ async function listFriend() {
 
         const data = await response.json();
 
-        displayFriendsInfos(data.friends);
+        const friends = data.friends.map(friend => ({
+            username: friend.username,
+            online: friend.online
+        }));
+
+        displayFriendsInfos(friends);
     } catch (error) {
         console.error('Getting friend list failed: ', error);
         alert('Network error: Unable to get friend list.');

@@ -258,7 +258,6 @@ def listFriends(request):
     friends = user.friends.all()
     friendlist = []
     for friend in friends:
-        friendlist.append(friend.username)
         friendlist.append({
             "username": friend.username,
             "online": friend.online,
