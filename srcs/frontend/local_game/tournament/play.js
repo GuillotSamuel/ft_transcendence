@@ -1,6 +1,5 @@
+import { startLocalGame } from "../gameManager.js";
 import {displayWinner } from "./drawWinner.js"
-
-let finalWinner = null;
 
 let canvas;
 let ctx;
@@ -72,7 +71,7 @@ function displayPlayButtonAndWait() {
             </div>
             <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
                 <button 
-                    class="btn btn-secondary btn-lg" 
+                    class="btn btn-primary btn-lg" 
                     style="padding: 10px 20px; border-radius: 5px;" 
                     id="playButton">
                     Play
@@ -104,7 +103,7 @@ function displayNextButtonAndWait() {
             </div>
             <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
                 <button 
-                    class="btn btn-secondary btn-lg" 
+                    class="btn btn-success btn-lg" 
                     style="padding: 10px 20px; border-radius: 5px;" 
                     id="nextButton">
                     Next Match
@@ -132,7 +131,7 @@ async function playCurrentRound(matches) {
         displayMatchOnCanvas(player1, player2);
         await displayPlayButtonAndWait();
         const winner = await determineMatchWinner(match);
-
+        console.log (`winner apres gameloop = ${winner}`);
         if (winner) {
             winners.push(winner);
             displayWinnerOnCanvas(winner);
@@ -152,7 +151,7 @@ async function determineMatchWinner([player1, player2]) {
     } else if (player2 === "None") {
         return player1; // Joueur 1 gagne par défaut
     } else {
-        return await playMatch(player1, player2); // Simuler un match
+        return startLocalGame(player1, player2, "tour"); // Simuler un match
     }
 }
 
@@ -177,24 +176,8 @@ async function playFinalMatch(player1, player2) {
     if (player2 === "None") {
         return player1; // Joueur 1 gagne par défaut
     }
-    return await playMatch(player1, player2); // Simuler le match final
-}
-
-
-async function playMatch(player1, player2) {
-    return new Promise((resolve) => {
-        console.log(`Match: ${player1} vs ${player2}`);
-        alert(`Match: ${player1} vs ${player2}`);
-
-        // Choisissez un gagnant aléatoire
-        const winner = Math.random() > 0.5 ? player1 : player2;
-
-        console.log(`Winner: ${winner}`);
-        alert(`Winner: ${winner}`);
-
-        // Attendez une courte durée avant de résoudre (pour simuler le temps de jeu)
-        setTimeout(() => resolve(winner), 1000);
-    });
+    //return await playMatch(player1, player2); // Simuler le match final
+    return startLocalGame(player1, player2, "tour");
 }
 
 

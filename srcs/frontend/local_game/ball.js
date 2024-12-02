@@ -102,9 +102,6 @@ export class Ball
         // Direction en Y avec un angle aléatoire
         this.speedY = randomSpeedY;
     
-        // Log pour vérifier la randomisation
-        console.log(`Reset position: speedX=${this.speedX}, speedY=${this.speedY}, x=${this.x}, y=${this.y}`);
     }
-    
-    
+
 }

@@ -15,6 +15,10 @@ let rightPaddleDown = false;
 let actionPerformed = false;
 let currentRandomY = null;
 let countdownInterval = null;
+let tournament = false;
+let player1 = "None";
+let player2 = "None";
+let winner = "None";
 
 window.clearCanvas = clearCanvas;
 
@@ -42,8 +46,9 @@ function initializeGame()
     document.addEventListener("keyup", keyUpHandler);
 }
 
-export function startGame(type) {
+export function startGame(type, p1, p2) {
     if (gameRunning) return;
+    if (type == "tour") tournament = true;
 
     initializeGame();
     gameRunning = true;
@@ -53,8 +58,13 @@ export function startGame(type) {
         if (type == "local") {
             gameLoop();
         } else if (type == "custom") {
-            console.log("ON EST DANS CUSTOM");
             gameLoopCustom();
+        }
+        else{
+            player1 = p1;
+            player2 = p2;
+            gameLoop();
+            return winner;
         }
     });
 }
@@ -62,6 +72,11 @@ export function startGame(type) {
 export function stopGame() {
     gameRunning = false;
 
+    document.removeEventListener("keydown", keyDownHandler);
+    document.removeEventListener("keyup", keyUpHandler);
+    stopListeningForPageChanges();
+    resetLocal();
+    
     // Arrêter le compte à rebours s'il est actif
     if (countdownInterval) {
         clearInterval(countdownInterval);
@@ -74,6 +89,13 @@ export function stopGame() {
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (tournament) {
+        tournament = false;
+        winner = displayWinnerTour(ctx, canvas, player1, player2, score);
+        console.log(`winner quand stop game = ${winner} `);
+        return winner;
+    }
 
     let winnerMessage = '';
     if (score.scorePlayer1 > score.scorePlayer2) {
@@ -106,12 +128,7 @@ export function stopGame() {
 
     if (score) 
         score.resetScore();
-
-    document.removeEventListener("keydown", keyDownHandler);
-    document.removeEventListener("keyup", keyUpHandler);
-    stopListeningForPageChanges();
-    resetLocal();
-
+    
     const gameButtonDisplay = document.getElementById('gameButtonDisplay');
 
     // Remplace tout le contenu par uniquement le bouton de retour
@@ -146,7 +163,10 @@ function gameLoop()
     leftPaddle.draw(ctx);
     rightPaddle.draw(ctx);
 
-    score.draw();
+    if (player1 != "None")
+        score.drawWithNames(player1, player2);
+    else
+        score.draw();
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer(2);
         ball.resetPosition(1);
@@ -157,6 +177,7 @@ function gameLoop()
     }
     requestAnimationFrame(gameLoop);
 }
+
 
 function gameLoopCustom()
 {
@@ -172,7 +193,7 @@ function gameLoopCustom()
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
     
-    check_ball_and_bonus(ball, imageBoost);
+    check_ball_and_bonus(ball, imageBoost);Esc
 
 
     leftPaddle.move(leftPaddleUp, leftPaddleDown);
@@ -334,7 +355,8 @@ function keyDownHandler(event)
         rightPaddleDown = true;
         event.preventDefault();
     }
-    if (event.key === "Escape") stopGame();
+    if (!tournament)
+        if (event.key === "Escape") stopGame();
 }
 
 function keyUpHandler(event)
@@ -349,4 +371,33 @@ function keyUpHandler(event)
         rightPaddleDown = false;
         event.preventDefault();
     }
+}
+
+
+function displayWinnerTour(ctx, canvas, player1, player2, score) {
+    let winner;
+    let message = '';
+
+    if (score.scorePlayer1 > score.scorePlayer2) {
+        winner = player1;
+        message = `${player1} Wins!`;
+    } else {
+        winner = player2;
+        message = `${player2} Wins!`;
+    }
+
+    if (ctx) {
+        // Afficher le message de victoire
+        ctx.font = "20px 'Press Start 2P', Arial";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#FFFFFF"; // Couleur blanche pour le texte
+        ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+
+        // Afficher le score final
+        ctx.font = "16px 'Press Start 2P', Arial";
+        const finalScore = `Final Score: ${player1} ${score.scorePlayer1} - ${score.scorePlayer2} ${player2}`;
+        ctx.fillText(finalScore, canvas.width / 2, canvas.height / 2 + 30);
+    }
+
+    return winner;
 }
