@@ -25,9 +25,7 @@ async function processRounds(tournamentTree, ctx) {
     while (currentRound.length > 0) {
         console.log("Current Round Matches:", currentRound);
 
-        // Attendre que l'utilisateur clique sur "Play" avant de continuer
         
-
         // Jouer tous les matchs du round actuel et obtenir les gagnants
         const nextRoundPlayers = await playCurrentRound(currentRound);
 
@@ -142,7 +140,6 @@ function displayPlayButtonAndWait() {
                 </button>
             </div>
         `;
-
         const playButton = document.getElementById('playButton');
         playButton.addEventListener('click', () => {
             gameButtonDisplay.innerHTML = ''; // Efface le bouton après l'interaction

@@ -1,6 +1,6 @@
 import { clearCanvas } from "../game.js";
 import {playTournament} from "./play.js";
-
+import {displayCurrentRound} from "./displayRound.js";
 window.clearCanvas = clearCanvas;
 window.generateAliasFields = generateAliasFields;
 window.submitAliases = submitAliases;
@@ -111,7 +111,7 @@ export function generateAliasFields() {
         aliasDiv.style.gap = '10px';
 
         aliasDiv.innerHTML = `
-            <label for="player${i}Alias" style="color: white; font-size: 16px;">Player ${i} Alias:</label>
+            <label for="player${i}Alias" style="color: black; font-size: 16px;">Player ${i}</label>
             <input 
                 type="text" 
                 id="player${i}Alias" 
@@ -182,7 +182,7 @@ export function submitAliases() {
     ctx.fillStyle = "white";
     ctx.fillText("The tournament is ready!", canvas.width / 2, canvas.height / 2 - 40);
     ctx.fillText("Click 'Start Tournament' to begin!", canvas.width / 2, canvas.height / 2);
-
+    displayCurrentRound(tournamentTree);
     drawPlayButton(ctx, canvas, canvas.width / 2 - 85, canvas.height / 2 + 30, 180, 50, "Start Tournament");
 }
 
@@ -242,6 +242,7 @@ export function drawPlayButton(ctx, canvas, x, y, width, height, text) {
             mouseY <= y + height
         ) {
             console.log("Play button clicked!");
+            
             playTournament(tournamentTree);
             // Ajouter la logique du bouton ici
             canvas.removeEventListener("click", handleCanvasClick);
