@@ -321,7 +321,7 @@ function countdown(callback) {
         leftPaddle.draw(ctx);
         rightPaddle.draw(ctx);
         ball.draw(ctx);
-        score.draw();
+        score.drawWithNames(player1, player2);
         
         // Afficher le message principal
         ctx.font = "30px 'Press Start 2P', Arial";

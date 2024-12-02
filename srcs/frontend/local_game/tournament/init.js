@@ -176,10 +176,9 @@ export function submitAliases() {
     // Afficher un message indiquant que le tournoi est prêt
     ctx.fillStyle = "white";
     ctx.fillText("The tournament is ready!", canvas.width / 2, canvas.height / 2 - 40);
-    ctx.fillText("Click 'Start Matches' to begin!", canvas.width / 2, canvas.height / 2);
+    ctx.fillText("Click 'Start Tournament' to begin!", canvas.width / 2, canvas.height / 2);
 
-    // Dessiner un bouton "Start Matches"
-    drawPlayButton(ctx, canvas, canvas.width / 2 - 70, canvas.height / 2 + 30, 140, 50, "Start Matches");
+    drawPlayButton(ctx, canvas, canvas.width / 2 - 85, canvas.height / 2 + 30, 180, 50, "Start Tournament");
 }
 
 
