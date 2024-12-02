@@ -41,6 +41,16 @@ async function processRounds(tournamentTree, ctx) {
 
             const finalWinner = await playFinalMatch(player1, player2);
             displayWinner(finalWinner);
+            const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+            gameButtonDisplay.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
+                <button 
+                    class="btn btn-secondary btn-lg" 
+                    style="padding: 10px 20px; border-radius: 5px;" 
+                    onclick="tournamentGame()">
+                    Return
+                </button>
+            </div>`;
             break;
         }
     }
