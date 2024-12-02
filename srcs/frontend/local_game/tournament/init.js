@@ -36,7 +36,7 @@ export function tournamentGame() {
         "Max players: 8",
         "2. The alias for each player.",
         "This is a single-elimination tournament.",
-        "The final will be played in BO3."
+        "GL, HF"
     ];
 
     // Positionnement dynamique pour le texte
