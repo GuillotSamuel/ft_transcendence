@@ -624,6 +624,7 @@ function loadLanguage(lang) {
 }
 
 function changeLanguage(language) {
+    document.documentElement.lang = language;
     loadLanguage(language);
     localStorage.setItem("language", language);
 }

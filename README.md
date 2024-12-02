@@ -29,3 +29,4 @@ _To complete..._
 6. Support on all devices sguillot
 7. Game Customization Options emauduit
 8. Expanding Browser Compatibility sguillot
+
