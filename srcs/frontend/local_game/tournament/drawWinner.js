@@ -25,9 +25,13 @@ export function displayWinner(winner) {
     ctx.fillStyle = "#FFFFFF"; // Texte en blanc pour contraster avec le fond
 
     // Message principal avec emojis
-    ctx.fillText(`${trophyEmoji} Congratulations, ${winner}! ${trophyEmoji}`, canvas.width / 2, canvas.height / 2 - 30);
+    ctx.fillText(`${trophyEmoji} Congratulations! ${trophyEmoji}`, canvas.width / 2, canvas.height / 2 - 60);
+
+    // Afficher le pseudo du gagnant
+    ctx.font = "36px Arial"; // Taille légèrement plus petite pour le pseudo
+    ctx.fillText(`${winner}`, canvas.width / 2, canvas.height / 2 - 10);
 
     // Message secondaire avec emojis
     ctx.font = "24px Arial";
-    ctx.fillText(`${fireworksEmoji} You are the champion! ${fireworksEmoji}`, canvas.width / 2, canvas.height / 2 + 20);
+    ctx.fillText(`${fireworksEmoji} You are the champion! ${fireworksEmoji}`, canvas.width / 2, canvas.height / 2 + 40);
 }
