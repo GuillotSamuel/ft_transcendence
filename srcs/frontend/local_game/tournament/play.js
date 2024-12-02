@@ -47,7 +47,7 @@ async function processRounds(tournamentTree, ctx) {
                     class="btn btn-secondary btn-lg" 
                     style="padding: 10px 20px; border-radius: 5px;" 
                     onclick="tournamentGame()">
-                    Return
+                    Return To Menu
                 </button>
             </div>`;
             break;
@@ -66,7 +66,7 @@ function displayPlayButtonAndWait() {
                     class="btn btn-secondary btn-lg" 
                     style="padding: 10px 20px; border-radius: 5px;" 
                     onclick="tournamentGame()">
-                    Return
+                    Return To Menu
                 </button>
             </div>
             <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
@@ -98,7 +98,7 @@ function displayNextButtonAndWait() {
                     class="btn btn-secondary btn-lg" 
                     style="padding: 10px 20px; border-radius: 5px;" 
                     onclick="tournamentGame()">
-                    Return
+                    Return To Menu
                 </button>
             </div>
             <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
