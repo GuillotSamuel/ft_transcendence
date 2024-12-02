@@ -8,7 +8,7 @@ let localGame = false;
 window.stopGame = stopGame;
 
 // Démarre un jeu local
-export function startLocalGame(player1 = "None", player2 = "None", type = "None") {
+export function startLocalGame(player1 = "Player1", player2 = "Player2", type = "None") {
     isGameRunning = true;
     localGame = true;
     const gameButtonDisplay = document.getElementById('gameButtonDisplay');
@@ -19,7 +19,7 @@ export function startLocalGame(player1 = "None", player2 = "None", type = "None"
         return startGame(type, player1, player2);
     }
     else
-        startGame("local");
+        startGame("local", player1, player2);
 }
 
 export function startCustomGame() {

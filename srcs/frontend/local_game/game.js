@@ -16,9 +16,9 @@ let actionPerformed = false;
 let currentRandomY = null;
 let countdownInterval = null;
 let tournament = false;
-let player1 = "None";
-let player2 = "None";
-let winner = "None";
+let player1 = "Player1";
+let player2 = "Player2";
+let winner;
 
 window.clearCanvas = clearCanvas;
 
@@ -26,6 +26,7 @@ function initializeGame()
 {
     startListeningForPageChanges();
     begin_time = Date.now();
+    winner = "None";
     // Sélection du canvas
     canvas = document.getElementById("pong-canvas");
     ctx = canvas.getContext("2d");
@@ -47,29 +48,27 @@ function initializeGame()
 }
 
 export function startGame(type, p1, p2) {
-    if (gameRunning) return;
-    if (type == "tour") tournament = true;
+    return new Promise((resolve) => {
+        if (gameRunning) return;
+        if (type == "tour") tournament = true;
+        player1 = p1;
+        player2 = p2;
+        initializeGame();
+        gameRunning = true;
 
-    initializeGame();
-    gameRunning = true;
-
-    // Ajouter le compte à rebours
-    countdown(() => {
-        if (type == "local") {
-            gameLoop();
-        } else if (type == "custom") {
-            gameLoopCustom();
-        }
-        else{
-            player1 = p1;
-            player2 = p2;
-            gameLoop();
-            return winner;
-        }
+        countdown(() => {
+            if (type == "local") {
+                gameLoop(); // Passez resolve pour capturer le gagnant
+            } else if (type == "custom") {
+                gameLoopCustom();
+            } else {
+                gameLoop(resolve);
+            }
+        });
     });
 }
 
-export function stopGame() {
+export function stopGame(resolve) {
     gameRunning = false;
 
     document.removeEventListener("keydown", keyDownHandler);
@@ -94,10 +93,11 @@ export function stopGame() {
         tournament = false;
         winner = displayWinnerTour(ctx, canvas, player1, player2, score);
         console.log(`winner quand stop game = ${winner} `);
-        return winner;
+        resolve(winner);
+        return;
     }
 
-    let winnerMessage = '';
+    let winnerMessage = '';player1
     if (score.scorePlayer1 > score.scorePlayer2) {
         winnerMessage = 'Player 1 Wins!';
         ctx.fillStyle = "#FF4136";
@@ -143,12 +143,10 @@ export function clearCanvas() {
     }
 }
 
-function gameLoop()
-{
+function gameLoop(resolve) {
     if (!gameRunning) return;
-    if (score.check_winner() == true)
-    {
-        stopGame();
+    if (score.check_winner() == true) {
+        stopGame(resolve); // Appelle stopGame avec resolve
         return;
     }
 
@@ -156,26 +154,29 @@ function gameLoop()
 
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
-    
+
     leftPaddle.move(leftPaddleUp, leftPaddleDown);
     rightPaddle.move(rightPaddleUp, rightPaddleDown);
 
     leftPaddle.draw(ctx);
     rightPaddle.draw(ctx);
 
-    if (player1 != "None")
-        score.drawWithNames(player1, player2);
-    else
-        score.draw();
+    score.drawWithNames(player1, player2);
+
     if (ball.x - ball.radius <= 0) {
         score.incrementPlayer(2);
         ball.resetPosition(1);
-    }
-    else if (ball.x + ball.radius >= canvas.width) {
+    } else if (ball.x + ball.radius >= canvas.width) {
         score.incrementPlayer(1);
         ball.resetPosition(2);
     }
-    requestAnimationFrame(gameLoop);
+
+    // Utilisation d'une fonction fléchée pour passer `resolve` à la prochaine itération
+    if (tournament)
+        requestAnimationFrame(() => gameLoop(resolve));
+    else{
+        requestAnimationFrame(gameLoop);
+    }
 }
 
 
@@ -193,7 +194,7 @@ function gameLoopCustom()
     ball.update(canvas, leftPaddle, rightPaddle);
     ball.draw(ctx);
     
-    check_ball_and_bonus(ball, imageBoost);Esc
+    check_ball_and_bonus(ball, imageBoost);
 
 
     leftPaddle.move(leftPaddleUp, leftPaddleDown);

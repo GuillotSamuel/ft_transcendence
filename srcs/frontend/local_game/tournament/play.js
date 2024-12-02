@@ -1,5 +1,5 @@
 import { startLocalGame } from "../gameManager.js";
-import {displayWinner } from "./drawWinner.js"
+import {displayWinner } from "./drawWinner.js";
 
 let canvas;
 let ctx;
@@ -151,7 +151,9 @@ async function determineMatchWinner([player1, player2]) {
     } else if (player2 === "None") {
         return player1; // Joueur 1 gagne par défaut
     } else {
-        return startLocalGame(player1, player2, "tour"); // Simuler un match
+        
+        const winner = await startLocalGame(player1, player2, "tour"); // Attendez la résolution de la promesse
+        return winner;
     }
 }
 
