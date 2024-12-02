@@ -20,6 +20,7 @@ export function displayWinner(winner) {
     // Ajouter des emojis
     const trophyEmoji = "🏆";
     const fireworksEmoji = "🎉";
+    const crownEmoji = "👑";
 
     // Couleur du texte
     ctx.fillStyle = "#FFFFFF"; // Texte en blanc pour contraster avec le fond
@@ -29,7 +30,7 @@ export function displayWinner(winner) {
 
     // Afficher le pseudo du gagnant
     ctx.font = "36px Arial"; // Taille légèrement plus petite pour le pseudo
-    ctx.fillText(`${winner}`, canvas.width / 2, canvas.height / 2 - 10);
+    ctx.fillText(`${crownEmoji} ${winner} ${crownEmoji}`, canvas.width / 2, canvas.height / 2 - 10);
 
     // Message secondaire avec emojis
     ctx.font = "24px Arial";

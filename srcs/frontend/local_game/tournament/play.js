@@ -35,8 +35,6 @@ async function processRounds(tournamentTree, ctx) {
         // Vérifier si c'est la finale
         if (isFinalRound(currentRound)) {
             const [player1, player2] = currentRound[0];
-            console.log(`Final Match: ${player1} vs ${player2}`);
-            alert(`Final Match: ${player1} vs ${player2}`);
 
             const finalWinner = await playFinalMatch(player1, player2);
             displayWinner(finalWinner);
@@ -131,7 +129,6 @@ async function playCurrentRound(matches) {
         displayMatchOnCanvas(player1, player2);
         await displayPlayButtonAndWait();
         const winner = await determineMatchWinner(match);
-        console.log (`winner apres gameloop = ${winner}`);
         if (winner) {
             winners.push(winner);
             displayWinnerOnCanvas(winner);
@@ -140,6 +137,15 @@ async function playCurrentRound(matches) {
     }
 
     return winners;
+}
+
+// Fonction pour jouer la finale
+async function playFinalMatch(player1, player2) {
+    displayMatchOnCanvas(player1, player2);
+    displayFinalMatchText();
+    await displayPlayButtonAndWait();
+    const winner = await determineMatchWinner([player1, player2]);
+    return winner;
 }
 
 // Fonction pour déterminer le gagnant d'un match
@@ -151,7 +157,6 @@ async function determineMatchWinner([player1, player2]) {
     } else if (player2 === "None") {
         return player1; // Joueur 1 gagne par défaut
     } else {
-        
         const winner = await startLocalGame(player1, player2, "tour"); // Attendez la résolution de la promesse
         return winner;
     }
@@ -173,14 +178,7 @@ function isFinalRound(round) {
     return round.length === 1 && round[0].length === 2;
 }
 
-// Fonction pour jouer la finale
-async function playFinalMatch(player1, player2) {
-    if (player2 === "None") {
-        return player1; // Joueur 1 gagne par défaut
-    }
-    //return await playMatch(player1, player2); // Simuler le match final
-    return startLocalGame(player1, player2, "tour");
-}
+
 
 
 // Fonction pour afficher les noms des participants sur le canvas avec des effets visuels
@@ -257,5 +255,22 @@ function displayWinnerOnCanvas(winner) {
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
     }
+}
+
+
+
+function displayFinalMatchText() {
+    const canvas = document.getElementById("pong-canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Définir le style du texte pour "Final Match"
+    ctx.font = "bold 36px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.fillStyle = "#FFFFFF"; // Couleur blanche pour le texte
+
+    // Ajouter le texte
+    const text = "🏆 Final Match 🏆";
+    ctx.fillText(text, canvas.width / 2, 20); // Afficher le texte à 20px du haut
 }
 
