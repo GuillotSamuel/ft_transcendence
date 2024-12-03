@@ -133,3 +133,12 @@ h3 {
     max-height: 220px;
 }
 
+#gameButtonDisplay {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+}
+
+#current-avatar {
+    border-radius: 50%;
+}

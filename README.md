@@ -30,3 +30,5 @@ _To complete..._
 7. Game Customization Options emauduit
 8. Expanding Browser Compatibility sguillot
 
+fix avatar
+display game stat graphs

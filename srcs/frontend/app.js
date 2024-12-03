@@ -1006,13 +1006,12 @@ async function changeAvatar() {
         const data = await response.json();
         if (response.ok) {
             alert('Avatar has been changed successfuly !');
-            // navigate();
+            getAvatar();
         } else {
             alert(`Error: ${data.message || 'Change avatar failed'}`);
         }
     } catch (error) {
         console.error('Error posting avatar:', error);
-        alert('Network error: Unable to change the avatar');
     }
 }
 
@@ -1024,21 +1023,18 @@ async function getAvatar() {
         });
 
         if (response.ok) {
-            const data = await response.json();
+            const blob = await response.blob();
+            const avatarUrl = URL.createObjectURL(blob);
 
-            if (data.avatarUrl) {
-                document.getElementById('current-avatar').src = data.avatarUrl;
-            } else {
-                alert('Avatar URL not found in the response');
-            }
+            document.getElementById('current-avatar').src = avatarUrl;
         } else {
-            alert('Error fetching user avatar');
+            console.error('Error fetching user avatar');
         }
     } catch (error) {
         console.error('Error fetching avatar:', error);
-        alert('Network error: Unable to get the avatar');
     }
 }
+
 
 async function login42() {
     try {

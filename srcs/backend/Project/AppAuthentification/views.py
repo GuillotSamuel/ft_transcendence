@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect
 import requests
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
+from django.http import HttpResponse
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -287,12 +288,20 @@ def addAvatar(request):
         return Response({'message': 'Avatar updated successfully.'}, status=status.HTTP_200_OK)
     return Response({'error': 'No avatar provided.'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET'])
 @authentication_classes([JWTCookieAuthentication])
 @permission_classes([IsAuthenticated])
 def getAvatar(request):
     user = request.user
+    print(f"Utilisateur authentifié: {user.username}")
+
     if user.avatar:
-        return Response({'avatarUrl': user.avatar.url}, status=status.HTTP_200_OK)
+        print(f"L'utilisateur a un avatar: {user.avatar.url}")
+        with open(user.avatar.path, 'rb') as avatar_file:
+            return HttpResponse(avatar_file.read(), content_type='image/jpeg')
     else:
-        return Response({'error': 'No avatar set'}, status=status.HTTP_404_NOT_FOUND)
+        print("L'utilisateur n'a pas d'avatar, envoi de l'avatar par défaut.")
+        default_avatar_path = os.path.join(settings.MEDIA_ROOT, 'avatars', 'default_avatar.jpg')
+        with open(default_avatar_path, 'rb') as default_avatar:
+            return HttpResponse(default_avatar.read(), content_type='image/jpeg')
