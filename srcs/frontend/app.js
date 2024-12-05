@@ -1124,6 +1124,11 @@ async function statsHistoryDisplay() {
 }
 
 function resizeGame() {
+    const hash = window.location.hash.substring(1);
+
+    if (hash !== 'game')
+        return;
+
     const canvas = document.getElementById('pong-canvas');
 
     const ratio = 600 / 400;
