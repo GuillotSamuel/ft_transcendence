@@ -1167,26 +1167,27 @@ async function statsHistoryDisplay() {
 }
 
 function resizeGame() {
-    const hash = window.location.hash.substring(1);
+    // // CREATE BUG IN GAME
+    // const hash = window.location.hash.substring(1);
 
-    if (hash !== 'game')
-        return;
+    // if (hash !== 'game')
+    //     return;
 
-    const canvas = document.getElementById('pong-canvas');
+    // const canvas = document.getElementById('pong-canvas');
 
-    const ratio = 600 / 400;
+    // const ratio = 600 / 400;
 
-    const parentWidth = canvas.parentElement.clientWidth;
-    const parentHeight = window.innerHeight;
+    // const parentWidth = canvas.parentElement.clientWidth;
+    // const parentHeight = window.innerHeight;
 
-    let newWidth = parentWidth;
-    let newHeight = newWidth / ratio;
+    // let newWidth = parentWidth;
+    // let newHeight = newWidth / ratio;
 
-    if (newHeight > parentHeight * 0.8) {
-        newHeight = parentHeight * 0.8;
-        newWidth = newHeight * ratio;
-    }
+    // if (newHeight > parentHeight * 0.8) {
+    //     newHeight = parentHeight * 0.8;
+    //     newWidth = newHeight * ratio;
+    // }
 
-    canvas.width = newWidth;
-    canvas.height = newHeight;
+    // canvas.width = newWidth;
+    // canvas.height = newHeight;
 }
