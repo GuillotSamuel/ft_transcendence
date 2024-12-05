@@ -4,8 +4,22 @@
     box-sizing: border-box;
 }
 
-html, body {
-    height: 100%;
+body {
+    background: linear-gradient(135deg, rgb(0, 5, 71), rgb(81, 0, 87));
+    color: rgb(255, 252, 238) !important;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.text-muted {
+    color: rgb(255, 255, 255) !important;
+}
+
+#navbar {
+    background-color: #16044B !important;
+    border-bottom: solid 1px #968EAE;
 }
 
 #app {
@@ -18,10 +32,52 @@ html, body {
     padding: 20px;
 }
 
+.card_bg {
+    background-color: rgb(255, 255, 255, 0.05) !important;
+}
+
 #language-selector {
     margin-top: 8px;
-    background-color: #212529;
-    color: white;
+    background-color: #16044B !important;
+    color: rgb(255, 255, 255) !important;
+}
+
+.bg-dark {
+    background-color: transparent !important;
+}
+
+.form-control {
+    background-color: rgb(255, 255, 255) !important;
+}
+
+.friend-card-global {
+    background-color: rgb(255, 255, 255, 0.05) !important;
+}
+
+.friend-card {
+    color: rgb(255, 255, 255) !important;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.friendIsConnected {
+    color: green;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 128, 0, 0.5);
+}
+
+.friendIsOffline {
+    color: red;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(255, 0, 0, 0.5);
+}
+
+.card-user-stats {
+    background-color: rgb(255, 255, 255, 0.05) !important;
+}
+
+.user-stats-p {
+    color: rgb(255, 255, 255) !important;
 }
 
 footer a {
@@ -30,6 +86,59 @@ footer a {
     transition: color 0.2s ease-in-out;
 }
 
-footer a:hover {
-    color: #0d6efd;
+
+.btn {
+    color: rgb(255, 255, 255);
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.45), inset 0 0 30px rgba(255, 255, 255, 0.2);
+    transition: box-shadow 0.15s ease-in;
+}
+
+.btn:hover {
+    color: rgb(255, 255, 255);
+    box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.5), inset 0 0 30px rgba(255, 255, 255, 0.35);
+}
+
+.btn-lg:hover {
+    color: rgb(255, 255, 255) !important;
+}
+
+a {
+    color: rgb(255, 255, 255) !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    transition: color 0.1s ease, text-shadow 1s ease !important;
+}
+
+a:hover {
+    color: rgb(174, 243, 255) !important;
+}
+
+h3 {
+    color: rgb(255, 255, 255) !important;
+}
+
+#qrcode {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+}
+
+#qrcode img {
+    border: solid 10px  rgb(255, 255, 255) !important;
+    max-width: 220px;
+    max-height: 220px;
+}
+
+#gameButtonDisplay {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+}
+
+#current-avatar {
+    border-radius: 50%;
 }

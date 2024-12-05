@@ -81,18 +81,27 @@ export class Ball
 
     // Method to reset the ball's position with a 1-second delay
     async resetPosition(player) {
-        // Set initial position and temporarily stop the ball
-        this.x = this.beginX;
-        this.y = this.beginY;
+        // Position de départ légèrement aléatoire autour du centre
+        this.x = this.beginX + (Math.random() * 20 - 10); // Décalage entre -10 et 10
+        this.y = this.beginY + (Math.random() * 20 - 10);
+    
+        // Réinitialisation temporaire de la vitesse
         this.speedX = 0;
         this.speedY = 0;
-
-        // Wait for 1 second
-        await Ball.sleep(1000);
-
-        // Set the speed and direction after the pause
-        this.speedX = player === 2 ? this.beginSpeedX : -this.beginSpeedX;
-        this.speedY = Math.random() < 0.5 ? this.beginSpeedY : -this.beginSpeedY;
-    }
     
+        // Pause d'une seconde
+        await Ball.sleep(1000);
+    
+        // Définir la nouvelle direction et vitesse
+        const randomSpeedX = Math.random() * 0.5 + 2; // Vitesse aléatoire entre 2 et 2.5
+        const randomSpeedY = (Math.random() * 4 - 2); // Vitesse aléatoire entre -2 et 2
+    
+        // Direction en X déterminée par le joueur qui a marqué
+        this.speedX = player === 2 ? randomSpeedX : -randomSpeedX;
+    
+        // Direction en Y avec un angle aléatoire
+        this.speedY = randomSpeedY;
+    
+    }
+
 }

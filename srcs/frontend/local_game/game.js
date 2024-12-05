@@ -1,34 +1,42 @@
 import { Ball } from "./ball.js";
 import { Paddle } from "./paddle.js";
 import { Score } from "./score.js";
-import { resetLocal } from './gameManager.js';
+import { resetLocal, startListeningForPageChanges, stopListeningForPageChanges } from './gameManager.js';
 import { createBoostPNG } from "./spicy_game/managePNG.js";
 
 let canvas, ctx;
 let gameRunning = false;
-
+let currentBoostType = "Skinny";
 let ball, leftPaddle, rightPaddle, score, imageBoost, begin_time;
-
 let leftPaddleUp = false;
 let leftPaddleDown = false;
 let rightPaddleUp = false;
 let rightPaddleDown = false;
 let actionPerformed = false;
-let currentRandomHeight = null;
+let currentRandomY = null;
+let countdownInterval = null;
+let tournament = false;
+let player1 = "Player1";
+let player2 = "Player2";
+let winner;
+
+window.clearCanvas = clearCanvas;
 
 function initializeGame()
 {
+    startListeningForPageChanges();
     begin_time = Date.now();
+    winner = "None";
     // Sélection du canvas
     canvas = document.getElementById("pong-canvas");
     ctx = canvas.getContext("2d");
     canvas.width = 600;
     canvas.height = 400;
-
+    
     // Initialisation des objets de jeu
     ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 2, 2);
-    leftPaddle = new Paddle(10, canvas.height / 2 - 50, 10, 100, canvas);
-    rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 50, 10, 100, canvas);
+    leftPaddle = new Paddle(10, canvas.height / 2 - 50, 10, 80, canvas);
+    rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 50, 10, 80, canvas);
     score = new Score(canvas, ctx);
 
     // Initialisation du champignon au centre
@@ -37,6 +45,303 @@ function initializeGame()
     // Écouteurs d'événements
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
+}
+
+export function startGame(type, p1, p2) {
+    return new Promise((resolve) => {
+        if (gameRunning) return;
+        if (type == "tour") tournament = true;
+        player1 = p1;
+        player2 = p2;
+        initializeGame();
+        gameRunning = true;
+
+        countdown(() => {
+            if (type == "local") {
+                gameLoop(); // Passez resolve pour capturer le gagnant
+            } else if (type == "custom") {
+                gameLoopCustom();
+            } else {
+                gameLoop(resolve);
+            }
+        });
+    });
+}
+
+export function stopGame(resolve) {
+    gameRunning = false;
+
+    document.removeEventListener("keydown", keyDownHandler);
+    document.removeEventListener("keyup", keyUpHandler);
+    stopListeningForPageChanges();
+    resetLocal();
+    
+    // Arrêter le compte à rebours s'il est actif
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+
+    if (!ctx || !canvas) {
+        console.warn("Canvas or context not initialized. Skipping cleanup.");
+        return;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (tournament) {
+        tournament = false;
+        winner = displayWinnerTour(ctx, canvas, player1, player2, score);
+        console.log(`winner quand stop game = ${winner} `);
+        resolve(winner);
+        return;
+    }
+
+    let winnerMessage = '';player1
+    if (score.scorePlayer1 > score.scorePlayer2) {
+        winnerMessage = 'Player 1 Wins!';
+        ctx.fillStyle = "#FF4136";
+    } else if (score.scorePlayer2 > score.scorePlayer1) {
+        winnerMessage = 'Player 2 Wins!';
+        ctx.fillStyle = "#0074D9";
+    } else {
+        winnerMessage = 'It\'s a Draw!';
+        ctx.fillStyle = "#FFFFFF";
+    }
+
+    if (ctx) {
+        // Afficher le message de victoire
+        ctx.font = "20px 'Press Start 2P', Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(winnerMessage, canvas.width / 2, canvas.height / 2);
+
+        // Afficher le score final
+        ctx.font = "16px 'Press Start 2P', Arial";
+        ctx.fillStyle = "#FFFFFF";
+        const finalScore = `Final Score: ${score.scorePlayer1} - ${score.scorePlayer2}`;
+        ctx.fillText(finalScore, canvas.width / 2, canvas.height / 2 + 30);
+
+        // Afficher l'invitation à rejouer
+        ctx.font = "16px 'Press Start 2P', Arial";
+        ctx.fillText("Press 'Return' to play again", canvas.width / 2, canvas.height / 2 + 60);
+    }
+
+    if (score) 
+        score.resetScore();
+    
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+
+    // Remplace tout le contenu par uniquement le bouton de retour
+    gameButtonDisplay.innerHTML = `
+        <button class="btn btn-secondary btn-lg" onclick="clearCanvas(); displaySecondaryButtons()">Return</button>
+    `;
+}
+
+export function clearCanvas() {
+    if (ctx && canvas) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+}
+
+function gameLoop(resolve) {
+    if (!gameRunning) return;
+    if (score.check_winner() == true) {
+        stopGame(resolve); // Appelle stopGame avec resolve
+        return;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ball.update(canvas, leftPaddle, rightPaddle);
+    ball.draw(ctx);
+
+    leftPaddle.move(leftPaddleUp, leftPaddleDown);
+    rightPaddle.move(rightPaddleUp, rightPaddleDown);
+
+    leftPaddle.draw(ctx);
+    rightPaddle.draw(ctx);
+
+    score.drawWithNames(player1, player2);
+
+    if (ball.x - ball.radius <= 0) {
+        score.incrementPlayer(2);
+        ball.resetPosition(1);
+    } else if (ball.x + ball.radius >= canvas.width) {
+        score.incrementPlayer(1);
+        ball.resetPosition(2);
+    }
+
+    // Utilisation d'une fonction fléchée pour passer `resolve` à la prochaine itération
+    if (tournament)
+        requestAnimationFrame(() => gameLoop(resolve));
+    else{
+        requestAnimationFrame(gameLoop);
+    }
+}
+
+
+function gameLoopCustom()
+{
+    if (!gameRunning) return;
+    if (score.check_winner() == true)
+    {
+        stopGame();
+        return;
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ball.update(canvas, leftPaddle, rightPaddle);
+    ball.draw(ctx);
+    
+    check_ball_and_bonus(ball, imageBoost);
+
+
+    leftPaddle.move(leftPaddleUp, leftPaddleDown);
+    rightPaddle.move(rightPaddleUp, rightPaddleDown);
+
+
+    leftPaddle.draw(ctx);
+    rightPaddle.draw(ctx);
+
+    score.draw();
+    //rand pos unique si diff time > 2
+    if (check_time()) {
+        if (!actionPerformed) {
+            const randomValue = Math.random();
+            
+            // Déterminer le type de boost en fonction de randomValue
+            if (randomValue < 0.33) {
+                currentBoostType = "Fat";
+            } else if (randomValue < 0.66) {
+                currentBoostType = "Skinny";
+            } else {
+                currentBoostType = "Arrow"; // Nouvelle possibilité
+            }
+
+            imageBoost = createBoostPNG(currentBoostType, canvas); // Crée un boost basé sur le type choisi
+            currentRandomY = imageBoost.getRandomPosition(); // Trouve une position unique sur la hauteur du canvas
+            actionPerformed = true;
+        }
+        imageBoost.draw(ctx, canvas.height, currentRandomY);
+    }
+
+    if (ball.x - ball.radius <= 0) {
+        score.incrementPlayer(2);
+        ball.resetPosition(1);
+        reset_all();
+    }
+    else if (ball.x + ball.radius >= canvas.width) {
+        score.incrementPlayer(1);
+        ball.resetPosition(2);
+        reset_all();
+    }
+    requestAnimationFrame(gameLoopCustom);
+}
+
+function check_time() {
+    const time_now = Date.now();
+    let diff_time = (time_now - begin_time) / 1000; // Convertir en secondes
+
+    if (diff_time >= 8) {
+        begin_time = time_now;
+        actionPerformed = false;
+        currentRandomY = null;
+        imageBoost = null;
+        return false;
+    }
+
+    if (diff_time >= 3) {
+        return true; // Condition satisfaite
+    }
+    return false;
+}
+
+
+function check_ball_and_bonus(ball, imageBoost)
+{
+    if (imageBoost){
+        let y = imageBoost.drawY;
+        let x = imageBoost.drawX;
+        let hauteur = imageBoost.drawY + imageBoost.height;
+        let largeur = imageBoost.drawX + imageBoost.width;
+
+        let xball = ball.x + ball.radius; 
+        let yball = ball.y + ball.radius;
+        if ((xball >= x && xball <= largeur) && (yball >= y && yball <= hauteur)) {
+            handle_bonus();
+        }
+    }
+
+}
+
+function handle_bonus() 
+{
+    const duration = 5000; // Durée du bonus en millisecondes
+
+    if (ball.getLastPaddleTouch() === "right") {
+        if (currentBoostType === "Skinny") {
+            leftPaddle.applyBonus(60, "red", duration);
+        } 
+        else if (currentBoostType === "Fat"){
+            rightPaddle.applyBonus(110, "#00FF00", duration);
+        }
+        else{
+            leftPaddle.reverse("yellow", duration);
+        }
+    } else if (ball.getLastPaddleTouch() === "left") {
+        if (currentBoostType === "Skinny") {
+            rightPaddle.applyBonus(60, "red", duration);
+        } 
+        else if (currentBoostType === "Fat"){
+            leftPaddle.applyBonus(110, "#00FF00", duration);
+        }
+        else{
+            rightPaddle.reverse("yellow", duration);
+        }
+    }
+}
+
+function reset_all()
+{
+    rightPaddle.resetBonus();
+    leftPaddle.resetBonus();
+
+    imageBoost = null;
+    actionPerformed = false;
+    begin_time = Date.now();
+}
+
+function countdown(callback) {
+    let countdownTime = 3; // Début du compte à rebours
+    countdownInterval = setInterval(() => { // Stocke l'identifiant
+        // Effacer le canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        leftPaddle.draw(ctx);
+        rightPaddle.draw(ctx);
+        ball.draw(ctx);
+        score.drawWithNames(player1, player2);
+        
+        // Afficher le message principal
+        ctx.font = "30px 'Press Start 2P', Arial";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText("The game is starting...", canvas.width / 2, canvas.height / 2 - 50);
+
+        // Afficher le compte à rebours
+        ctx.font = "30px 'Press Start 2P', Arial";
+        ctx.fillText(countdownTime, canvas.width / 2, canvas.height / 2 + 50);
+
+        countdownTime--;
+
+        if (countdownTime < 0) {
+            clearInterval(countdownInterval); // Arrêter l'intervalle
+            countdownInterval = null; // Réinitialiser la variable
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Effacer le canvas
+            callback(); // Démarrer le jeu une fois le compte à rebours terminé
+        }
+    }, 1000); // 1 seconde entre chaque étape
 }
 
 function keyDownHandler(event)
@@ -51,7 +356,8 @@ function keyDownHandler(event)
         rightPaddleDown = true;
         event.preventDefault();
     }
-    if (event.key === "Escape") stopGame();
+    if (!tournament)
+        if (event.key === "Escape") stopGame();
 }
 
 function keyUpHandler(event)
@@ -68,145 +374,31 @@ function keyUpHandler(event)
     }
 }
 
-export function startGame()
-{
-    if (gameRunning) return;
 
-    initializeGame();
-    ball.resetPosition();
-    gameRunning = true;
-    gameLoop();
-}
+function displayWinnerTour(ctx, canvas, player1, player2, score) {
+    let winner;
+    let message = '';
 
-export function stopGame()
-{
-    gameRunning = false;
-
-    if (!ctx || !canvas) {
-        // console.warn("Canvas or context not initialized. Skipping cleanup.");
-        return;
-    }
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    let winnerMessage = '';
     if (score.scorePlayer1 > score.scorePlayer2) {
-        winnerMessage = 'Player 1 Wins!';
-        ctx.fillStyle = "#FF4136";
-    } else if (score.scorePlayer2 > score.scorePlayer1) {
-        winnerMessage = 'Player 2 Wins!';
-        ctx.fillStyle = "#0074D9";
+        winner = player1;
+        message = `${player1} Wins!`;
     } else {
-        winnerMessage = 'It\'s a Draw!';
-        ctx.fillStyle = "#FFFFFF";
+        winner = player2;
+        message = `${player2} Wins!`;
     }
 
     if (ctx) {
-        ctx.font = "bold 60px 'Press Start 2P', cursive";
+        // Afficher le message de victoire
+        ctx.font = "20px 'Press Start 2P', Arial";
         ctx.textAlign = "center";
-        ctx.fillText(winnerMessage, canvas.width / 2, canvas.height / 2);
+        ctx.fillStyle = "#FFFFFF"; // Couleur blanche pour le texte
+        ctx.fillText(message, canvas.width / 2, canvas.height / 2);
 
-        ctx.font = "bold 30px 'Press Start 2P', cursive";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fillText("Press 'Start' to play again", canvas.width / 2, canvas.height / 2 + 50);
+        // Afficher le score final
+        ctx.font = "16px 'Press Start 2P', Arial";
+        const finalScore = `Final Score: ${player1} ${score.scorePlayer1} - ${score.scorePlayer2} ${player2}`;
+        ctx.fillText(finalScore, canvas.width / 2, canvas.height / 2 + 30);
     }
 
-    if (score) score.resetScore();
-
-    document.removeEventListener("keydown", keyDownHandler);
-    document.removeEventListener("keyup", keyUpHandler);
-
-    resetLocal();
-}
-
-function check_time() 
-{
-    let time_now = Date.now();
-    let diff_time = (time_now - begin_time) / 1000;
-
-    if (diff_time >= 8) {
-        begin_time = time_now;
-        actionPerformed = false;
-        currentRandomHeight = null;
-        return false;
-    }
-
-    if (diff_time >= 1) {
-        return true; // time where you can draw 
-    }
-
-    return false;
-}
-
-function check_ball_and_bonus(ball, imageBoost)
-{
-    console.log("pos x= ", ball.x);
-    console.log("pos y= ", ball.y);
-
-    console.log("draw y = ", imageBoost.drawY);
-    console.log("draw x = ", imageBoost.drawX);
-    let y = imageBoost.drawY;
-    let x = imageBoost.drawX;
-    let hauteur = imageBoost.drawY + imageBoost.height;
-    let largeur = imageBoost.drawX + imageBoost.width;
-
-    console.log("hauteur y = ", hauteur);
-    console.log("largeur x = ", largeur);
-    let xball = ball.x + ball.radius; 
-    let yball = ball.y + ball.radius;
-    if ( (xball >= x && xball <= largeur) && (yball >= y && yball <= hauteur)) {
-        console.log("CA TOUUCHE");
-    }
-
-}
-
-function gameLoop()
-{
-    if (!gameRunning) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ball.update(canvas, leftPaddle, rightPaddle);
-    ball.draw(ctx);
-
-    check_ball_and_bonus(ball, imageBoost);
-
-    if (ball.getLastPaddleTouch() === "right") {
-    console.log("The last paddle to touch the ball was the right paddle.");
-    // Appliquez une logique ici, comme un bonus pour le joueur de droite
-    } else if (ball.getLastPaddleTouch() === "left") {
-        console.log("The last paddle to touch the ball was the left paddle.");
-        // Appliquez une logique ici, comme un bonus pour le joueur de gauche
-    }
-
-
-    leftPaddle.move(leftPaddleUp, leftPaddleDown);
-    rightPaddle.move(rightPaddleUp, rightPaddleDown);
-    leftPaddle.draw(ctx);
-    rightPaddle.draw(ctx);
-
-    score.draw();
-
-    // rand pos unique si diff time > 2
-    if (check_time()) {
-        if (!actionPerformed) {
-            currentRandomHeight = imageBoost.getRandomPosition(); // find unique pos with the height of canvas
-            console.log("Random height generated:", currentRandomHeight);
-            actionPerformed = true;
-        }
-        imageBoost.draw(ctx, canvas.height, currentRandomHeight); 
-    }
-
-    if (ball.x - ball.radius <= 0) {
-        score.incrementPlayer2();
-        ball.resetPosition(1);
-        begin_time = Date.now();
-    }
-    if (ball.x + ball.radius >= canvas.width) {
-        score.incrementPlayer1();
-        ball.resetPosition(2);
-        begin_time = Date.now();
-    }
-
-    requestAnimationFrame(gameLoop);
+    return winner;
 }

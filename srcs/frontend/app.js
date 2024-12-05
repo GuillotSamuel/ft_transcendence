@@ -1,5 +1,9 @@
 import { startRemoteGame } from './remote_game/websocket.js';
-import { startLocalGame } from './local_game/gameManager.js';
+import { disconnectGame } from './remote_game/disconnect.js';
+import { tournamentGame } from './local_game/tournament/init.js';
+import { startLocalGame, startCustomGame } from './local_game/gameManager.js';
+import { drawFindGameScreen } from './remote_game/find_return_button.js';
+
 
 const routes = {
     home: {
@@ -30,29 +34,15 @@ const routes = {
                                 <label for="login-password" class="form-label" data-translate="password-connexion-label"></label>
                                 <input type="password" class="form-control" id="login-password" required>
                             </div>
-                            <button type="button" onclick="loginUser()" class="btn btn-primary w-100" data-translate="login-connexion-button"></button>
+                            <div class="mb-3">
+                                <label for="login-2fa" class="form-label" data-translate="2fa-connexion-label"></label>
+                                <input type="text" class="form-control" id="login-2fa" required>
+                            </div>
+                            <button type="button" onclick="loginUser()" class="btn btn-primary w-100 mb-3" data-translate="login-connexion-button"></button>
                         </form>
 
-                        <button type="button" class="btn btn-primary w-100" onclick="login42()">Login 42</button>
+                        <button type="button" class="btn btn-primary w-100 mb-3" onclick="login42()">Login 42</button>
                         <p class="mt-3 text-center"><div data-translate="signUp-connexion-text"></div> <a href="#registration" data-translate="signUp-connexion-link"></a></p>
-                    </div>
-                </div>
-            </section>
-        `
-    },
-    connexion2FA: {
-        template: `
-            <section id="connexion-2FA-page" class="container d-flex flex-column justify-content-center align-items-center vh-100">
-                <div class="row text-center w-100">
-                    <div class="col-md-12">
-                        <h3 class="mb-3" data-translate="2fa-connexion2fa-title"></h3>
-                        <form id="connexion-otp-form">
-                            <div class="mb-3">
-                                <label for="otp-code" class="form-label" data-translate="enterOtp-connexion2fa-label"></label>
-                                <input type="text" class="form-control" id="connexion-otp-code-id" required>
-                            </div>
-                            <button type="button" class="btn btn-primary w-100" onclick="connexionOTP()" data-translate="validate-connexion2fa-button"></button>
-                        </form>
                     </div>
                 </div>
             </section>
@@ -141,7 +131,7 @@ const routes = {
                             <img id="current-avatar" alt="User Avatar" width="100" height="100" style="object-fit: cover;"/>
                         </div>
                         <input type="file" id="new-avatar" accept="image/*" onchange="previewAvatar(event)">
-                        <button id="submit-avatar" class="btn btn-primary w-100 mt-2" onclick="changeAvatar()" data-translate="changeAvatar-editPage-button">Upload Avatar</button>
+                        <button id="submit-avatar" class="btn btn-primary w-100 mt-2" onclick="changeAvatar()" data-translate="avatar-editPage-button"></button>
 
                         <hr class="my-4">
 
@@ -216,22 +206,18 @@ const routes = {
     game: {
         template: `
             <section id="game" class="container mt-5 pt-5">
-                <div class="row text-center">
+                <div class="row text-center game-container">
                     <div class="col-md-12">
                         <!-- Styled heading -->
                         <h2 class="display-1 text-gradient fw-bold arcade-text mb-4" data-translate="title-game-title"></h2>
                         <p class="lead text-muted" data-translate="presentation-game-text"></p>
                         <!-- Canvas for the game -->
-                        <div class="canvas-container p-4 rounded shadow">
-                            <canvas id="pong-canvas" class="bg-dark rounded border border-light" width="800" height="600"></canvas>
+                        <div id="game-canvas-container">
+                            <canvas id="pong-canvas" class="bg-dark rounded border border-light" width="600" height="400"></canvas>
                         </div>
                         <!-- Buttons for Local and Remote Game -->
                         <div class="d-flex justify-content-center gap-3 mt-4" id="gameButtonDisplay"></div>
                         
-                        <!-- Messages from the WebSocket -->
-                        <div id="gameMessageDisplay" class="mt-4 p-3 bg-light rounded shadow-sm">
-                            <!-- Messages will be dynamically appended here -->
-                        </div>
                     </div>
                 </div>
             </section>
@@ -243,10 +229,10 @@ const routes = {
                 <div class="row text-center">
                     <div class="col-md-12">
                         <h2 class="display-1 text-gradient fw-bold arcade-text mb-4" data-translate="title-friend-title"></h2>
-                        <div class="card p-4 mb-4 bg-light">
+                        <div class="card p-4 mb-4 bg-light card_bg">
                             <div class="card-body">
                                 <h3 class="mb-3" data-translate="adding-friend-title"></h3>
-                                <input type="text" id="friend-username-input" class="form-control mb-3" placeholder="Enter friend's username">
+                                <input type="text" id="friend-username-input" class="form-control mb-3" placeholder="Enter friend's username" data-translate="adding-friend-placeholder">
                                 <button id="add-friend-button" class="btn btn-primary" onclick="addingFriend()" data-translate="adding-friend-button"></button>
                             </div>
                         </div>
@@ -263,7 +249,7 @@ const routes = {
                 <div class="row text-center">
                     <div class="col-md-12">
                         <h2 class="display-1 text-gradient fw-bold arcade-text mb-4" data-translate="title-statsHistory-title"></h2>
-                        <div class="card p-4 mb-4 bg-light">
+                        <div class="card p-4 mb-4 bg-light card-user-stats">
                             <div class="card-body">
                                 <h3 class="mb-3" data-translate="stats-statsHistory-title"></h3>
                                 <div id="user-stats"></div>
@@ -288,12 +274,17 @@ window.disable2FA = disable2FA;
 window.toggle2FAStatus = toggle2FAStatus;
 window.validateOTP = validateOTP;
 window.changePassword = changePassword;
-window.connexionOTP = connexionOTP;
 window.deleteAccount = deleteAccount;
 window.startRemoteGame = startRemoteGame;
 window.addingFriend = addingFriend;
 window.changeAvatar = changeAvatar;
 window.login42 = login42;
+window.disconnectGame = disconnectGame;
+window.drawFindGameScreen = drawFindGameScreen;
+window.displaySecondaryButtons = displaySecondaryButtons;
+window.manageDisplayGame = manageDisplayGame;
+window.startCustomGame = startCustomGame;
+window.tournamentGame = tournamentGame;
 
 /* Utils */
 
@@ -332,22 +323,18 @@ async function checkAuthentication() {
 async function loginUser() {
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
+    const otp = document.getElementById('login-2fa').value;
+
     try {
         const response = await fetch('/api/login/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password, otp })
         });
 
         const data = await response.json();
         if (response.ok) {
-            if (await is2FAactivate() === true) {
-                location.hash = '#connexion2FA';
-            }
-            else {
-                location.hash = '#game';
-            }
-
+            location.hash = '#game';
         } else {
             alert(`Error: ${data.message || 'Login failed'}`);
         }
@@ -441,7 +428,7 @@ async function changePassword() {
         const response = await fetch('/api/changePassword/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({oldPwd, newPwd}),
+            body: JSON.stringify({ oldPwd, newPwd }),
             credentials: 'include'
         });
 
@@ -474,6 +461,8 @@ async function enable2FA() {
             location.hash = '#confirm2FA';
             setTimeout(() => {
                 const qrCodeElement = document.getElementById('qrcode');
+
+
                 try {
                     new QRCode(qrCodeElement, {
                         text: QRURL,
@@ -520,34 +509,6 @@ async function disable2FA() {
     }
 }
 
-async function is2FAactivate() {
-    try {
-        const response = await fetch('/api/is2FAactivate/', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-        });
-        if (response.ok) {
-            const data = await response.json();
-            if (data["2FA_activated"] === 'yes') {
-                return (true);
-            }
-            else if (data["2FA_activated"] === 'no') {
-                return (false);
-            }
-            else {
-                alert('Error: Unknown 2FA status');
-            }
-        }
-        else {
-            alert('Error: error while fetching 2FA status')
-        }
-    }
-    catch (error) {
-        alert('2FA error: Unable to get 2FA status')
-    }
-}
-
 async function toggle2FAStatus() {
     const button = document.getElementById('toggle-2fa');
 
@@ -557,7 +518,7 @@ async function toggle2FAStatus() {
     }
 
     try {
-        const response = await fetch('/api/is2FAactivate/', {
+        const response = await fetch('/api/infosUser/', {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
@@ -565,6 +526,7 @@ async function toggle2FAStatus() {
         if (response.ok) {
             const data = await response.json();
             if (data["2FA_activated"] === 'yes') {
+                button.setAttribute('data-translate', 'disable2fa-editPage-button');
                 button.textContent = 'Disable 2FA';
                 button.onclick = async () => {
                     await disable2FA();
@@ -572,7 +534,7 @@ async function toggle2FAStatus() {
                 };
             }
             else if (data["2FA_activated"] === 'no') {
-                button.textContent = 'Enable 2FA';
+                button.setAttribute('data-translate', 'enable2fa-editPage-button');
                 button.onclick = async () => {
                     await enable2FA();
                     toggle2FAStatus();
@@ -590,32 +552,6 @@ async function toggle2FAStatus() {
         alert('2FA error: Unable to get 2FA status')
     }
 }
-
-async function connexionOTP() {
-    const otp = document.getElementById('connexion-otp-code-id').value;
-
-    try {
-        const response = await fetch('/api/login2FA/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ otp }),
-            credentials: 'include'
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            location.hash = "#game";
-        }
-        else {
-            alert('Wrong 2FA code');
-            location.hash = "#connexion";
-        }
-    }
-    catch (error) {
-        alert('Error: OTP connexion failed');
-    }
-}
-
 
 /* Profile & User Information */
 
@@ -691,6 +627,7 @@ function loadLanguage(lang) {
 }
 
 function changeLanguage(language) {
+    document.documentElement.lang = language;
     loadLanguage(language);
     localStorage.setItem("language", language);
 }
@@ -705,15 +642,26 @@ async function manageDisplayGame() {
 
     if (isAuthenticated) {
         gameButtonDisplay.innerHTML = `
-            <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
-            <button class="btn btn-info btn-lg" onclick="startRemoteGame()" data-translate="game-remote-button"></button>
+            <button id="local-button" class="btn btn-primary btn-lg" onclick="displaySecondaryButtons()" data-translate="game-local-button">Local Game</button>
+            <button id="remote-button" class="btn btn-info btn-lg" onclick="drawFindGameScreen()" data-translate="game-remote-button">Remote Game</button>
+            <button id="disconnect-button" class="btn btn-danger btn-lg" onclick="disconnectGame()" data-translate="game-disconnect-button" style="display: none;">Disconnect</button>
         `;
     } else {
         gameButtonDisplay.innerHTML = `
-            <button class="btn btn-primary btn-lg" onclick="startLocalGame()" data-translate="game-local-button"></button>
-            <button class="btn btn-info btn-lg" onclick="startRemoteGame()" data-translate="game-remote-button"></button>
-            `;
+            <button class="btn btn-primary btn-lg" onclick="displaySecondaryButtons()" data-translate="game-local-button">Local Game</button>
+        `;
     }
+}
+
+export function displaySecondaryButtons() {
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+
+    gameButtonDisplay.innerHTML = `
+        <button class="btn btn-success btn-lg" onclick="startLocalGame()">Quick Start</button>
+        <button class="btn btn-warning btn-lg" onclick="startCustomGame()">Custom Game</button>
+        <button class="btn btn-info btn-lg" onclick="tournamentGame()">Tournament</button>
+        <button class="btn btn-secondary btn-lg" onclick="manageDisplayGame()">Return</button>
+    `;
 }
 
 async function navigate() {
@@ -723,45 +671,62 @@ async function navigate() {
     const isConnected = await checkAuthentication();
 
     if ((hash !== 'home' && hash !== 'connexion'
-        && hash !== 'connexion2FA' && hash !== 'registration'
-        && hash !== 'registrationSuccess' && hash !== 'game'
-        && hash !== '')
+        && hash !== 'registration' && hash !== 'game'
+        && hash !== 'registrationSuccess' && hash !== '')
         && !isConnected) {
         location.hash = '#connexion';
         return;
     }
 
-    if ((hash === 'connexion' || hash === 'connexion2FA'
-        || hash == 'regitration' || hash == 'registrationSuccess')
+    if ((hash === 'connexion' || hash == 'regitration'
+        || hash == 'registrationSuccess')
         && isConnected) {
-            location.hash = '#home';
-            return;
-        }
+        location.hash = '#home';
+        return;
+    }
 
     const appDiv = document.getElementById('app');
-    if (route) {
-        appDiv.innerHTML = route.template;
-    } else {
+
+    if (!hash) {
+        location.hash = '#home';
+        return;
+    }
+    else if (!route) {
         appDiv.innerHTML = "<h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p>";
+        return;
+    }
+    else {
+        appDiv.innerHTML = route.template;
     }
 
     if (hash === 'editPage') {
-        appDiv.innerHTML = route.template;
         await toggle2FAStatus();
         await getAvatar();
     }
     if (hash === 'profile') {
-        appDiv.innerHTML = route.template;
         await displayUserInfos();
         await getAvatar();
     }
     if (hash === 'game') {
-        appDiv.innerHTML = route.template;
+        resizeGame();
         await manageDisplayGame();
     }
-    if (hash === 'friend') {
-        appDiv.innerHTML = route.template;
-        await listFriend();
+    let intervalId;
+
+if (hash === 'friend') {
+    await listFriend();
+
+    intervalId = setInterval(async () => {
+        if (window.location.hash === '#friend') {
+            await listFriend();
+        } else {
+            clearInterval(intervalId);
+        }
+    }, 1000);
+}
+
+    if (hash === 'statsHistory') {
+        await statsHistoryDisplay();
     }
 }
 
@@ -784,7 +749,7 @@ async function manageDisplayAuth() {
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
+                <li class="nav-item">
                     <a class="nav-link" href="#friend" data-translate="friends-navbar-button"></a>
                 </li>
                 <li class="nav-item">
@@ -894,6 +859,8 @@ window.addEventListener('hashchange', async () => {
     changeLanguage(savedLanguage);
 });
 
+window.addEventListener('resize', resizeGame);
+
 /* Friends */
 
 async function addingFriend() {
@@ -961,19 +928,26 @@ async function displayFriendsInfos(friends) {
 
     friends.forEach(friend => {
         const friendItem = document.createElement('div');
-        friendItem.classList.add('card', 'mb-3');
+        friendItem.classList.add('card', 'mb-3', 'friend-card-global');
 
         const cardBody = document.createElement('div');
         cardBody.classList.add('card-body', 'd-flex', 'justify-content-between', 'align-items-center');
 
         const friendName = document.createElement('span');
-        friendName.textContent = friend;
+        friendName.textContent = friend.username;
+        friendName.classList.add('friend-card');
         cardBody.appendChild(friendName);
+
+        const friendStatus = document.createElement('div');
+        friendStatus.classList.add('status-btn');
+        friendStatus.classList.add(friend.online ? 'friendIsConnected' : 'friendIsOffline');
+        friendStatus.textContent = friend.online ? 'Connected' : 'Offline';
+        cardBody.appendChild(friendStatus);
 
         const removeButton = document.createElement('button');
         removeButton.classList.add('btn', 'btn-danger');
         removeButton.textContent = 'Remove Friend';
-        removeButton.onclick = () => removeFriend(friend);
+        removeButton.onclick = () => removeFriend(friend.username);
         cardBody.appendChild(removeButton);
 
         friendItem.appendChild(cardBody);
@@ -997,7 +971,12 @@ async function listFriend() {
 
         const data = await response.json();
 
-        displayFriendsInfos(data.friends);
+        const friends = data.friends.map(friend => ({
+            username: friend.username,
+            online: friend.online
+        }));
+
+        displayFriendsInfos(friends);
     } catch (error) {
         console.error('Getting friend list failed: ', error);
         alert('Network error: Unable to get friend list.');
@@ -1027,13 +1006,12 @@ async function changeAvatar() {
         const data = await response.json();
         if (response.ok) {
             alert('Avatar has been changed successfuly !');
-             // navigate();
+            getAvatar();
         } else {
             alert(`Error: ${data.message || 'Change avatar failed'}`);
         }
     } catch (error) {
         console.error('Error posting avatar:', error);
-        alert('Network error: Unable to change the avatar');
     }
 }
 
@@ -1045,21 +1023,18 @@ async function getAvatar() {
         });
 
         if (response.ok) {
-            const data = await response.json();
+            const blob = await response.blob();
+            const avatarUrl = URL.createObjectURL(blob);
 
-            if (data.avatarUrl) {
-                document.getElementById('current-avatar').src = data.avatarUrl;
-            } else {
-                alert('Avatar URL not found in the response');
-            }
+            document.getElementById('current-avatar').src = avatarUrl;
         } else {
-            alert('Error fetching user avatar');
+            console.error('Error fetching user avatar');
         }
     } catch (error) {
         console.error('Error fetching avatar:', error);
-        alert('Network error: Unable to get the avatar');
     }
 }
+
 
 async function login42() {
     try {
@@ -1079,4 +1054,64 @@ async function login42() {
     } catch (error) {
         console.error('Error:', error);
     }
+}
+
+/* Game */
+
+async function statsHistoryDisplay() {
+    try {
+        const response = await fetch('/api/matchsDetails/', {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        if (response.ok) {
+            const data = await response.json();
+
+            const userStatsDiv = document.getElementById('user-stats');
+            userStatsDiv.innerHTML = `
+            <p class="user-stats-p"><strong data-translate="wins-statsHistory-p"></strong> ${data.win}</p>
+            <p class="user-stats-p"><strong data-translate="losses-statsHistory-p"></strong> ${data.lose}</p>`;
+
+            const userHistoryDiv = document.getElementById('user-history');
+            if (data.matchs.length > 0) {
+                const historyHTML = data.matchs.map(match => `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <p><strong data-translate="p1-statsHistory-p"></strong> ${match.player1}</p>
+                            <p><strong data-translate="p2-statsHistory-p"></strong> ${match.player2}</p>
+                            <p><strong data-translate="score-statsHistory-p"></strong> ${match.p1_score} - ${match.p2_score}</p>
+                            <p><strong data-translate="winner-statsHistory-p"></strong> ${match.winner}</p>
+                            <p><strong data-translate="date-statsHistory-p"></strong> ${new Date(match.date).toLocaleString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+                userHistoryDiv.innerHTML = historyHTML;
+            } else {
+                userHistoryDiv.innerHTML = '<p data-translate="noMatchsYet-statsHistory-p"></p>';
+            }
+        }
+    } catch (error) {
+        console.error('Error: ', error);
+    }
+}
+
+function resizeGame() {
+    const canvas = document.getElementById('pong-canvas');
+
+    const ratio = 600 / 400;
+
+    const parentWidth = canvas.parentElement.clientWidth;
+    const parentHeight = window.innerHeight;
+
+    let newWidth = parentWidth;
+    let newHeight = newWidth / ratio;
+
+    if (newHeight > parentHeight * 0.8) {
+        newHeight = parentHeight * 0.8;
+        newWidth = newHeight * ratio;
+    }
+
+    canvas.width = newWidth;
+    canvas.height = newHeight;
 }

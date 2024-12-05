@@ -1,50 +1,59 @@
 // gameManager.js
-
 import { startGame, stopGame } from './game.js';
-
-let isGameRunning = false; // État global du jeu
+import {tournamentGame} from "./tournament/init.js";
+// État global du jeu
+let isGameRunning = false; 
 let localGame = false;
 
-// function to hide or show button for local game
-export function toggleLocalGameButton(show)
-{
-    const localGameButton = document.querySelector('[data-translate="game-local-button"]');
-    if (localGameButton) {
-        localGameButton.style.display = show ? 'inline-block' : 'none';
-        console.log("button display:", show);
-    }
-}
+window.stopGame = stopGame;
+window.tournamentGame = tournamentGame;
 
-// to know if we are in remote or local
-export function resetLocal()
-{
-    if (localGame)
-    {
-        localGame = false;
-        toggleLocalGameButton(true);
-    }
-}
-
-export function startLocalGame()
-{
+// Démarre un jeu local
+export function startLocalGame(player1 = "Player1", player2 = "Player2", type = "None") {
     isGameRunning = true;
     localGame = true;
-    console.log("Local Game started");
-
-    toggleLocalGameButton(false);
-    // Démarrer le jeu
-    startGame();
-}
-
-export function resetGameStateOnPageChange()
-{
-    if (isGameRunning) {
-        console.log("Page changed while the game is running. Resetting game state.");
-        isGameRunning = false;
-        
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+    
+    if (type == "tour"){
+        return startGame(type, player1, player2);
     }
-    stopGame();
-    isGameRunning = false;
+    else{
+        gameButtonDisplay.innerHTML = `
+        <button class="btn btn-danger btn-lg" onclick="stopGame();">Leave</button>
+        `;
+        startGame("local", player1, player2);
+    }
 }
 
-window.addEventListener('hashchange', resetGameStateOnPageChange);
+export function startCustomGame() {
+    isGameRunning = true;
+    localGame = true;
+    const gameButtonDisplay = document.getElementById('gameButtonDisplay');
+    gameButtonDisplay.innerHTML = `
+        <button class="btn btn-danger btn-lg" onclick="stopGame()">Leave</button>
+    `;
+    startGame("custom");
+}
+
+// Nettoie les ressources si l'utilisateur quitte la page
+function resetGameStateOnPageChange() {
+    isGameRunning = false;
+    stopGame();
+}
+
+// Réinitialise l'état local
+export function resetLocal() {
+    if (localGame) {
+        localGame = false;
+    }
+}
+
+// Ajout de l'écouteur
+export function startListeningForPageChanges() {
+    window.addEventListener('hashchange', resetGameStateOnPageChange);
+}
+
+// Suppression de l'écouteur
+export function stopListeningForPageChanges() {
+    window.removeEventListener('hashchange', resetGameStateOnPageChange);
+}

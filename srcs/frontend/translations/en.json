@@ -34,6 +34,7 @@
     "login-connexion-title": "Login to your account",
     "username-connexion-label": "Username",
     "password-connexion-label": "Password",
+    "2fa-connexion-label": "2fa password (optionnal)",
     "login-connexion-button": "Log In",
     "signUp-connexion-text": "Don't have an account?",
     "signUp-connexion-link": "Sign up",
@@ -63,12 +64,15 @@
     "logOut-profile-button": "Log Out",
 
     "title-editPage-title": "Edit Your Profile",
+    "avatar-editPage-button": "Upload Avatar",
     "currentPassword-editPage-label": "Current Password",
     "newPassword-editPage-label": "New Password",
     "confirmNewPassword-editPage-label": "Confirm New Password",
     "changePassword-profile-button": "Change Password",
     "2fa-editPage-title": "Two-Factor Authentication (2FA)",
     "enableDisable-editPage-text": "Enable or disable Two-Factor Authentication for added security.",
+    "enable2fa-editPage-button": "Enable 2FA",
+    "disable2fa-editPage-button": "Disable 2FA",
     "delete-editPage-title": "Delete Account",
     "delete-editPage-text": "If you want to permanently delete your account, click the button below. This action cannot be undone.",
     "delete-profile-button": "Delete My Account",
@@ -87,13 +91,23 @@
 
     "game-local-button": "Local Game",
     "game-remote-button": "Remote Game",
+    "game-disconnect-button": "Disconnect",
 
     "title-friend-title": "Friends",
     "adding-friend-title": "Adding friends",
+    "adding-friend-placeholder": "Enter friend's username",
     "adding-friend-button": "Validate input",
     "list-friend-title": "Friends list",
 
     "title-statsHistory-title": "Games stats and history",
     "stats-statsHistory-title": "Stats",
-    "history-statsHistory-title": "History"
+    "history-statsHistory-title": "History",
+    "noMatchsYet-statsHistory-p": "No matchs played yet.",
+    "wins-statsHistory-p": "Wins:",
+    "losses-statsHistory-p": "Losses:",
+    "p1-statsHistory-p": "Player 1:",
+    "p2-statsHistory-p": "Player 2:",
+    "score-statsHistory-p": "Score:",
+    "winner-statsHistory-p": "Winner:",
+    "date-statsHistory-p": "Date:"
 }

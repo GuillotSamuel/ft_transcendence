@@ -25,9 +25,10 @@ export class imagePNG
     {
         return this.name;
     }
+    
     getRandomPosition() 
     {
-        const pos = [50, 100, 150, 200, 250, 300];
+        const pos = [50, 60, 75, 275, 290, 300];
         const randomIndex = Math.floor(Math.random() * pos.length);
         return pos[randomIndex];
     }
