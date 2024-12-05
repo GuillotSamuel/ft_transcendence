@@ -376,6 +376,7 @@ async function loginUser() {
 }
 
 async function disconnectUser() {
+    const hash = window.location.hash.substring(1);
     const response = await fetch('/api/logout/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -384,8 +385,7 @@ async function disconnectUser() {
     if (!response.ok) {
         alert('Error while disconnecting')
     }
-    location.hash = "#home";
-    navigate();
+    location.hash = "";
 }
 
 async function registerUser() {
