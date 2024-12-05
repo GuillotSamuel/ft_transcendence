@@ -12,6 +12,7 @@
     "navigation-footer-title": "ナビゲーション",
     "home-footer-button": "ホーム",
     "game-footer-button": "ゲーム",
+    "privacyPolicy-footer-button": "プライバシーポリシー",
     "connexion-footer-button": "ログイン",
     "registration-footer-button": "サインアップ",
     "friend-footer-button": "フレンド",
@@ -109,5 +110,16 @@
     "p2-statsHistory-p": "プレイヤー2：",
     "score-statsHistory-p": "スコア：",
     "winner-statsHistory-p": "勝者：",
-    "date-statsHistory-p": "日付："
+    "date-statsHistory-p": "日付：",
+
+    "title-privacyPolicy-title": "プライバシーポリシー",
+    "content-privacyPolicy-introduction": "私たちはお客様のプライバシーを重視し、個人データの保護に努めています。本プライバシーポリシーでは、収集する情報、その利用方法、およびお客様のデータに関する権利について説明します。",
+    "subtitle-privacyPolicy-collection": "収集するデータ",
+    "content-privacyPolicy-collection": "お名前、メールアドレス、使用状況データなどの個人情報を収集し、サービスを向上させ、最高の体験を提供します。",
+    "subtitle-privacyPolicy-use": "データの使用方法",
+    "content-privacyPolicy-use": "データはアカウント管理、サービス改善、更新情報やプロモーションのご案内に使用されます。",
+    "subtitle-privacyPolicy-rights": "お客様の権利",
+    "content-privacyPolicy-rights": "お客様には、データへのアクセス、修正、削除、または処理の制限を求める権利があります。いつでも同意を撤回することができます。",
+    "subtitle-privacyPolicy-security": "データのセキュリティ",
+    "content-privacyPolicy-security": "暗号化、アクセス制御、定期的な監視など、適切な対策を講じてお客様のデータを保護します。"
 }

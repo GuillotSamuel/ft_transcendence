@@ -12,6 +12,7 @@
     "navigation-footer-title": "Navigation",
     "home-footer-button": "Accueil",
     "game-footer-button": "Jeu",
+    "privacyPolicy-footer-button": "Politique de Confidentialité",
     "connexion-footer-button": "Connexion",
     "registration-footer-button": "Inscription",
     "friend-footer-button": "Amis",
@@ -109,5 +110,16 @@
     "p2-statsHistory-p": "Joueur 2 :",
     "score-statsHistory-p": "Score :",
     "winner-statsHistory-p": "Gagnant :",
-    "date-statsHistory-p": "Date :"
+    "date-statsHistory-p": "Date :",
+
+    "title-privacyPolicy-title": "Politique de Confidentialité",
+    "content-privacyPolicy-introduction": "Nous accordons une grande importance à votre vie privée et nous engageons à protéger vos données personnelles. Cette politique de confidentialité explique quelles informations nous collectons, comment nous les utilisons et vos droits concernant vos données.",
+    "subtitle-privacyPolicy-collection": "Données que Nous Collectons",
+    "content-privacyPolicy-collection": "Nous collectons des informations personnelles telles que votre nom, adresse e-mail et données d'utilisation pour améliorer nos services et vous offrir la meilleure expérience possible.",
+    "subtitle-privacyPolicy-use": "Comment Nous Utilisons Vos Données",
+    "content-privacyPolicy-use": "Vos données sont utilisées pour gérer votre compte, améliorer nos services et communiquer avec vous à propos de mises à jour ou promotions.",
+    "subtitle-privacyPolicy-rights": "Vos Droits",
+    "content-privacyPolicy-rights": "Vous avez le droit d'accéder, de corriger, de supprimer ou de limiter le traitement de vos données. Vous pouvez également retirer votre consentement à tout moment.",
+    "subtitle-privacyPolicy-security": "Sécurité des Données",
+    "content-privacyPolicy-security": "Nous prenons des mesures appropriées pour garantir la sécurité de vos données, y compris le cryptage, le contrôle d'accès et la surveillance régulière."
 }

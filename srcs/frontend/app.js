@@ -261,7 +261,31 @@ const routes = {
                 </div>
             </section>
         `
-    }
+    },
+    privacyPolicy: {
+        template: `
+            <section id="privacyPolicy" class="container mt-5 pt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <h2 class="text-center" data-translate="title-privacyPolicy-title"></h2>
+                        <p data-translate="content-privacyPolicy-introduction"></p>
+    
+                        <h3 data-translate="subtitle-privacyPolicy-collection"></h3>
+                        <p data-translate="content-privacyPolicy-collection"></p>
+    
+                        <h3 data-translate="subtitle-privacyPolicy-use"></h3>
+                        <p data-translate="content-privacyPolicy-use"></p>
+    
+                        <h3 data-translate="subtitle-privacyPolicy-rights"></h3>
+                        <p data-translate="content-privacyPolicy-rights"></p>
+    
+                        <h3 data-translate="subtitle-privacyPolicy-security"></h3>
+                        <p data-translate="content-privacyPolicy-security"></p>
+                    </div>
+                </div>
+            </section>
+        `
+    }    
 };
 
 
@@ -672,7 +696,8 @@ async function navigate() {
 
     if ((hash !== 'home' && hash !== 'connexion'
         && hash !== 'registration' && hash !== 'game'
-        && hash !== 'registrationSuccess' && hash !== '')
+        && hash !== 'registrationSuccess' && hash !== 'privacyPolicy'
+        && hash !== '')
         && !isConnected) {
         location.hash = '#connexion';
         return;
@@ -776,6 +801,7 @@ async function manageDisplayAuth() {
         navFooter.innerHTML = `
             <li><a href="#home" data-translate="home-footer-button"></a></li>
             <li><a href="#game" data-translate="game-footer-button"></a></li>
+            <li><a href="#privacyPolicy" data-translate="privacyPolicy-footer-button"></a></li>
             <li><a href="#friend" data-translate="friend-footer-button"></a></li>
             <li><a href="#statsHistory" data-translate="statsHistory-footer-button"></a></li>
             <li><a href="#profile" data-translate="profile-footer-button"></a></li>
@@ -813,6 +839,7 @@ async function manageDisplayAuth() {
         navFooter.innerHTML = `
             <li><a href="#home" data-translate="home-footer-button"></a></li>
             <li><a href="#game" data-translate="game-footer-button"></a></li>
+            <li><a href="#privacyPolicy" data-translate="privacyPolicy-footer-button"></a></li>
             <li><a href="#connexion" data-translate="connexion-footer-button"></a></li>
             <li><a href="#registration" data-translate="registration-footer-button"></a></li>
         `;
