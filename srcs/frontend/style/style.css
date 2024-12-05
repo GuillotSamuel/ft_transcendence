@@ -172,3 +172,7 @@ h3 {
     max-width: 250px !important;
     max-height: 250px !important;
 }
+
+.logout-button-hover {
+    cursor: pointer !important;
+}

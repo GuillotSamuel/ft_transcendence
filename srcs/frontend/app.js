@@ -256,13 +256,12 @@ const routes = {
                             </div>
                         </div>
 
-                        <div class="row mt-4">
-                            <h3 class="mb-3" data-translate="winLoseRatio-statsHistory-title"></h3>
-                            <div class="col-md-6 ratio-canva-container">
-                                <h4 data-translate="winLose-chart-title"></h4>
-                                <canvas id="winLoseChart"></canvas>
-                            </div>
+
+                        <div class="col-md-6 ratio-canva-container">
+                            <h3 data-translate="winLose-chart-title"></h3>
+                            <canvas id="winLoseChart"></canvas>
                         </div>
+
 
                         <h3 class="mb-3" data-translate="history-statsHistory-title"></h3>
                         <div id="user-history"></div>
@@ -294,7 +293,7 @@ const routes = {
                 </div>
             </section>
         `
-    }    
+    }
 };
 
 
@@ -386,6 +385,7 @@ async function disconnectUser() {
         alert('Error while disconnecting')
     }
     location.hash = "#home";
+    navigate();
 }
 
 async function registerUser() {
@@ -747,17 +747,17 @@ async function navigate() {
     }
     let intervalId;
 
-if (hash === 'friend') {
-    await listFriend();
+    if (hash === 'friend') {
+        await listFriend();
 
-    intervalId = setInterval(async () => {
-        if (window.location.hash === '#friend') {
-            await listFriend();
-        } else {
-            clearInterval(intervalId);
-        }
-    }, 1000);
-}
+        intervalId = setInterval(async () => {
+            if (window.location.hash === '#friend') {
+                await listFriend();
+            } else {
+                clearInterval(intervalId);
+            }
+        }, 1000);
+    }
 
     if (hash === 'statsHistory') {
         await statsHistoryDisplay();
@@ -793,7 +793,7 @@ async function manageDisplayAuth() {
                     <a class="nav-link" href="#profile" data-translate="profile-navbar-button"></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" onclick="disconnectUser()" data-translate="logout-navbar-button"></a>
+                    <a class="nav-link logout-button-hover" onclick="disconnectUser()" data-translate="logout-navbar-button"></a>
                 </li>
                 <li class="nav-item">
                     <select id="language-selector">
@@ -814,7 +814,7 @@ async function manageDisplayAuth() {
             <li><a href="#friend" data-translate="friend-footer-button"></a></li>
             <li><a href="#statsHistory" data-translate="statsHistory-footer-button"></a></li>
             <li><a href="#profile" data-translate="profile-footer-button"></a></li>
-            <li><a onclick="disconnectUser()" data-translate="logout-footer-button"></a></li>
+            <li><a onclick="disconnectUser()" class="logout-button-hover" data-translate="logout-footer-button"></a></li>
         `;
     } else {
         navbarNav.innerHTML = `
@@ -1102,8 +1102,7 @@ function displayGraphs(winLoseRatio, win, lose) {
         winLoseCanvas.chartInstance.destroy();
     }
 
-    if (winLoseRatio !== -1)
-    {
+    if (winLoseRatio !== -1) {
         winLoseCanvas.chartInstance = new Chart(ctxWinLose, {
             type: 'pie',
             data: {
@@ -1120,7 +1119,7 @@ function displayGraphs(winLoseRatio, win, lose) {
         noDataMessage.style.textAlign = "center";
         noDataMessage.style.marginTop = "20px";
         noDataMessage.style.color = "rgb(255, 255, 255)";
-        
+
         const chartContainer = winLoseCanvas.parentElement;
         chartContainer.appendChild(noDataMessage);
     }
