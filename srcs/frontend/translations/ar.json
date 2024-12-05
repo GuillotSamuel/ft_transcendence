@@ -12,6 +12,7 @@
     "navigation-footer-title": "التنقل",
     "home-footer-button": "الرئيسية",
     "game-footer-button": "اللعبة",
+    "privacyPolicy-footer-button": "سياسة الخصوصية",
     "connexion-footer-button": "تسجيل الدخول",
     "registration-footer-button": "إنشاء حساب",
     "friend-footer-button": "الأصدقاء",
@@ -109,5 +110,17 @@
     "p2-statsHistory-p": "اللاعب 2:",
     "score-statsHistory-p": "النتيجة:",
     "winner-statsHistory-p": "الفائز:",
-    "date-statsHistory-p": "التاريخ:"
+    "date-statsHistory-p": "التاريخ:",
+    "winLose-chart-title": "رسم بياني للفوز/الخسارة",
+
+    "title-privacyPolicy-title": "سياسة الخصوصية",
+    "content-privacyPolicy-introduction": "نحن نقدر خصوصيتك ونلتزم بحماية بياناتك الشخصية. توضح سياسة الخصوصية هذه المعلومات التي نجمعها، وكيفية استخدامها، وحقوقك المتعلقة ببياناتك.",
+    "subtitle-privacyPolicy-collection": "البيانات التي نجمعها",
+    "content-privacyPolicy-collection": "نجمع معلومات شخصية مثل اسمك، عنوان بريدك الإلكتروني وبيانات الاستخدام لتحسين خدماتنا وتقديم أفضل تجربة ممكنة.",
+    "subtitle-privacyPolicy-use": "كيف نستخدم بياناتك",
+    "content-privacyPolicy-use": "تُستخدم بياناتك لإدارة حسابك، تحسين خدماتنا، والتواصل معك بشأن التحديثات أو العروض الترويجية.",
+    "subtitle-privacyPolicy-rights": "حقوقك",
+    "content-privacyPolicy-rights": "لديك الحق في الوصول إلى بياناتك، تصحيحها، حذفها أو تقييد معالجتها. يمكنك أيضًا سحب موافقتك في أي وقت.",
+    "subtitle-privacyPolicy-security": "أمان البيانات",
+    "content-privacyPolicy-security": "نتخذ تدابير مناسبة لضمان أمان بياناتك، بما في ذلك التشفير، ضوابط الوصول، والمراقبة المنتظمة."
 }

@@ -12,6 +12,7 @@
     "navigation-footer-title": "Навигация",
     "home-footer-button": "Главная",
     "game-footer-button": "Игра",
+    "privacyPolicy-footer-button": "Политика Конфиденциальности",
     "connexion-footer-button": "Вход",
     "registration-footer-button": "Регистрация",
     "friend-footer-button": "Друзья",
@@ -109,5 +110,17 @@
     "p2-statsHistory-p": "Игрок 2:",
     "score-statsHistory-p": "Счет:",
     "winner-statsHistory-p": "Победитель:",
-    "date-statsHistory-p": "Дата:"
+    "date-statsHistory-p": "Дата:",
+    "winLose-chart-title": "График Побед/Поражений",
+
+    "title-privacyPolicy-title": "Политика Конфиденциальности",
+    "content-privacyPolicy-introduction": "Мы ценим вашу конфиденциальность и обязуемся защищать ваши личные данные. Эта политика конфиденциальности объясняет, какую информацию мы собираем, как мы ее используем и какие права у вас есть в отношении ваших данных.",
+    "subtitle-privacyPolicy-collection": "Данные, Которые Мы Собираем",
+    "content-privacyPolicy-collection": "Мы собираем личную информацию, такую как ваше имя, адрес электронной почты и данные об использовании, чтобы улучшить наши услуги и обеспечить лучший пользовательский опыт.",
+    "subtitle-privacyPolicy-use": "Как Мы Используем Ваши Данные",
+    "content-privacyPolicy-use": "Ваши данные используются для управления вашим аккаунтом, улучшения наших услуг и связи с вами по поводу обновлений или акций.",
+    "subtitle-privacyPolicy-rights": "Ваши Права",
+    "content-privacyPolicy-rights": "Вы имеете право на доступ к вашим данным, их исправление, удаление или ограничение их обработки. Вы также можете отозвать свое согласие в любое время.",
+    "subtitle-privacyPolicy-security": "Безопасность Данных",
+    "content-privacyPolicy-security": "Мы принимаем соответствующие меры для обеспечения безопасности ваших данных, включая шифрование, контроль доступа и регулярный мониторинг."
 }

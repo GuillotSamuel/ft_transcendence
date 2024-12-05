@@ -80,12 +80,13 @@ def matchsDetails(request):
     user =  request.user
     win = 0
     lose = 0
+    winLoseRatio = None
     matchsDetails = []
 
     matchs = Match.objects.all()
     for match in matchs:
         if user == match.player1 or user == match.player2:
-            if(user == match.winner):
+            if user == match.winner:
                 win+=1
             else:
                 lose+=1
@@ -97,4 +98,14 @@ def matchsDetails(request):
             "winner": match.winner.username,
             "date": match.created_at,
         })
-    return Response({"win": win, "lose": lose, "matchs" : matchsDetails}, status=status.HTTP_200_OK)
+    total_matches = win + lose
+    if total_matches > 0:
+        winLoseRatio = round((win / total_matches) * 100, 2)
+    else:
+        winLoseRatio = -1
+    return Response({
+        "win": win,
+        "lose": lose,
+        "winLoseRatio": winLoseRatio,
+        "matchs": matchsDetails
+    }, status=status.HTTP_200_OK)

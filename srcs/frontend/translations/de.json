@@ -12,6 +12,7 @@
     "navigation-footer-title": "Navigation",
     "home-footer-button": "Startseite",
     "game-footer-button": "Spiel",
+    "privacyPolicy-footer-button": "Datenschutzrichtlinie",
     "connexion-footer-button": "Anmeldung",
     "registration-footer-button": "Registrieren",
     "friend-footer-button": "Freunde",
@@ -109,5 +110,17 @@
     "p2-statsHistory-p": "Spieler 2:",
     "score-statsHistory-p": "Ergebnis:",
     "winner-statsHistory-p": "Gewinner:",
-    "date-statsHistory-p": "Datum:"
+    "date-statsHistory-p": "Datum:",
+    "winLose-chart-title": "Gewinn/Verlust-Diagramm",
+
+    "title-privacyPolicy-title": "Datenschutzrichtlinie",
+    "content-privacyPolicy-introduction": "Wir legen großen Wert auf Ihre Privatsphäre und verpflichten uns, Ihre persönlichen Daten zu schützen. Diese Datenschutzrichtlinie erklärt, welche Informationen wir sammeln, wie wir sie verwenden und welche Rechte Sie in Bezug auf Ihre Daten haben.",
+    "subtitle-privacyPolicy-collection": "Von uns Erhobene Daten",
+    "content-privacyPolicy-collection": "Wir erfassen persönliche Informationen wie Ihren Namen, Ihre E-Mail-Adresse und Nutzungsdaten, um unsere Dienste zu verbessern und Ihnen die beste Erfahrung zu bieten.",
+    "subtitle-privacyPolicy-use": "Wie Wir Ihre Daten Verwenden",
+    "content-privacyPolicy-use": "Ihre Daten werden verwendet, um Ihr Konto zu verwalten, unsere Dienste zu verbessern und mit Ihnen über Updates oder Werbeaktionen zu kommunizieren.",
+    "subtitle-privacyPolicy-rights": "Ihre Rechte",
+    "content-privacyPolicy-rights": "Sie haben das Recht, auf Ihre Daten zuzugreifen, sie zu korrigieren, zu löschen oder deren Verarbeitung einzuschränken. Sie können Ihre Einwilligung jederzeit widerrufen.",
+    "subtitle-privacyPolicy-security": "Datensicherheit",
+    "content-privacyPolicy-security": "Wir ergreifen geeignete Maßnahmen, um die Sicherheit Ihrer Daten zu gewährleisten, einschließlich Verschlüsselung, Zugriffskontrollen und regelmäßiger Überwachung."
 }

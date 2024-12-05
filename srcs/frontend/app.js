@@ -255,13 +255,46 @@ const routes = {
                                 <div id="user-stats"></div>
                             </div>
                         </div>
+
+                        <div class="row mt-4">
+                            <h3 class="mb-3" data-translate="winLoseRatio-statsHistory-title"></h3>
+                            <div class="col-md-6 ratio-canva-container">
+                                <h4 data-translate="winLose-chart-title"></h4>
+                                <canvas id="winLoseChart"></canvas>
+                            </div>
+                        </div>
+
                         <h3 class="mb-3" data-translate="history-statsHistory-title"></h3>
                         <div id="user-history"></div>
                     </div>
                 </div>
             </section>
         `
-    }
+    },
+    privacyPolicy: {
+        template: `
+            <section id="privacyPolicy" class="container mt-5 pt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <h2 class="text-center" data-translate="title-privacyPolicy-title"></h2>
+                        <p data-translate="content-privacyPolicy-introduction"></p>
+    
+                        <h3 data-translate="subtitle-privacyPolicy-collection"></h3>
+                        <p data-translate="content-privacyPolicy-collection"></p>
+    
+                        <h3 data-translate="subtitle-privacyPolicy-use"></h3>
+                        <p data-translate="content-privacyPolicy-use"></p>
+    
+                        <h3 data-translate="subtitle-privacyPolicy-rights"></h3>
+                        <p data-translate="content-privacyPolicy-rights"></p>
+    
+                        <h3 data-translate="subtitle-privacyPolicy-security"></h3>
+                        <p data-translate="content-privacyPolicy-security"></p>
+                    </div>
+                </div>
+            </section>
+        `
+    }    
 };
 
 
@@ -672,7 +705,8 @@ async function navigate() {
 
     if ((hash !== 'home' && hash !== 'connexion'
         && hash !== 'registration' && hash !== 'game'
-        && hash !== 'registrationSuccess' && hash !== '')
+        && hash !== 'registrationSuccess' && hash !== 'privacyPolicy'
+        && hash !== '')
         && !isConnected) {
         location.hash = '#connexion';
         return;
@@ -776,6 +810,7 @@ async function manageDisplayAuth() {
         navFooter.innerHTML = `
             <li><a href="#home" data-translate="home-footer-button"></a></li>
             <li><a href="#game" data-translate="game-footer-button"></a></li>
+            <li><a href="#privacyPolicy" data-translate="privacyPolicy-footer-button"></a></li>
             <li><a href="#friend" data-translate="friend-footer-button"></a></li>
             <li><a href="#statsHistory" data-translate="statsHistory-footer-button"></a></li>
             <li><a href="#profile" data-translate="profile-footer-button"></a></li>
@@ -813,6 +848,7 @@ async function manageDisplayAuth() {
         navFooter.innerHTML = `
             <li><a href="#home" data-translate="home-footer-button"></a></li>
             <li><a href="#game" data-translate="game-footer-button"></a></li>
+            <li><a href="#privacyPolicy" data-translate="privacyPolicy-footer-button"></a></li>
             <li><a href="#connexion" data-translate="connexion-footer-button"></a></li>
             <li><a href="#registration" data-translate="registration-footer-button"></a></li>
         `;
@@ -1058,6 +1094,38 @@ async function login42() {
 
 /* Game */
 
+function displayGraphs(winLoseRatio, win, lose) {
+    const winLoseCanvas = document.getElementById('winLoseChart');
+    const ctxWinLose = winLoseCanvas.getContext('2d');
+
+    if (winLoseCanvas.chartInstance) {
+        winLoseCanvas.chartInstance.destroy();
+    }
+
+    if (winLoseRatio !== -1)
+    {
+        winLoseCanvas.chartInstance = new Chart(ctxWinLose, {
+            type: 'pie',
+            data: {
+                labels: ['Wins', 'Losses'],
+                datasets: [{
+                    data: [win, lose],
+                    backgroundColor: ['rgb(87, 99, 255)', 'rgb(247, 133, 255)']
+                }]
+            }
+        });
+    } else {
+        const noDataMessage = document.createElement('p');
+        noDataMessage.textContent = "No data available yet for the graphs.";
+        noDataMessage.style.textAlign = "center";
+        noDataMessage.style.marginTop = "20px";
+        noDataMessage.style.color = "rgb(255, 255, 255)";
+        
+        const chartContainer = winLoseCanvas.parentElement;
+        chartContainer.appendChild(noDataMessage);
+    }
+}
+
 async function statsHistoryDisplay() {
     try {
         const response = await fetch('/api/matchsDetails/', {
@@ -1076,7 +1144,7 @@ async function statsHistoryDisplay() {
             const userHistoryDiv = document.getElementById('user-history');
             if (data.matchs.length > 0) {
                 const historyHTML = data.matchs.map(match => `
-                    <div class="card mb-3">
+                    <div class="card mb-3 historic-card">
                         <div class="card-body">
                             <p><strong data-translate="p1-statsHistory-p"></strong> ${match.player1}</p>
                             <p><strong data-translate="p2-statsHistory-p"></strong> ${match.player2}</p>
@@ -1090,6 +1158,8 @@ async function statsHistoryDisplay() {
             } else {
                 userHistoryDiv.innerHTML = '<p data-translate="noMatchsYet-statsHistory-p"></p>';
             }
+
+            displayGraphs(data.winLoseRatio, data.win, data.lose);
         }
     } catch (error) {
         console.error('Error: ', error);
@@ -1097,6 +1167,11 @@ async function statsHistoryDisplay() {
 }
 
 function resizeGame() {
+    const hash = window.location.hash.substring(1);
+
+    if (hash !== 'game')
+        return;
+
     const canvas = document.getElementById('pong-canvas');
 
     const ratio = 600 / 400;

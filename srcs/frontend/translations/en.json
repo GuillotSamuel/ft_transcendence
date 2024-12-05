@@ -12,6 +12,7 @@
     "navigation-footer-title": "Navigation",
     "home-footer-button": "Home",
     "game-footer-button": "Game",
+    "privacyPolicy-footer-button": "Privacy Policy",
     "connexion-footer-button": "Connexion",
     "registration-footer-button": "Sign up",
     "friend-footer-button": "Friends",
@@ -109,5 +110,17 @@
     "p2-statsHistory-p": "Player 2:",
     "score-statsHistory-p": "Score:",
     "winner-statsHistory-p": "Winner:",
-    "date-statsHistory-p": "Date:"
+    "date-statsHistory-p": "Date:",
+    "winLose-chart-title": "Win/Lose chart",
+
+    "title-privacyPolicy-title": "Privacy Policy",
+    "content-privacyPolicy-introduction": "We value your privacy and are committed to protecting your personal data. This privacy policy explains what information we collect, how we use it, and your rights regarding your data.",
+    "subtitle-privacyPolicy-collection": "Data We Collect",
+    "content-privacyPolicy-collection": "We collect personal information such as your name, email address, and usage data to improve our services and provide you with the best experience.",
+    "subtitle-privacyPolicy-use": "How We Use Your Data",
+    "content-privacyPolicy-use": "Your data is used to manage your account, improve our services, and communicate with you about updates or promotions.",
+    "subtitle-privacyPolicy-rights": "Your Rights",
+    "content-privacyPolicy-rights": "You have the right to access, correct, delete, or limit the processing of your data. You can also withdraw your consent at any time.",
+    "subtitle-privacyPolicy-security": "Data Security",
+    "content-privacyPolicy-security": "We take appropriate measures to ensure the security of your data, including encryption, access controls, and regular monitoring."
 }
