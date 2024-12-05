@@ -255,6 +255,15 @@ const routes = {
                                 <div id="user-stats"></div>
                             </div>
                         </div>
+
+                        <div class="row mt-4">
+                            <h3 class="mb-3" data-translate="winLoseRatio-statsHistory-title"></h3>
+                            <div class="col-md-6 ratio-canva-container">
+                                <h4 data-translate="winLose-chart-title"></h4>
+                                <canvas id="winLoseChart"></canvas>
+                            </div>
+                        </div>
+
                         <h3 class="mb-3" data-translate="history-statsHistory-title"></h3>
                         <div id="user-history"></div>
                     </div>
@@ -1085,6 +1094,41 @@ async function login42() {
 
 /* Game */
 
+function displayGraphs(winLoseRatio) {
+    const winLoseCanvas = document.getElementById('winLoseChart');
+    const ctxWinLose = winLoseCanvas.getContext('2d');
+
+    const winRatio = winLoseRatio;
+    const loseRatio = 1 - winLoseRatio;
+
+    if (winLoseCanvas.chartInstance) {
+        winLoseCanvas.chartInstance.destroy();
+    }
+
+    if (winLoseRatio !== -1)
+    {
+        winLoseCanvas.chartInstance = new Chart(ctxWinLose, {
+            type: 'pie',
+            data: {
+                labels: ['Wins', 'Losses'],
+                datasets: [{
+                    data: [winRatio, loseRatio],
+                    backgroundColor: ['rgb(87, 99, 255)', 'rgb(247, 133, 255)']
+                }]
+            }
+        });
+    } else {
+        const noDataMessage = document.createElement('p');
+        noDataMessage.textContent = "No data available yet for the graphs.";
+        noDataMessage.style.textAlign = "center";
+        noDataMessage.style.marginTop = "20px";
+        noDataMessage.style.color = "rgb(255, 255, 255)";
+        
+        const chartContainer = winLoseCanvas.parentElement;
+        chartContainer.appendChild(noDataMessage);
+    }
+}
+
 async function statsHistoryDisplay() {
     try {
         const response = await fetch('/api/matchsDetails/', {
@@ -1103,7 +1147,7 @@ async function statsHistoryDisplay() {
             const userHistoryDiv = document.getElementById('user-history');
             if (data.matchs.length > 0) {
                 const historyHTML = data.matchs.map(match => `
-                    <div class="card mb-3">
+                    <div class="card mb-3 historic-card">
                         <div class="card-body">
                             <p><strong data-translate="p1-statsHistory-p"></strong> ${match.player1}</p>
                             <p><strong data-translate="p2-statsHistory-p"></strong> ${match.player2}</p>
@@ -1117,6 +1161,8 @@ async function statsHistoryDisplay() {
             } else {
                 userHistoryDiv.innerHTML = '<p data-translate="noMatchsYet-statsHistory-p"></p>';
             }
+
+            displayGraphs(data.winLoseRatio);
         }
     } catch (error) {
         console.error('Error: ', error);

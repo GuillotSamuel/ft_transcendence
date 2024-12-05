@@ -73,7 +73,7 @@ body::-webkit-scrollbar {
 }
 
 .card-user-stats {
-    background-color: rgb(255, 255, 255, 0.05) !important;
+    background-color: rgb(255, 255, 255, 0.1) !important;
 }
 
 .user-stats-p {
@@ -147,4 +147,28 @@ h3 {
 
 #current-avatar {
     border-radius: 50%;
+}
+
+.historic-card {
+    background-color: rgb(255, 255, 255, 0.05) !important;
+    color: rgb(255, 255, 255) !important;
+}
+
+.ratio-canva-container {
+    color: rgb(255, 255, 255) !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    margin: 20px !important;
+    margin-bottom: 35px !important;
+    border-radius: 6px !important;
+    padding: 20px !important;
+}
+
+#winLoseChart {
+    max-width: 250px !important;
+    max-height: 250px !important;
 }
