@@ -111,7 +111,7 @@ export function generateAliasFields() {
         aliasDiv.style.gap = '10px';
 
         aliasDiv.innerHTML = `
-            <label for="player${i}Alias" style="color: black; font-size: 16px;">Player ${i}</label>
+            <label for="player${i}Alias" style="color: white; font-size: 16px;">Player ${i}</label>
             <input 
                 type="text" 
                 id="player${i}Alias" 
