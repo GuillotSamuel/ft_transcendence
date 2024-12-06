@@ -12,9 +12,9 @@ services:
       - ../.env
     depends_on:
       - django
-    # volumes:
-    #   - static_data:/static:ro
-    #   - media_data:/media:ro
+    volumes:
+      - static_data:/static:ro
+      - ./media:/media:ro
     networks:
       - tsdc_network
     restart: always
@@ -30,6 +30,9 @@ services:
       - ../.env
     depends_on:
       - postgresql
+    volumes:
+      - static_data:/static
+      - ./media:/app/Project/media/avatars
     networks:
       - tsdc_network
     restart: always
@@ -47,84 +50,20 @@ services:
 
 volumes:
   db_data:
+    name: db_data
+    driver: local
+    driver_opts:
+      type : none
+      device: ~/data/db
+      o : bind
+  static_data:
+    name: static_data
+    driver: local
+    driver_opts:
+      type : none
+      device: ~/data/static
+      o : bind
 
 networks:
   tsdc_network:
     driver: bridge
-
-# version: "3.8"
-
-# services:
-# # --- NGINX --- #
-#   nginx:
-#     container_name: nginx
-#     image: nginx
-#     build: ./frontend
-#     ports:
-#       - "443:443"
-#     env_file:
-#       - ../.env
-#     depends_on:
-#       - django
-#     volumes:
-#       - static_data:/static:ro
-#       - media_data:/media:ro
-#     networks:
-#       - tsdc_network
-#     restart: always
-# # --- DJANGO --- #
-#   django:
-#     container_name: django
-#     build:
-#       context: ./backend/django
-#       dockerfile: Dockerfile
-#     ports:
-#       - "8000:8000"
-#     env_file:
-#       - ../.env
-#     depends_on:
-#       - postgresql
-#     volumes:
-#       - static_data:/static
-#       - media_data:/media 
-#     networks:
-#       - tsdc_network
-#     restart: always
-# # --- POSTGRESQL --- #
-#   postgresql:
-#     container_name: postgresql
-#     image: postgres:latest
-#     env_file:
-#       - ../.env
-#     volumes:
-#       - db_data:/var/lib/postgresql/data
-#     networks:
-#       - tsdc_network
-#     restart: always
-
-# volumes:
-#   db_data:
-#     name: db_data
-#     driver: local
-#     driver_opts:
-#       type : none
-#       device: ~/data/db
-#       o : bind
-#   static_data:
-#     name: static_data
-#     driver: local
-#     driver_opts:
-#       type : none
-#       device: ~/data/static
-#       o : bind
-#   media_data:
-#     name: media_data
-#     driver: local
-#     driver_opts:
-#       type : none
-#       device: ~/data/media
-#       o : bind
-
-# networks:
-#   tsdc_network:
-#     driver: bridge

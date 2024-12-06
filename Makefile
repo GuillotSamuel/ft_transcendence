@@ -9,11 +9,9 @@ all: build up
 
 prepare_directories:
 	@echo "$(YELLOW)Preparing directories for Docker containers volumes...$(NC)"
-	@sudo mkdir -p $(HOME)/data/db
-	@sudo mkdir -p $(HOME)/data/static
-	@sudo mkdir -p $(HOME)/data/media
-	@sudo chown -R $(USER):$(USER) $(HOME)/data
-	@sudo chmod -R 755 $(HOME)/data
+	@mkdir -p $(HOME)/data/db
+	@mkdir -p $(HOME)/data/static
+	@mkdir -p $(HOME)/data/media
 
 build: # prepare_directories
 	@echo "$(YELLOW)Building Docker images...$(NC)"
@@ -67,7 +65,7 @@ shellPostgreSQL:
 
 shellDjango:
 	@echo "$(YELLOW)Accessing the shell of the Django container...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) exec django sh
+	docker-compose -f $(COMPOSE_FILE) exec django bash
 
 shellNginx:
 	@echo "$(YELLOW)Accessing the shell of the Nginx container...$(NC)"
