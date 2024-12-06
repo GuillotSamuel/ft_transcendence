@@ -18,7 +18,7 @@ export function displayCurrentRound(currentRound) {
 
     // Ajouter un titre pour le round
     const title = document.createElement('h3');
-    title.textContent = 'Current Round Matches';
+    title.textContent = 'Matches Tree';
     title.style.marginBottom = '10px';
     roundInfo.appendChild(title);
 
