@@ -125,7 +125,6 @@ export function generateAliasFields() {
 }
 
 export function submitAliases() {
-    console.log("submitAliases called");
 
     const aliasInputs = document.querySelectorAll('[id^="player"]');
     const aliases = [];
@@ -140,7 +139,6 @@ export function submitAliases() {
             aliases.push(alias);
         }
     });
-    console.log("Collected aliases:", aliases);
 
     // Vérifier si tous les participants ont bien un alias
     if (aliases.length < aliasInputs.length) {
@@ -170,7 +168,6 @@ export function submitAliases() {
 
     // Générer l'arbre de tournoi
     tournamentTree = generateTournamentTree(aliases);
-    console.log("Generated Tournament Tree:", tournamentTree);
 
     // Afficher l'arbre de tournoi
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -241,8 +238,6 @@ export function drawPlayButton(ctx, canvas, x, y, width, height, text) {
             mouseY >= y &&
             mouseY <= y + height
         ) {
-            console.log("Play button clicked!");
-            
             playTournament(tournamentTree);
             // Ajouter la logique du bouton ici
             canvas.removeEventListener("click", handleCanvasClick);

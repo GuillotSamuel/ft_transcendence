@@ -39,6 +39,10 @@ function initializeGame()
     rightPaddle = new Paddle(canvas.width - 20, canvas.height / 2 - 50, 10, 80, canvas);
     score = new Score(canvas, ctx);
 
+    leftPaddle.draw(ctx);
+    rightPaddle.draw(ctx);
+    ball.draw(ctx);
+    score.drawWithNames(player1, player2);
     // Initialisation du champignon au centre
     imageBoost = createBoostPNG("Skinny", canvas);
 
@@ -92,7 +96,6 @@ export function stopGame(resolve) {
     if (tournament) {
         tournament = false;
         winner = displayWinnerTour(ctx, canvas, player1, player2, score);
-        console.log(`winner quand stop game = ${winner} `);
         resolve(winner);
         return;
     }

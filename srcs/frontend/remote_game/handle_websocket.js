@@ -46,7 +46,6 @@ export function handleWebSocketMessage(event) {
                 break;
 
             case 'PLAYER_DISCONNECTED':
-                console.log(`Le joueur ${data.data.player_number} s'est déconnecté.`);
                 drawMessageOnCanvas(`Le joueur ${data.data.player_number} s'est déconnecté.`);
                 break;
 
@@ -60,7 +59,6 @@ export function handleWebSocketMessage(event) {
 
 
 export function handleGameStopped(){
-    console.log("Opponent has disconnect, you Won 3-0 !")
 
     isGameOver = true; // Indique que le jeu est terminé
 
@@ -94,11 +92,9 @@ export function handleGameStopped(){
 }
 
 export function handleWebSocketOpen() {
-    console.log("WebSocket connecté !");
 }
 
 export function handleWebSocketClose() {
-    console.log("WebSocket déconnecté !");
     stopLoadingBar();
 
     playerRole = null;
@@ -111,16 +107,12 @@ export function handleWebSocketError(event) {
 }
 
 function handleMatchReady(data) {
-    console.log("MATCH_READY: Le match est prêt à commencer !");
     stopListening();
 }
 
 function handleWinner(data) {
     let winner = data.winner;
     isGameOver = true; // Indique que le jeu est terminé
-    console.log("le role du client est: ", playerRole);
-    console.log("LE GAGNANT EST:", winner);
-    console.log(`Le score est de p1: ${data.p1_score} et p2: ${data.p2_score}`);
 
     if (getIsRemoteGameActive())
         setIsRemoteGameActive(false);
@@ -160,11 +152,9 @@ function handleWinner(data) {
 
 function handleAssignRole(data) {
     playerRole = data.player_role; // Stocke le rôle (player1 ou player2)
-    console.log("Rôle assigné :", playerRole);
 }
 
 function handlePrintForUser(message) {
-    console.log("PRINTFORUSER: Message reçu :", message);
     startLoadingBar();
 }
 
@@ -181,7 +171,6 @@ function handleGameStart(state) {
 
 function handleGameStateUpdate(state) {
     if (isGameOver) {
-        console.log("Le jeu est terminé. Les mises à jour sont ignorées.");
         return; // Arrête de traiter les mises à jour si le jeu est terminé
     }
 
@@ -196,12 +185,10 @@ function handleGameStateUpdate(state) {
 }
 
 function returnMain() {
-    console.log('Retour à l\'écran principal...');
     const ctx = document.getElementById('pong-canvas').getContext('2d');
     
     if (websocket && websocket.readyState === WebSocket.OPEN) {
         websocket.close(); // Fermeture de la connexion
-        console.log("WebSocket fermée proprement.");
     }
 
     // Supprimer les événements clavier pour ce jeu

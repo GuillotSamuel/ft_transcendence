@@ -18,7 +18,6 @@ export async function playTournament(tournamentTree) {
     ctx = canvas.getContext("2d");
 
     await ctx.clearRect(0, 0, canvas.width, canvas.height);
-    console.log("Starting Tournament!");
     
     await processRounds(tournamentTree, ctx);
 }
@@ -27,9 +26,7 @@ async function processRounds(tournamentTree, ctx) {
     let currentRound = tournamentTree;
 
     while (currentRound.length > 0) {
-        console.log("Current Round Matches:", currentRound);
 
-        //clearRoundDisplay();
         // Jouer tous les matchs du round actuel et obtenir les gagnants
         const nextRoundPlayers = await playCurrentRound(currentRound);
 
@@ -37,7 +34,6 @@ async function processRounds(tournamentTree, ctx) {
         currentRound = prepareNextRound(nextRoundPlayers);
         clearRoundDisplay();
         displayCurrentRound(currentRound);
-        console.log("Next Round Matches:", currentRound);
 
         // Vérifier si c'est la finale
         if (isFinalRound(currentRound)) {

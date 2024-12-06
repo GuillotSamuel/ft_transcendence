@@ -37,14 +37,12 @@ export function disconnectPlayerSync() {
         // Utiliser sendBeacon si disponible
         if (navigator.sendBeacon) {
             navigator.sendBeacon(url, payload);
-            console.log("Déconnexion envoyée via sendBeacon.");
         } else {
             // Fallback pour les navigateurs qui ne supportent pas sendBeacon
             const xhr = new XMLHttpRequest();
             xhr.open('POST', url, false); // `false` pour une requête synchrone
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(payload);
-            console.log("Déconnexion envoyée via XMLHttpRequest synchronisé.");
         }
     } catch (error) {
         console.error("Erreur lors de l'envoi de la déconnexion :", error);
@@ -55,12 +53,10 @@ export function disconnectPlayerSync() {
 export function startListening() {
     window.addEventListener('beforeunload', disconnectGame);
     window.addEventListener('hashchange', disconnectGame);
-    console.log("Started listening for page changes.");
 }
 
 // Suppression de l'écouteur
 export function stopListening() {
     window.removeEventListener('beforeunload', disconnectGame);
     window.removeEventListener('hashchange', disconnectGame);
-    console.log("Stopped listening for page changes.");
 }

@@ -61,10 +61,8 @@ export function displayCurrentRound(currentRound) {
 
 export function clearRoundDisplay() {
     const currentRoundInfo = document.getElementById('currentRoundInfo');
-    console.log("clearRoundDisplay: currentRoundInfo", currentRoundInfo);
     if (currentRoundInfo) {
         currentRoundInfo.remove();
-        console.log("clearRoundDisplay: currentRoundInfo removed");
     } else {
         console.warn("clearRoundDisplay: Element with ID 'currentRoundInfo' not found");
     }

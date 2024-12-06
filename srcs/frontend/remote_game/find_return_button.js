@@ -88,7 +88,6 @@ export function drawFindGameScreen() {
 
     if (!localButton || !remoteButton) {
         console.error('Boutons "local-button" ou "remote-button" introuvables dans le DOM.');
-        console.log('DOM actuel:', document.body.innerHTML);
         return;
     }
 
@@ -127,7 +126,6 @@ export function drawFindGameScreen() {
 
 // Fonction pour rechercher une partie
 function findGame() {
-    console.log('Recherche d\'une partie...');
     const ctx = document.getElementById('pong-canvas').getContext('2d');
     // Afficher un message dans le canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -141,7 +139,6 @@ function findGame() {
 }
 
 function returnToMainMenu() {
-    console.log('Retour à l\'écran principal...');
 
     // Récupérer le canvas
     const canvas = document.getElementById('pong-canvas');

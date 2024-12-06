@@ -42,7 +42,6 @@ export async function startRemoteGame() {
     // Gestion des événements WebSocket
     websocket.onmessage = handleWebSocketMessage;
     websocket.onopen = () => {
-        console.log("WebSocket connecté !");
         handleWebSocketOpen();
 
         // Affiche le bouton Disconnect
@@ -87,7 +86,6 @@ function sendPlayerDirection(direction) {
     if (websocket && websocket.readyState === WebSocket.OPEN && playerRole !== null) {
         const message = { player_role: playerRole, direction: direction };
         websocket.send(JSON.stringify(message));
-        console.log("Direction envoyée :", message);
     } else {
         console.warn("WebSocket non connectée ou rôle non assigné. Impossible d'envoyer la direction.");
     }
