@@ -198,8 +198,7 @@ function gameLoopCustom()
     ball.draw(ctx);
     
     check_ball_and_bonus(ball, imageBoost);
-
-
+    
     leftPaddle.move(leftPaddleUp, leftPaddleDown);
     rightPaddle.move(rightPaddleUp, rightPaddleDown);
 
@@ -207,7 +206,7 @@ function gameLoopCustom()
     leftPaddle.draw(ctx);
     rightPaddle.draw(ctx);
 
-    score.draw();
+    score.drawWithNames();
     //rand pos unique si diff time > 2
     if (check_time()) {
         if (!actionPerformed) {

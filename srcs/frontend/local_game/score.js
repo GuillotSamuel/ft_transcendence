@@ -30,7 +30,7 @@ export class Score
 
     }
 
-    drawWithNames(player1, player2) {
+    drawWithNames(player1 = "player1", player2= "player2") {
         this.ctx.font = "bold 20px 'Arial Black', sans-serif";
         this.ctx.textAlign = "center";
 
