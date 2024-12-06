@@ -1,10 +1,12 @@
 import { clearCanvas } from "../game.js";
 import {playTournament} from "./play.js";
-import {displayCurrentRound} from "./displayRound.js";
+import {displayCurrentRound, clearRoundDisplay} from "./displayRound.js";
+
 window.clearCanvas = clearCanvas;
 window.generateAliasFields = generateAliasFields;
 window.submitAliases = submitAliases;
 window.tournamentGame = tournamentGame;
+window.clearRoundDisplay = clearRoundDisplay;
 
 let canvas;
 let ctx;
@@ -160,7 +162,7 @@ export function submitAliases() {
             <button 
                 class="btn btn-secondary btn-lg" 
                 style="padding: 10px 20px; border-radius: 5px;" 
-                onclick="tournamentGame()">
+                onclick="clearRoundDisplay(); tournamentGame()">
                 Return
             </button>
         </div>
